@@ -1,0 +1,10 @@
+{
+    "id": 2,
+    "fields":
+    [
+        {
+            "name": "reason",
+            "type": "NetworkText"
+        }
+    ]
+}

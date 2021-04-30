@@ -1,0 +1,11 @@
+{
+    "id": 3,
+    "fields":
+    [
+        {
+            "name": "player_id",
+            "type": "u8"
+        }
+    ]
+}
+
