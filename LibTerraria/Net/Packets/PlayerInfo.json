@@ -36,31 +36,31 @@
         },
         {
             "name": "hair_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "skin_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "eye_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "shirt_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "undershirt_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "pants_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "shoe_color",
-            "type": "Color"
+            "type": "Terraria::Net::Color"
         },
         {
             "name": "difficulty_flags",

@@ -85,6 +85,7 @@ int main(int argc, char** argv)
     outln("#include <LibTerraria/Net/NetworkText.h>");
     outln("#include <LibTerraria/Net/Color.h>");
     outln("#include <LibTerraria/Net/Packet.h>");
+    outln("#include <LibTerraria/Item.h>");
     outln();
     outln("// This was auto-generated from {}", lexical_path);
     outln("namespace Terraria::Net::Packets");

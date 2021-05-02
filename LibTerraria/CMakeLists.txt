@@ -14,17 +14,17 @@ file(GLOB packet_definitions ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/*.json)
 foreach(file ${packet_definitions})
     get_filename_component(file_name ${file} NAME_WE)
     compile_packet_definition(${file_name}.json ${file_name}.h)
-    message(${file_name})
 endforeach()
 
 add_library(Terraria
-        Empty.cpp
+        Item.cpp
         ConnectRequest.h
         Disconnect.h
         SetUserSlot.h
         PlayerInfo.h
-        Net/Color.h
-        Net/NetworkText.h
+        SyncInventorySlot.h
         )
+
+target_include_directories(Terraria SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
 
 target_lagom(Terraria)

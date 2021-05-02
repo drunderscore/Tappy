@@ -2,6 +2,7 @@
 #include <LibTerraria/Net/NetworkText.h>
 #include <LibTerraria/Net/Packets/SetUserSlot.h>
 #include <LibTerraria/Net/Packets/PlayerInfo.h>
+#include <LibTerraria/Net/Packets/SyncInventorySlot.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -63,7 +64,14 @@ void Client::on_ready_to_read()
     else if (packet_id == 4)
     {
         InputMemoryStream packet_bytes_stream(bytes);
-
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
+        outln("Player {} ({}) is connecting.", player_info->name(), m_id);
+    }
+    else if (packet_id == 5)
+    {
+        InputMemoryStream packet_bytes_stream(bytes);
+        auto inv_slot = Terraria::Net::Packets::SyncInventorySlot::from_bytes(packet_bytes_stream);
+        outln("{} has {} of {} with prefix {} in slot {}", m_id, inv_slot->stack(), inv_slot->id(), inv_slot->prefix(),
+              inv_slot->slot());
     }
 }
