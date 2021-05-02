@@ -63,14 +63,14 @@ int main(int argc, char** argv)
     Vector<Field> fields;
 
     json_fields.as_array().for_each([&](auto& value)
-                                    {
-                                        if (!value.is_object())
-                                            return;
+    {
+        if (!value.is_object())
+            return;
 
-                                        auto name = value.as_object().get("name").as_string();
-                                        auto type = value.as_object().get("type").as_string();
-                                        fields.append(Field(move(name), move(type)));
-                                    });
+        auto name = value.as_object().get("name").as_string();
+        auto type = value.as_object().get("type").as_string();
+        fields.append(Field(move(name), move(type)));
+    });
 
     AK::LexicalPath lexical_path(serial_file_path);
     auto& class_name = lexical_path.title();
