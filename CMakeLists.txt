@@ -3,7 +3,7 @@ project(Tappy CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-function(target_serenity target)
+function(target_lagom target)
     target_include_directories(${target} SYSTEM PRIVATE
             # This is pretty much solely for AK
             ${CMAKE_SOURCE_DIR}/serenity/

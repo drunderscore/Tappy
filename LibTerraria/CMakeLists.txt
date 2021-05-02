@@ -27,4 +27,4 @@ add_library(Terraria
         Net/NetworkText.h
         )
 
-target_serenity(Terraria)
+target_lagom(Terraria)

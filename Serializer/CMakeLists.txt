@@ -1,2 +1,2 @@
 add_executable(Serializer main.cpp)
-target_serenity(Serializer)
+target_lagom(Serializer)

@@ -3,7 +3,7 @@ add_executable(Server
         Client.cpp
         )
 
-target_serenity(Server)
+target_lagom(Server)
 target_include_directories(Server SYSTEM PRIVATE
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_BINARY_DIR}
