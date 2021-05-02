@@ -4,7 +4,7 @@
 #include <LibCore/Timer.h>
 #include <LibCore/TCPSocket.h>
 
-class Client : public RefCounted<Client>
+class Client : public Weakable<Client>
 {
 public:
     enum class DisconnectReason

@@ -11,23 +11,6 @@ Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) : m_socket(move(soc
     {
         on_ready_to_read();
     };
-
-//    m_connection_timeout_timer = Core::Timer::create_single_shot(1000, [this]()
-//    {
-//        // Don't let the client get destroyed under our feet before we've cleaned up.
-//        NonnullRefPtr<Client> protect(*this);
-//        outln("Client {} took too long to connect, disconnecting", m_id);
-//        Terraria::Net::Packets::Disconnect disconnect;
-//        disconnect.set_reason("lol bye");
-//        auto bytes = disconnect.to_bytes();
-//        auto bytes_size = static_cast<u16>(bytes.size());
-//        m_socket->send({&bytes_size, sizeof(bytes_size)});
-//        m_socket->send(bytes);
-//        if (on_disconnect)
-//            on_disconnect(DisconnectReason::TookTooLongToConnect);
-//        m_socket->close();
-//    });
-//    m_connection_timeout_timer->start();
 }
 
 void Client::on_ready_to_read()

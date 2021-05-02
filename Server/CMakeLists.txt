@@ -1,6 +1,7 @@
 add_executable(Server
         main.cpp
         Client.cpp
+        Server.cpp
         )
 
 target_lagom(Server)
