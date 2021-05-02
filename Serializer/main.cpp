@@ -84,17 +84,24 @@ int main(int argc, char** argv)
     outln("#include <LibTerraria/Net/Types.h>");
     outln("#include <LibTerraria/Net/NetworkText.h>");
     outln("#include <LibTerraria/Net/Color.h>");
+    outln("#include <LibTerraria/Net/Packet.h>");
     outln();
     outln("// This was auto-generated from {}", lexical_path);
     outln("namespace Terraria::Net::Packets");
     outln("{{");
-    outln("class {}", class_name);
+    outln("class {} : public Terraria::Net::Packet", class_name);
     outln("{{");
 
     outln("public:");
     outln("{}() = default;", class_name);
     outln();
 
+    outln("const char* packet_name() const");
+    outln("{{");
+    outln("return \"{}\";", class_name);
+    outln("}}");
+
+    outln();
     outln("static Optional<{}> from_bytes(InputStream& stream)", class_name);
     outln("{{");
 
@@ -122,7 +129,7 @@ int main(int argc, char** argv)
     outln("}}");
     outln();
 
-    outln("ByteBuffer to_bytes()");
+    outln("ByteBuffer to_bytes() const");
     outln("{{");
     outln("static constexpr u8 PACKET_ID = {};", packet_id);
     outln("auto buffer = ByteBuffer::create_uninitialized(256);");

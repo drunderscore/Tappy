@@ -48,7 +48,7 @@ public:
         return shift / 7;
     }
 
-    static size_t write_string(OutputStream& stream, String& value)
+    static size_t write_string(OutputStream& stream, const String& value)
     {
         auto bytes_written = write_7bit_encoded_int(stream, value.length());
         bytes_written += stream.write(value.bytes());

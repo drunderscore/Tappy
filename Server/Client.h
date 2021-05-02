@@ -1,8 +1,10 @@
 #pragma once
 
+#include <LibTerraria/Net/Packet.h>
 #include <AK/RefCounted.h>
 #include <LibCore/Timer.h>
 #include <LibCore/TCPSocket.h>
+#include <LibCore/FileStream.h>
 
 class Client : public Weakable<Client>
 {
@@ -21,9 +23,12 @@ public:
     { return m_id; }
 
 private:
+    void send(const Terraria::Net::Packet& packet);
+
     void on_ready_to_read();
 
     NonnullRefPtr<Core::TCPSocket> m_socket;
-    RefPtr<Core::Timer> m_connection_timeout_timer;
+    Core::InputFileStream m_input_stream;
+    Core::OutputFileStream m_output_stream;
     u8 m_id;
 };
