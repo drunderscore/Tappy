@@ -276,7 +276,7 @@ public:
         _Count
     };
 
-//private:
+private:
     AK::HashMap<Slot, Item> m_items;
 };
 }
