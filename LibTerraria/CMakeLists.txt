@@ -3,7 +3,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets)
 function(compile_packet_definition source output)
     add_custom_command(
             OUTPUT ${output}
-            COMMAND Serializer/Serializer ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/${output}
+            COMMAND Serializer/Serializer -a packet_definition ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/${output}
             VERBATIM
             DEPENDS Serializer
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
