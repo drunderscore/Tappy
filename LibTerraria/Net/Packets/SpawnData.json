@@ -1,0 +1,13 @@
+{
+    "fields":
+    [
+        {
+            "name": "spawn_x",
+            "type": "i32"
+        },
+        {
+            "name": "spawn_y",
+            "type": "i32"
+        }
+    ]
+}
