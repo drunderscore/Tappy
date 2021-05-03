@@ -1,0 +1,217 @@
+{
+    "fields":
+    [
+        {
+            "name": "time",
+            "type": "i32"
+        },
+        {
+            "name": "day_state",
+            "type": "u8"
+        },
+        {
+            "name": "moon_phase",
+            "type": "u8"
+        },
+        {
+            "name": "max_tiles_x",
+            "type": "i16"
+        },
+        {
+            "name": "max_tiles_y",
+            "type": "i16"
+        },
+        {
+            "name": "spawn_x",
+            "type": "i16"
+        },
+        {
+            "name": "spawn_y",
+            "type": "i16"
+        },
+        {
+            "name": "world_surface",
+            "type": "i16"
+        },
+        {
+            "name": "rock_layer",
+            "type": "i16"
+        },
+        {
+            "name": "world_id",
+            "type": "i32"
+        },
+        {
+            "name": "world_name",
+            "type": "String"
+        },
+        {
+            "name": "gamemode",
+            "type": "u8"
+        },
+        {
+            "name": "world_uuid",
+            "type": "Array<u8, 16>"
+        },
+        {
+            "name": "world_generator_version",
+            "type": "u64"
+        },
+        {
+            "name": "moon_type",
+            "type": "u8"
+        },
+        {
+            "name": "tree_backgrounds",
+            "type": "Array<u8, 4>"
+        },
+        {
+            "name": "corruption_background",
+            "type": "u8"
+        },
+        {
+            "name": "jungle_background",
+            "type": "u8"
+        },
+        {
+            "name": "snow_background",
+            "type": "u8"
+        },
+        {
+            "name": "hallow_background",
+            "type": "u8"
+        },
+        {
+            "name": "crimson_background",
+            "type": "u8"
+        },
+        {
+            "name": "desert_background",
+            "type": "u8"
+        },
+        {
+            "name": "ocean_background",
+            "type": "u8"
+        },
+        {
+            "name": "mushroom_background",
+            "type": "u8"
+        },
+        {
+            "name": "underworld_background",
+            "type": "u8"
+        },
+        {
+            "name": "ice_back_style",
+            "type": "u8"
+        },
+        {
+            "name": "jungle_back_style",
+            "type": "u8"
+        },
+        {
+            "name": "hell_back_style",
+            "type": "u8"
+        },
+        {
+            "name": "wind_speed_target",
+            "type": "float"
+        },
+        {
+            "name": "number_of_clouds",
+            "type": "u8"
+        },
+        {
+            "name": "tree_x",
+            "type": "Array<i32, 3>"
+        },
+        {
+            "name": "tree_style",
+            "type": "Array<u8, 4>"
+        },
+        {
+            "name": "cave_back_x",
+            "type": "Array<i32, 3>"
+        },
+        {
+            "name": "cave_back_style",
+            "type": "Array<u8, 4>"
+        },
+        {
+            "name": "tree_top_variations",
+            "type": "Array<u8, 13>"
+        },
+        {
+            "name": "max_raining",
+            "type": "float"
+        },
+        {
+            "name": "world_flags_1",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_2",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_3",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_4",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_5",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_6",
+            "type": "u8"
+        },
+        {
+            "name": "world_flags_7",
+            "type": "u8"
+        },
+        {
+            "name": "copper_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "iron_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "silver_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "gold_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "cobalt_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "mythril_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "adamantite_ore_tier",
+            "type": "u16"
+        },
+        {
+            "name": "invasion_type",
+            "type": "i8"
+        },
+        {
+            "name": "lobby_id",
+            "type": "u64"
+        },
+        {
+            "name": "intended_sandstorm_severity",
+            "type": "float"
+        }
+    ]
+}
