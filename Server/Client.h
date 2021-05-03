@@ -9,6 +9,7 @@
 #include <LibTerraria/Net/Packet.h>
 #include <AK/RefCounted.h>
 #include <AK/WeakPtr.h>
+#include <AK/UUID.h>
 #include <LibCore/Timer.h>
 #include <LibCore/TCPSocket.h>
 #include <LibCore/FileStream.h>
@@ -46,5 +47,6 @@ private:
     Core::InputFileStream m_input_stream;
     Core::OutputFileStream m_output_stream;
     OwnPtr<Terraria::Player> m_player;
+    Optional<UUID> m_uuid;
     u8 m_id;
 };

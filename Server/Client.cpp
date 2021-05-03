@@ -9,6 +9,7 @@
 #include <LibTerraria/Net/Packets/SetUserSlot.h>
 #include <LibTerraria/Net/Packets/PlayerInfo.h>
 #include <LibTerraria/Net/Packets/SyncInventorySlot.h>
+#include <LibTerraria/Net/Packets/ClientUUID.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -48,7 +49,7 @@ void Client::on_ready_to_read()
         return;
     }
 
-    u8 packet_id;
+    Terraria::Net::Packet::Id packet_id;
     m_input_stream >> packet_id;
     if (m_input_stream.has_any_error())
     {
@@ -59,24 +60,23 @@ void Client::on_ready_to_read()
 
     // The packet size (2 bytes) and id (1 byte) are part of this.
     auto bytes = m_socket->read(packet_size - 3);
+    InputMemoryStream packet_bytes_stream(bytes);
 
     // Connection request, let's send a user slot
-    if (packet_id == 1)
+    if (packet_id == Terraria::Net::Packet::Id::ConnectRequest)
     {
         Terraria::Net::Packets::SetUserSlot set_user_slot;
         set_user_slot.set_player_id(m_id);
         send(set_user_slot);
     }
-    else if (packet_id == 4)
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerInfo)
     {
-        InputMemoryStream packet_bytes_stream(bytes);
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
         m_player = make<Terraria::Player>(Terraria::Character::create_from_packet(*player_info));
         outln("Got character, created player for {}", m_player->character().name());
     }
-    else if (packet_id == 5)
+    else if (packet_id == Terraria::Net::Packet::Id::SyncInventorySlot)
     {
-        InputMemoryStream packet_bytes_stream(bytes);
         auto inv_slot = Terraria::Net::Packets::SyncInventorySlot::from_bytes(packet_bytes_stream);
         if (inv_slot->id() != Terraria::Item::Id::None)
         {
@@ -84,12 +84,36 @@ void Client::on_ready_to_read()
                                          Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
         }
     }
-    else if (packet_id == 6)
+    else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)
     {
         outln("Client wants world info, lets just list items tho");
         m_player->inventory().for_each([](auto slot, auto item)
         {
             outln("Slot {}: {} of {}", slot, item.stack(), item.id());
         });
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::ClientUUID)
+    {
+        auto client_uuid = Terraria::Net::Packets::ClientUUID::from_bytes(packet_bytes_stream);
+        if (client_uuid->uuid().length() != 36)
+        {
+            warnln("Client sent UUID that isn't 36 characters.");
+        }
+        else
+        {
+            m_uuid = UUID(client_uuid->uuid().view());
+            if (m_uuid.has_value())
+            {
+                outln("Client {} has UUID {}", m_id, m_uuid->to_string());
+            }
+            else
+            {
+                warnln("Client sent invalid UUID that AK couldn't parse.");
+            }
+        }
+    }
+    else
+    {
+        warnln("Unhandled packet {}", packet_id);
     }
 }

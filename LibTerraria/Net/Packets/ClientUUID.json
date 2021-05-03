@@ -2,7 +2,7 @@
     "fields":
     [
         {
-            "name": "version",
+            "name": "uuid",
             "type": "String"
         }
     ]

@@ -66,12 +66,6 @@ int main(int argc, char** argv)
         }
 
         auto json_object = json->as_object();
-        auto packet_id = json_object.get("id");
-        if (packet_id.type() != AK::JsonValue::Type::UnsignedInt32)
-        {
-            warnln("No packet id.");
-            return 4;
-        }
 
         auto json_fields = json_object.get("fields");
         if (json_fields.type() != AK::JsonValue::Type::Array)
@@ -83,14 +77,14 @@ int main(int argc, char** argv)
         Vector<Field> fields;
 
         json_fields.as_array().for_each([&](auto& value)
-                                        {
-                                            if (!value.is_object())
-                                                return;
+        {
+            if (!value.is_object())
+                return;
 
-                                            auto name = value.as_object().get("name").as_string();
-                                            auto type = value.as_object().get("type").as_string();
-                                            fields.append(Field(move(name), move(type)));
-                                        });
+            auto name = value.as_object().get("name").as_string();
+            auto type = value.as_object().get("type").as_string();
+            fields.append(Field(move(name), move(type)));
+        });
 
         AK::LexicalPath lexical_path(input_file_path);
         auto& class_name = lexical_path.title();
@@ -153,7 +147,7 @@ int main(int argc, char** argv)
 
         outln("ByteBuffer to_bytes() const");
         outln("{{");
-        outln("static constexpr u8 PACKET_ID = {};", packet_id);
+        outln("static constexpr auto PACKET_ID = Terraria::Net::Packet::Id::{};", class_name);
         outln("auto buffer = ByteBuffer::create_uninitialized(256);");
         outln("OutputMemoryStream stream(buffer);");
         outln("stream << PACKET_ID;");
