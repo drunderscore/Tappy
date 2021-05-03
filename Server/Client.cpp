@@ -12,6 +12,7 @@
 #include <LibTerraria/Net/Packets/ClientUUID.h>
 #include <LibTerraria/Net/Packets/PlayerHP.h>
 #include <LibTerraria/Net/Packets/PlayerMana.h>
+#include <LibTerraria/Net/Packets/PlayerBuffs.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -122,6 +123,17 @@ void Client::on_ready_to_read()
         m_player->set_hp(player_hp->hp());
         m_player->set_max_hp(player_hp->max_hp());
         outln("{} has {}/{} hp", m_id, player_hp->hp(), player_hp->max_hp());
+    }
+    else if(packet_id == Terraria::Net::Packet::Id::PlayerBuffs)
+    {
+        auto player_buffs = Terraria::Net::Packets::PlayerBuffs::from_bytes(packet_bytes_stream);
+        player_buffs->buffs().span().copy_to(m_player->buffs().span());
+        outln("Got player buffs, here they are:");
+        for(auto buff_id : m_player->buffs())
+        {
+            if(buff_id != 0)
+                outln("Buff {}", buff_id);
+        }
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerMana)
     {

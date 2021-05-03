@@ -25,6 +25,7 @@ add_library(Terraria
         Disconnect.h
         SetUserSlot.h
         PlayerInfo.h
+        PlayerBuffs.h
         ClientUUID.h
         PlayerHP.h
         PlayerMana.h

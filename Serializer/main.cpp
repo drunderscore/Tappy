@@ -13,6 +13,14 @@
 
 void stringify(const String& name, const StringView& lines);
 
+void get_array_info(const String& name, StringView& type, StringView& length)
+{
+    GenericLexer lexer(name);
+    lexer.consume_until('<');
+    type = lexer.consume_until(',').trim_whitespace();
+    length = lexer.consume_until('>').trim_whitespace();
+}
+
 class Field
 {
 public:
@@ -134,6 +142,13 @@ int main(int argc, char** argv)
                 outln("if(!op_{}.has_value()) return {{}};", field.name());
                 outln("packet.m_{} = op_{}.value();", field.name(), field.name());
             }
+            else if (field.type().starts_with("Array"))
+            {
+                StringView array_type;
+                StringView array_length;
+                get_array_info(field.type(), array_type, array_length);
+                outln("stream.read({{ packet.m_{}.data(), packet.m_{}.size() * sizeof({}) }});", field.name(), field.name(), array_type);
+            }
             else
             {
                 // Let's be naive and hope an overload solves our problems :^)
@@ -161,6 +176,14 @@ int main(int argc, char** argv)
             {
                 outln("stream.write(m_{}.to_bytes());", field.name());
             }
+            else if (field.type().starts_with("Array"))
+            {
+                StringView array_type;
+                StringView array_length;
+                get_array_info(field.type(), array_type, array_length);
+                outln("stream.write({{ m_{}.data(), m_{}.size() * sizeof({}) }});", field.name(), field.name(),
+                      array_type);
+            }
             else
             {
                 // Let's be naive and hope the overload solves our problems :^)
@@ -185,6 +208,11 @@ int main(int argc, char** argv)
                 outln("const NetworkText& {}() const {{ return m_{}; }}", field.name(), field.name());
                 outln("void set_{}(NetworkText value) {{ m_{} = move(value); }}", field.name(), field.name());
             }
+            else if (field.type().starts_with("Array"))
+            {
+                outln("const {}& {}() const {{ return m_{}; }}", field.type(), field.name(), field.name());
+                outln("{}& {}() {{ return m_{}; }}", field.type(), field.name(), field.name());
+            }
             else
             {
                 // Let's be naive and hope this type is trivial
@@ -198,7 +226,10 @@ int main(int argc, char** argv)
         for (auto& field : fields)
         {
             // This should be correct for most cases.
-            outln("{} m_{};", field.type(), field.name());
+            if (field.type() != "String" && field.type() != "NetworkText" && !field.type().starts_with("Array"))
+                outln("{} m_{}{{}};", field.type(), field.name());
+            else
+                outln("{} m_{};", field.type(), field.name());
         }
 
         outln("}};");

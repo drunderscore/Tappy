@@ -15,6 +15,8 @@ namespace Terraria
 class Player : public Weakable<Player>
 {
 public:
+    using BuffsArray = Array<u16, 22>;
+
     explicit Player(Character c) : m_character(move(c))
     {}
 
@@ -26,6 +28,10 @@ public:
 
     PlayerInventory& inventory()
     { return m_inventory; }
+
+    const BuffsArray& buffs() const { return m_buffs; }
+
+    BuffsArray& buffs() { return m_buffs; }
 
     i16 hp() const
     { return m_hp; }
@@ -58,5 +64,6 @@ private:
     i16 m_max_mana{};
     Character m_character;
     PlayerInventory m_inventory;
+    BuffsArray m_buffs; // The network is limited to 22 concurrent buffs.
 };
 }
