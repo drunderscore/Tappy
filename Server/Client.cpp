@@ -29,7 +29,7 @@ Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
 void Client::send(const Terraria::Net::Packet& packet)
 {
     auto bytes = packet.to_bytes();
-    m_output_stream << static_cast<u16>(bytes.size());
+    m_output_stream << static_cast<u16>(bytes.size() + 2);
     m_output_stream << bytes;
 }
 

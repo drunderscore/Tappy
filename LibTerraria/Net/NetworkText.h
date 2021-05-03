@@ -34,18 +34,15 @@ public:
         return network_text;
     }
 
-    ByteBuffer to_bytes()
+    ByteBuffer to_bytes() const
     {
         // TODO: Support non-literal network text
         VERIFY(m_mode == Mode::Literal);
         auto bytes = ByteBuffer::create_uninitialized(256);
         AK::OutputMemoryStream stream(bytes);
-        dbgln("stream size is {}, remaining {}", stream.size(), stream.remaining());
-        dbgln("any error 1: {}", stream.has_any_error());
         stream << static_cast<u8>(m_mode);
-        dbgln("any error 2: {}", stream.has_any_error());
         Types::write_string(stream, m_text);
-        dbgln("any error 3: {}", stream.has_any_error());
+        bytes.trim(stream.size());
         return bytes;
     }
 
