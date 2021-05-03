@@ -120,7 +120,7 @@ int main(int argc, char** argv)
         outln("{}() = default;", class_name);
         outln();
 
-        outln("const char* packet_name() const");
+        outln("const char* packet_name() const override");
         outln("{{");
         outln("return \"{}\";", class_name);
         outln("}}");
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
         outln("}}");
         outln();
 
-        outln("ByteBuffer to_bytes() const");
+        outln("ByteBuffer to_bytes() const override");
         outln("{{");
         outln("static constexpr auto PACKET_ID = Terraria::Net::Packet::Id::{};", class_name);
         outln("auto buffer = ByteBuffer::create_uninitialized(256);");

@@ -30,7 +30,7 @@ public:
         ClientUUID = 68
     };
 
-    const char* packet_name() const
+    virtual const char* packet_name() const
     { VERIFY_NOT_REACHED(); }
 
     virtual ByteBuffer to_bytes() const
