@@ -11,7 +11,7 @@
         },
         {
             "name": "stack",
-            "type": "u16"
+            "type": "i16"
         },
         {
             "name": "prefix",

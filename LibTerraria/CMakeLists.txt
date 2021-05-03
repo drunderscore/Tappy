@@ -26,6 +26,8 @@ add_library(Terraria
         SetUserSlot.h
         PlayerInfo.h
         ClientUUID.h
+        PlayerHP.h
+        PlayerMana.h
         SyncInventorySlot.h
         )
 

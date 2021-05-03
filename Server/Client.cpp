@@ -10,6 +10,8 @@
 #include <LibTerraria/Net/Packets/PlayerInfo.h>
 #include <LibTerraria/Net/Packets/SyncInventorySlot.h>
 #include <LibTerraria/Net/Packets/ClientUUID.h>
+#include <LibTerraria/Net/Packets/PlayerHP.h>
+#include <LibTerraria/Net/Packets/PlayerMana.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -62,6 +64,8 @@ void Client::on_ready_to_read()
     auto bytes = m_socket->read(packet_size - 3);
     InputMemoryStream packet_bytes_stream(bytes);
 
+    // TODO: Some of these packets contain the player id, but we ignore that and assume it's the player id we assigned to this socket.
+
     // Connection request, let's send a user slot
     if (packet_id == Terraria::Net::Packet::Id::ConnectRequest)
     {
@@ -111,6 +115,20 @@ void Client::on_ready_to_read()
                 warnln("Client sent invalid UUID that AK couldn't parse.");
             }
         }
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerHP)
+    {
+        auto player_hp = Terraria::Net::Packets::PlayerHP::from_bytes(packet_bytes_stream);
+        m_player->set_hp(player_hp->hp());
+        m_player->set_max_hp(player_hp->max_hp());
+        outln("{} has {}/{} hp", m_id, player_hp->hp(), player_hp->max_hp());
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerMana)
+    {
+        auto player_mana = Terraria::Net::Packets::PlayerMana::from_bytes(packet_bytes_stream);
+        m_player->set_mana(player_mana->mana());
+        m_player->set_max_mana(player_mana->max_mana());
+        outln("{} has {}/{} mana", m_id, player_mana->mana(), player_mana->max_mana());
     }
     else
     {

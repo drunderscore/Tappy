@@ -23,6 +23,9 @@ public:
         PlayerInfo,
         SyncInventorySlot,
         RequestWorldData,
+        PlayerHP = 16,
+        PlayerMana = 42,
+        PlayerBuffs = 50,
         ClientUUID = 68
     };
 
