@@ -12,6 +12,7 @@
 #include <LibTerraria/Net/Packets/ClientUUID.h>
 #include <LibTerraria/Net/Packets/PlayerHP.h>
 #include <LibTerraria/Net/Packets/PlayerMana.h>
+#include <LibTerraria/Net/Packets/WorldData.h>
 #include <LibTerraria/Net/Packets/PlayerBuffs.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
@@ -91,11 +92,11 @@ void Client::on_ready_to_read()
     }
     else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)
     {
-        outln("Client wants world info, lets just list items tho");
-        m_player->inventory().for_each([](auto slot, auto item)
-        {
-            outln("Slot {}: {} of {}", slot, item.stack(), item.id());
-        });
+        outln("Client wants world info, let's try our best");
+
+        Terraria::Net::Packets::WorldData world_data;
+        outln("world data byte size is {}?", world_data.to_bytes().size());
+        send(world_data);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientUUID)
     {

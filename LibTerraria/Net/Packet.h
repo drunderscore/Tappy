@@ -23,6 +23,7 @@ public:
         PlayerInfo,
         SyncInventorySlot,
         RequestWorldData,
+        WorldData,
         PlayerHP = 16,
         PlayerMana = 42,
         PlayerBuffs = 50,
