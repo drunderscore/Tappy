@@ -71,7 +71,7 @@ void Client::on_ready_to_read()
     {
         InputMemoryStream packet_bytes_stream(bytes);
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
-        m_player = Terraria::Player(Terraria::Character::create_from_packet(*player_info));
+        m_player = make<Terraria::Player>(Terraria::Character::create_from_packet(*player_info));
         outln("Got character, created player for {}", m_player->character().name());
     }
     else if (packet_id == 5)

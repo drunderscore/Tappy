@@ -6,12 +6,13 @@
 
 #pragma once
 
+#include <AK/Weakable.h>
 #include <LibTerraria/PlayerInventory.h>
 #include <LibTerraria/Character.h>
 
 namespace Terraria
 {
-class Player
+class Player : public Weakable<Player>
 {
 public:
     explicit Player(Character c) : m_character(move(c))

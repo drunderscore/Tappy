@@ -8,6 +8,7 @@
 
 #include <LibTerraria/Net/Packet.h>
 #include <AK/RefCounted.h>
+#include <AK/WeakPtr.h>
 #include <LibCore/Timer.h>
 #include <LibCore/TCPSocket.h>
 #include <LibCore/FileStream.h>
@@ -29,6 +30,13 @@ public:
     u8 id() const
     { return m_id; }
 
+    WeakPtr<Terraria::Player> player()
+    {
+        if (!m_player)
+            return {};
+        return m_player->make_weak_ptr();
+    }
+
 private:
     void send(const Terraria::Net::Packet& packet);
 
@@ -37,6 +45,6 @@ private:
     NonnullRefPtr<Core::TCPSocket> m_socket;
     Core::InputFileStream m_input_stream;
     Core::OutputFileStream m_output_stream;
-    Optional<Terraria::Player> m_player;
+    OwnPtr<Terraria::Player> m_player;
     u8 m_id;
 };
