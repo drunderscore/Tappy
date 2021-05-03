@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) 2021, James Puleo <james@jame.xyz>
+ *
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 #pragma once
+
 #include <AK/Optional.h>
 #include <AK/Stream.h>
 #include <LibTerraria/Net/Types.h>
@@ -10,8 +17,12 @@ class NetworkText
 {
 public:
     NetworkText() = default;
-    NetworkText(String text) : m_text(move(text)) {}
-    NetworkText(const char* text) : NetworkText(String(text)) {}
+
+    NetworkText(String text) : m_text(move(text))
+    {}
+
+    NetworkText(const char* text) : NetworkText(String(text))
+    {}
 
     static Optional<NetworkText> from_bytes(InputStream& stream)
     {
@@ -45,10 +56,11 @@ public:
         LocalizationKey
     };
 
-    const String& as_literal_string() const { return m_text; }
+    const String& as_literal_string() const
+    { return m_text; }
 
 private:
     String m_text;
-    Mode m_mode { Mode::Literal };
+    Mode m_mode{Mode::Literal};
 };
 }

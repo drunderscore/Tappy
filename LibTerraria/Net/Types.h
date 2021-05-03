@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) 2021, James Puleo <james@jame.xyz>
+ *
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 #pragma once
+
 #include <AK/Stream.h>
 
 namespace Terraria::Net
@@ -15,7 +22,8 @@ public:
 
         size_t bytes_written = 1;
 
-        while (value >= 0x80) {
+        while (value >= 0x80)
+        {
             stream << static_cast<u8>(value | 0x80);
             value >>= 7;
             bytes_written++;
@@ -33,7 +41,8 @@ public:
         value = 0;
         u32 shift = 0;
         u8 b;
-        do {
+        do
+        {
             if (shift == 5 * 7)
             {
                 dbgln("7-bit encoded int has too many bytes!");
@@ -44,7 +53,8 @@ public:
             stream >> b;
             value |= (b & 0x7F) << shift;
             shift += 7;
-        } while ((b & 0x80) != 0);
+        }
+        while ((b & 0x80) != 0);
         return shift / 7;
     }
 
