@@ -65,13 +65,25 @@ void Client::on_ready_to_read()
     {
         InputMemoryStream packet_bytes_stream(bytes);
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
-        outln("Player {} ({}) is connecting.", player_info->name(), m_id);
+        m_player = Terraria::Player(Terraria::Character::create_from_packet(*player_info));
+        outln("Got character, created player for {}", m_player->character().name());
     }
     else if (packet_id == 5)
     {
         InputMemoryStream packet_bytes_stream(bytes);
         auto inv_slot = Terraria::Net::Packets::SyncInventorySlot::from_bytes(packet_bytes_stream);
-        outln("{} has {} of {} with prefix {} in slot {}", m_id, inv_slot->stack(), inv_slot->id(), inv_slot->prefix(),
-              inv_slot->slot());
+        if (inv_slot->id() != Terraria::Item::Id::None)
+        {
+            m_player->inventory().insert(inv_slot->slot(),
+                                         Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
+        }
+    }
+    else if (packet_id == 6)
+    {
+        outln("Client wants world info, lets just list items tho");
+        m_player->inventory().for_each([](auto slot, auto item)
+        {
+            outln("Slot {}: {} of {}", slot, item.stack(), item.id());
+        });
     }
 }

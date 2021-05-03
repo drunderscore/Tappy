@@ -5286,7 +5286,6 @@ struct AK::Formatter<Terraria::Item::Prefix> : AK::Formatter<String>
     }
 };
 
-
 InputStream& operator>>(InputStream& stream, Terraria::Item::Id& value);
 
 OutputStream& operator<<(OutputStream& stream, Terraria::Item::Id value);

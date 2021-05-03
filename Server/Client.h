@@ -5,6 +5,7 @@
 #include <LibCore/Timer.h>
 #include <LibCore/TCPSocket.h>
 #include <LibCore/FileStream.h>
+#include <LibTerraria/Player.h>
 
 class Client : public Weakable<Client>
 {
@@ -30,5 +31,6 @@ private:
     NonnullRefPtr<Core::TCPSocket> m_socket;
     Core::InputFileStream m_input_stream;
     Core::OutputFileStream m_output_stream;
+    Optional<Terraria::Player> m_player;
     u8 m_id;
 };

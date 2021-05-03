@@ -18,6 +18,8 @@ endforeach()
 
 add_library(Terraria
         Item.cpp
+        Net/Color.cpp
+        PlayerInventory.cpp
         ConnectRequest.h
         Disconnect.h
         SetUserSlot.h

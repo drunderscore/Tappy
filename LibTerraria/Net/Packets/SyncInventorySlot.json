@@ -8,7 +8,7 @@
         },
         {
             "name": "slot",
-            "type": "u16"
+            "type": "Terraria::PlayerInventory::Slot"
         },
         {
             "name": "stack",

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AK/Types.h>
+#include <AK/Stream.h>
 #include <AK/HashMap.h>
 #include <LibTerraria/Item.h>
 
@@ -276,10 +277,39 @@ public:
         _Count
     };
 
+    void insert(Slot slot, Item item)
+    {
+        outln("Inserting {} of {} into slot {}", item.stack(), item.id(), slot);
+        m_items.set(slot, item);
+    }
+
+    Optional<Item> get(Slot slot)
+    {
+        return m_items.get(slot);
+    }
+
+    template<typename Callback>
+    void for_each(Callback cb)
+    {
+        for (auto& kv : m_items)
+        {
+            cb(kv.key, kv.value);
+        }
+    }
+
 private:
     AK::HashMap<Slot, Item> m_items;
 };
 }
+
+template<>
+struct AK::Formatter<Terraria::PlayerInventory::Slot> : AK::Formatter<String>
+{
+    void format(FormatBuilder& builder, Terraria::PlayerInventory::Slot slot)
+    {
+        builder.put_i64(static_cast<i16>(slot));
+    }
+};
 
 template<>
 struct AK::Traits<Terraria::PlayerInventory::Slot> : public GenericTraits<Terraria::PlayerInventory::Slot>
@@ -287,3 +317,7 @@ struct AK::Traits<Terraria::PlayerInventory::Slot> : public GenericTraits<Terrar
     static constexpr unsigned hash(Terraria::PlayerInventory::Slot slot)
     { return int_hash(static_cast<i16>(slot)); }
 };
+
+InputStream& operator>>(InputStream& stream, Terraria::PlayerInventory::Slot& value);
+
+OutputStream& operator<<(OutputStream& stream, Terraria::PlayerInventory::Slot value);
