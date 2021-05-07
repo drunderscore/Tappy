@@ -14,6 +14,13 @@
 #include <LibTerraria/Net/Packets/PlayerMana.h>
 #include <LibTerraria/Net/Packets/WorldData.h>
 #include <LibTerraria/Net/Packets/PlayerBuffs.h>
+#include <LibTerraria/Net/Packets/SpawnData.h>
+#include <LibTerraria/Net/Packets/TileSection.h>
+#include <LibTerraria/Net/Packets/SpawnPlayer.h>
+#include <LibTerraria/Net/Packets/ConnectRequest.h>
+#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
+#include <LibTerraria/Net/Packets/ConnectFinished.h>
+#include <LibTerraria/Net/Packets/TileFrameSection.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -71,6 +78,9 @@ void Client::on_ready_to_read()
     // Connection request, let's send a user slot
     if (packet_id == Terraria::Net::Packet::Id::ConnectRequest)
     {
+        auto request = Terraria::Net::Packets::ConnectRequest::from_bytes(packet_bytes_stream);
+        outln("Client {} is connecting with version _{}_", m_id, request->version());
+
         Terraria::Net::Packets::SetUserSlot set_user_slot;
         set_user_slot.set_player_id(m_id);
         send(set_user_slot);
@@ -95,6 +105,14 @@ void Client::on_ready_to_read()
         outln("Client wants world info, let's try our best");
 
         Terraria::Net::Packets::WorldData world_data;
+        world_data.set_max_tiles_x(4200);
+        world_data.set_max_tiles_y(1200);
+        world_data.set_world_surface(400);
+        world_data.set_world_name("lol im cool");
+        world_data.set_spawn_x(world_data.world_surface() - 5);
+        world_data.set_spawn_y(world_data.max_tiles_y() / 2);
+        world_data.set_time(300);
+        world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
         outln("world data byte size is {}?", world_data.to_bytes().size());
         send(world_data);
     }
@@ -125,14 +143,14 @@ void Client::on_ready_to_read()
         m_player->set_max_hp(player_hp->max_hp());
         outln("{} has {}/{} hp", m_id, player_hp->hp(), player_hp->max_hp());
     }
-    else if(packet_id == Terraria::Net::Packet::Id::PlayerBuffs)
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerBuffs)
     {
         auto player_buffs = Terraria::Net::Packets::PlayerBuffs::from_bytes(packet_bytes_stream);
         player_buffs->buffs().span().copy_to(m_player->buffs().span());
         outln("Got player buffs, here they are:");
-        for(auto buff_id : m_player->buffs())
+        for (auto buff_id : m_player->buffs())
         {
-            if(buff_id != 0)
+            if (buff_id != 0)
                 outln("Buff {}", buff_id);
         }
     }
@@ -142,6 +160,41 @@ void Client::on_ready_to_read()
         m_player->set_mana(player_mana->mana());
         m_player->set_max_mana(player_mana->max_mana());
         outln("{} has {}/{} mana", m_id, player_mana->mana(), player_mana->max_mana());
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
+    {
+        auto spawn_data = Terraria::Net::Packets::SpawnData::from_bytes(packet_bytes_stream);
+        outln("Client {} wants to spawn at {}, {}", m_id, spawn_data->spawn_x(), spawn_data->spawn_y());
+        outln("okay we'll send some weird tile section, and tell them to spawn themselves");
+        static constexpr u16 width = 100;
+        static constexpr u16 height = 3;
+        static constexpr i32 starting_x = 41;
+        static constexpr i32 starting_y = 50;
+        Terraria::TileMap tiles(width, height);
+
+        Terraria::Tile stone;
+        stone.id() = Terraria::Tile::Id::Stone;
+
+        for(auto& t : tiles.tiles())
+            t = stone;
+
+        Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
+        send(section);
+
+        Terraria::Net::Packets::TileFrameSection frame_section;
+        frame_section.set_start_x(starting_x);
+        frame_section.set_start_y(starting_y);
+        frame_section.set_end_x(starting_x + width);
+        frame_section.set_end_y(starting_x + height);
+        send(frame_section);
+        Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
+        send(spawn_self);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SpawnPlayer)
+    {
+        outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
+        Terraria::Net::Packets::ConnectFinished connect_finished;
+        send(connect_finished);
     }
     else
     {
