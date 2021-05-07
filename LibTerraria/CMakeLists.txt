@@ -22,6 +22,9 @@ add_library(Terraria
         Net/Packet.cpp
         PlayerInventory.cpp
         ConnectRequest.h
+        SpawnPlayerSelf.h
+        TileFrameSection.h
+        ConnectFinished.h
         Disconnect.h
         SetUserSlot.h
         PlayerInfo.h
