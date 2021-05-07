@@ -20,12 +20,14 @@ add_library(Terraria
         Item.cpp
         Net/Color.cpp
         Net/Packet.cpp
+        Tile.h
         PlayerInventory.cpp
         ConnectRequest.h
         SpawnPlayerSelf.h
         TileFrameSection.h
         ConnectFinished.h
         Disconnect.h
+        Net/Packets/TileSection.cpp
         SetUserSlot.h
         PlayerInfo.h
         WorldData.h

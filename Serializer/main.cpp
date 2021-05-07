@@ -162,10 +162,10 @@ int main(int argc, char** argv)
 
         outln("ByteBuffer to_bytes() const override");
         outln("{{");
-        outln("static constexpr auto PACKET_ID = Terraria::Net::Packet::Id::{};", class_name);
+        outln("static constexpr auto packet_id = Terraria::Net::Packet::Id::{};", class_name);
         outln("auto buffer = ByteBuffer::create_uninitialized(256);");
         outln("OutputMemoryStream stream(buffer);");
-        outln("stream << PACKET_ID;");
+        outln("stream << packet_id;");
         for (auto& field : fields)
         {
             if (field.type() == "String")
