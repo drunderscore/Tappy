@@ -28,7 +28,7 @@ public:
 
     static Optional<SyncPlayer> from_bytes(InputStream& stream);
 
-    ByteBuffer to_bytes();
+    ByteBuffer to_bytes() const override;
 
     u8 player_id() const
     { return m_player_id; }
