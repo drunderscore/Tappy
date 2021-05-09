@@ -9,6 +9,7 @@
 #include <AK/Weakable.h>
 #include <LibTerraria/PlayerInventory.h>
 #include <LibTerraria/Character.h>
+#include <LibTerraria/Point.h>
 
 namespace Terraria
 {
@@ -29,9 +30,11 @@ public:
     PlayerInventory& inventory()
     { return m_inventory; }
 
-    const BuffsArray& buffs() const { return m_buffs; }
+    const BuffsArray& buffs() const
+    { return m_buffs; }
 
-    BuffsArray& buffs() { return m_buffs; }
+    BuffsArray& buffs()
+    { return m_buffs; }
 
     i16 hp() const
     { return m_hp; }
@@ -57,6 +60,42 @@ public:
     void set_max_mana(i16 value)
     { m_max_mana = value; }
 
+    const EntityPoint& position() const
+    { return m_position; }
+
+    const EntityPoint& velocity() const
+    { return m_velocity; }
+
+    void set_position(EntityPoint value)
+    { m_position = value; }
+
+    void set_velocity(EntityPoint value)
+    { m_velocity = value; }
+
+    u8 control_bits() const
+    { return m_control_bits; }
+
+    u8 bits_2() const
+    { return m_bits_2; }
+
+    u8 bits_3() const
+    { return m_bits_3; }
+
+    u8 bits_4() const
+    { return m_bits_4; }
+
+    void set_control_bits(u8 value)
+    { m_control_bits = value; }
+
+    void set_bits_2(u8 value)
+    { m_bits_2 = value; }
+
+    void set_bits_3(u8 value)
+    { m_bits_3 = value; }
+
+    void set_bits_4(u8 value)
+    { m_bits_4 = value; }
+
 private:
     i16 m_hp{};
     i16 m_max_hp{};
@@ -64,6 +103,14 @@ private:
     i16 m_max_mana{};
     Character m_character;
     PlayerInventory m_inventory;
-    BuffsArray m_buffs; // The network is limited to 22 concurrent buffs.
+    BuffsArray m_buffs{}; // The network is limited to 22 concurrent buffs.
+    EntityPoint m_position{};
+    EntityPoint m_velocity{};
+
+    u8 m_control_bits{};
+    u8 m_bits_2{};
+    u8 m_bits_3{};
+    u8 m_bits_4{};
+    u8 m_selected_item{};
 };
 }

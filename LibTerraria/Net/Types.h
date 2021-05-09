@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <AK/Vector.h>
+#include <AK/String.h>
+#include <AK/Types.h>
+#include <AK/Optional.h>
 #include <AK/Stream.h>
 
 namespace Terraria::Net
@@ -76,4 +80,12 @@ public:
         return bytes_read;
     }
 };
+}
+
+template<typename T>
+OutputStream& operator<<(OutputStream& stream, Optional<T> value)
+{
+    if (value.has_value())
+        stream.write_or_error({&*value, sizeof(T)});
+    return stream;
 }

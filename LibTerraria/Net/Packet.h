@@ -28,13 +28,15 @@ public:
         StatusText,
         TileSection,
         TileFrameSection,
-        SpawnPlayer = 12,
+        SpawnPlayer,
+        SyncPlayer,
         PlayerHP = 16,
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,
         ClientUUID = 68,
-        ConnectFinished = 129
+        ConnectFinished = 129,
+        ClientSyncedInventory = 138
     };
 
     virtual const char* packet_name() const

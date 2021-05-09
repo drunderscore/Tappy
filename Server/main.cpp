@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibCore/TCPServer.h>
 #include <Server/Server.h>
 
 static Server* s_server;

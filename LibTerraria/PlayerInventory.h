@@ -10,6 +10,7 @@
 #include <AK/Stream.h>
 #include <AK/HashMap.h>
 #include <LibTerraria/Item.h>
+#include <AK/Function.h>
 
 namespace Terraria
 {
@@ -285,11 +286,14 @@ public:
 
     void insert(Slot slot, Item item)
     {
+        if (on_insert_item)
+            on_insert_item(slot, item);
+
         outln("Inserting {} of {} into slot {}", item.stack(), item.id(), slot);
         m_items.set(slot, item);
     }
 
-    Optional<Item> get(Slot slot)
+    Optional<Item> get(Slot slot) const
     {
         return m_items.get(slot);
     }
@@ -303,8 +307,29 @@ public:
         }
     }
 
+    void set_selected_slot(Slot value)
+    {
+        if (m_selected_slot == value)
+            return;
+
+        if (on_selected_slot_change)
+            on_selected_slot_change(m_selected_slot, value);
+        m_selected_slot = value;
+    }
+
+    Slot selected_slot() const
+    { return m_selected_slot; }
+
+    Optional<Item> selected_item() const
+    { return get(m_selected_slot); }
+
+    // (slot_from, slot_to)
+    Function<void(Slot&, Slot&)> on_selected_slot_change;
+    Function<void(Slot&, Item&)> on_insert_item;
+
 private:
     AK::HashMap<Slot, Item> m_items;
+    Slot m_selected_slot{};
 };
 }
 

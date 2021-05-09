@@ -21,6 +21,7 @@
 #include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
 #include <LibTerraria/Net/Packets/ConnectFinished.h>
 #include <LibTerraria/Net/Packets/TileFrameSection.h>
+#include <LibTerraria/Net/Packets/SyncPlayer.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -89,6 +90,10 @@ void Client::on_ready_to_read()
     {
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
         m_player = make<Terraria::Player>(Terraria::Character::create_from_packet(*player_info));
+        m_player->inventory().on_selected_slot_change = [](auto from, auto to)
+        {
+            outln("Slot changed from {} to {}", from, to);
+        };
         outln("Got character, created player for {}", m_player->character().name());
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncInventorySlot)
@@ -195,6 +200,24 @@ void Client::on_ready_to_read()
         outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
         Terraria::Net::Packets::ConnectFinished connect_finished;
         send(connect_finished);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SyncPlayer)
+    {
+        auto sync_player = Terraria::Net::Packets::SyncPlayer::from_bytes(packet_bytes_stream);
+        m_player->set_control_bits(sync_player->control_bits());
+        m_player->set_bits_2(sync_player->bits_2());
+        m_player->set_bits_3(sync_player->bits_3());
+        m_player->set_bits_4(sync_player->bits_4());
+        m_player->inventory().set_selected_slot(
+                static_cast<Terraria::PlayerInventory::Slot>(sync_player->selected_item()));
+        m_player->set_position(sync_player->position());
+        if (sync_player->velocity().has_value())
+            m_player->set_velocity(*sync_player->velocity());
+        // TODO: Do something with potion of return use and home position
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
+    {
+        // This packet has no data, and is completely useless.
     }
     else
     {
