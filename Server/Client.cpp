@@ -175,7 +175,7 @@ void Client::on_ready_to_read()
         Terraria::Tile stone;
         stone.id() = Terraria::Tile::Id::Stone;
 
-        for(auto& t : tiles.tiles())
+        for (auto& t : tiles.tiles())
             t = stone;
 
         Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);

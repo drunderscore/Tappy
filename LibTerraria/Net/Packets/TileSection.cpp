@@ -57,7 +57,6 @@ ByteBuffer TileSection::to_bytes() const
         stream << header;
         if (tile_id.has_value())
         {
-            outln("LMAOOOO");
             if (additional_tile_byte)
                 stream << static_cast<u16>(*tile_id);
             else
