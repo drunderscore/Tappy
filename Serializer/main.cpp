@@ -105,8 +105,8 @@ int main(int argc, char** argv)
         outln("#include <AK/Stream.h>");
         outln("#include <LibTerraria/Net/Types.h>");
         outln("#include <LibTerraria/Net/NetworkText.h>");
-        outln("#include <LibTerraria/Net/Color.h>");
         outln("#include <LibTerraria/Net/Packet.h>");
+        outln("#include <LibTerraria/Color.h>");
         outln("#include <LibTerraria/Item.h>");
         outln("#include <LibTerraria/PlayerInventory.h>");
         outln();

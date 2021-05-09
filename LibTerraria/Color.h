@@ -9,7 +9,7 @@
 #include <AK/Types.h>
 #include <AK/Stream.h>
 
-namespace Terraria::Net
+namespace Terraria
 {
 struct [[gnu::packed]] Color
 {
@@ -19,6 +19,6 @@ struct [[gnu::packed]] Color
 };
 }
 
-InputStream& operator>>(InputStream& stream, Terraria::Net::Color& value);
+InputStream& operator>>(InputStream& stream, Terraria::Color& value);
 
-OutputStream& operator<<(OutputStream& stream, Terraria::Net::Color value);
+OutputStream& operator<<(OutputStream& stream, Terraria::Color value);

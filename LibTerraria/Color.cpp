@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/Net/Color.h>
+#include <LibTerraria/Color.h>
 
-InputStream& operator>>(InputStream& stream, Terraria::Net::Color& value)
+InputStream& operator>>(InputStream& stream, Terraria::Color& value)
 {
     stream.read_or_error({&value, sizeof(value)});
     return stream;
 }
 
-OutputStream& operator<<(OutputStream& stream, Terraria::Net::Color value)
+OutputStream& operator<<(OutputStream& stream, Terraria::Color value)
 {
     stream.write_or_error({&value, sizeof(value)});
     return stream;

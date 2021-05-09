@@ -7,7 +7,7 @@
 #pragma once
 
 #include <AK/Types.h>
-#include <LibTerraria/Net/Color.h>
+#include <LibTerraria/Color.h>
 #include <LibTerraria/Net/Packets/PlayerInfo.h>
 
 namespace Terraria
@@ -36,25 +36,25 @@ public:
     u8 hide_misc() const
     { return m_hide_misc; }
 
-    const Net::Color& hair_color() const
+    const Color& hair_color() const
     { return m_hair_color; }
 
-    const Net::Color& skin_color() const
+    const Color& skin_color() const
     { return m_skin_color; }
 
-    const Net::Color& eye_color() const
+    const Color& eye_color() const
     { return m_eye_color; }
 
-    const Net::Color& shirt_color() const
+    const Color& shirt_color() const
     { return m_shirt_color; }
 
-    const Net::Color& undershirt_color() const
+    const Color& undershirt_color() const
     { return m_undershirt_color; }
 
-    const Net::Color& pants_color() const
+    const Color& pants_color() const
     { return m_pants_color; }
 
-    const Net::Color& shoe_color() const
+    const Color& shoe_color() const
     { return m_shoe_color; }
 
     u8 difficulty_flags() const
@@ -94,13 +94,13 @@ private:
     u8 m_hide_visuals{};
     u8 m_hide_visuals2{};
     u8 m_hide_misc{};
-    Net::Color m_hair_color{};
-    Net::Color m_skin_color{};
-    Net::Color m_eye_color{};
-    Net::Color m_shirt_color{};
-    Net::Color m_undershirt_color{};
-    Net::Color m_pants_color{};
-    Net::Color m_shoe_color{};
+    Color m_hair_color{};
+    Color m_skin_color{};
+    Color m_eye_color{};
+    Color m_shirt_color{};
+    Color m_undershirt_color{};
+    Color m_pants_color{};
+    Color m_shoe_color{};
     u8 m_difficulty_flags{};
     u8 m_torch_flags{};
 };

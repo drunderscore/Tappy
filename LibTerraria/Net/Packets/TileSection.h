@@ -12,7 +12,7 @@
 #include <AK/Stream.h>
 #include <LibTerraria/Net/Types.h>
 #include <LibTerraria/Net/NetworkText.h>
-#include <LibTerraria/Net/Color.h>
+#include <LibTerraria/Color.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Item.h>
 #include <LibTerraria/PlayerInventory.h>

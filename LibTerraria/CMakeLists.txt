@@ -18,7 +18,7 @@ endforeach()
 
 add_library(Terraria
         Item.cpp
-        Net/Color.cpp
+        Color.cpp
         Net/Packet.cpp
         Tile.h
         PlayerInventory.cpp
