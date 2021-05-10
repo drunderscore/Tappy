@@ -23,6 +23,9 @@
 #include <LibTerraria/Net/Packets/TileFrameSection.h>
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/SyncNPC.h>
+#include <LibTerraria/Net/Packets/ReleaseNPC.h>
+#include <LibTerraria/Net/Packets/KillProjectile.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -117,7 +120,8 @@ void Client::on_ready_to_read()
         world_data.set_world_name("lol im cool");
         world_data.set_spawn_x(world_data.world_surface() - 5);
         world_data.set_spawn_y(world_data.max_tiles_y() / 2);
-        world_data.set_time(300);
+        world_data.set_time(8000);
+        world_data.set_day_state(1);
         world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
         outln("world data byte size is {}?", world_data.to_bytes().size());
         send(world_data);
@@ -219,7 +223,7 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SyncProjectile)
     {
         auto proj = Terraria::Net::Packets::SyncProjectile::from_bytes(packet_bytes_stream);
-        outln("Creating projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
+        outln("Syncing projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
               proj->velocity());
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)

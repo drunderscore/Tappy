@@ -26,6 +26,9 @@ add_library(Terraria
         SpawnPlayerSelf.h
         Point.cpp
         Net/Packets/SyncProjectile.cpp
+        Net/Packets/SyncNPC.cpp
+        ReleaseNPC.h
+        KillProjectile.h
         Net/Packets/SyncPlayer.cpp
         TileFrameSection.h
         ConnectFinished.h

@@ -31,11 +31,14 @@ public:
         SpawnPlayer,
         SyncPlayer,
         PlayerHP = 16,
+        SyncNPC = 23,
         SyncProjectile = 27,
+        KillProjectile = 29,
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,
         ClientUUID = 68,
+        ReleaseNPC = 71,
         ConnectFinished = 129,
         ClientSyncedInventory = 138
     };

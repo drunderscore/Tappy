@@ -1,0 +1,21 @@
+{
+    "fields":
+    [
+        {
+            "name": "x",
+            "type": "i32"
+        },
+        {
+            "name": "y",
+            "type": "i32"
+        },
+        {
+            "name": "type",
+            "type": "i16"
+        },
+        {
+            "name": "style",
+            "type": "u8"
+        }
+    ]
+}

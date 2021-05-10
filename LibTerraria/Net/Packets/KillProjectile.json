@@ -1,0 +1,14 @@
+{
+    "fields":
+    [
+        {
+            "name": "projectile_id",
+            "type": "i16"
+        },
+        {
+            "name": "owner",
+            "type": "u8"
+        }
+    ]
+}
+
