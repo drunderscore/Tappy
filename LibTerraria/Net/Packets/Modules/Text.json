@@ -1,0 +1,19 @@
+{
+    "module": "Text",
+    "fields":
+    [
+        {
+            "name": "author",
+            "type": "u8"
+        },
+        {
+            "name": "text",
+            "type": "NetworkText"
+        },
+        {
+            "name": "color",
+            "type": "Terraria::Color"
+        }
+    ]
+}
+

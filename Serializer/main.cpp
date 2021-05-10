@@ -95,7 +95,12 @@ int main(int argc, char** argv)
         });
 
         AK::LexicalPath lexical_path(input_file_path);
-        auto& class_name = lexical_path.title();
+        Optional<String> module;
+        auto module_obj = json_object.get("module");
+        if (module_obj.type() == AK::JsonValue::Type::String)
+            module = module_obj.as_string();
+
+        auto& class_name = module.has_value() ? *module : lexical_path.title();
 
         outln("#pragma once");
         outln();
@@ -111,7 +116,10 @@ int main(int argc, char** argv)
         outln("#include <LibTerraria/PlayerInventory.h>");
         outln();
         outln("// This was auto-generated from {}", lexical_path);
-        outln("namespace Terraria::Net::Packets");
+        if (module.has_value())
+            outln("namespace Terraria::Net::Packets::Modules");
+        else
+            outln("namespace Terraria::Net::Packets");
         outln("{{");
         outln("class {} : public Terraria::Net::Packet", class_name);
         outln("{{");
@@ -147,7 +155,8 @@ int main(int argc, char** argv)
                 StringView array_type;
                 StringView array_length;
                 get_array_info(field.type(), array_type, array_length);
-                outln("stream.read({{ packet.m_{}.data(), packet.m_{}.size() * sizeof({}) }});", field.name(), field.name(), array_type);
+                outln("stream.read({{ packet.m_{}.data(), packet.m_{}.size() * sizeof({}) }});", field.name(),
+                      field.name(), array_type);
             }
             else
             {
@@ -162,10 +171,21 @@ int main(int argc, char** argv)
 
         outln("ByteBuffer to_bytes() const override");
         outln("{{");
-        outln("static constexpr auto packet_id = Terraria::Net::Packet::Id::{};", class_name);
+        if (module.has_value())
+        {
+            outln("static constexpr auto packet_id = Terraria::Net::Packet::Id::NetModules;");
+            outln("static constexpr auto module_id = Terraria::Net::Packet::ModuleId::{};", class_name);
+        }
+        else
+        {
+            outln("static constexpr auto packet_id = Terraria::Net::Packet::Id::{};", class_name);
+        }
+
         outln("auto buffer = ByteBuffer::create_uninitialized(256);");
         outln("OutputMemoryStream stream(buffer);");
         outln("stream << packet_id;");
+        if (module.has_value())
+            outln("stream << module_id;");
         for (auto& field : fields)
         {
             if (field.type() == "String")

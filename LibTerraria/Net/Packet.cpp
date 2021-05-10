@@ -17,3 +17,15 @@ OutputStream& operator<<(OutputStream& stream, Terraria::Net::Packet::Id value)
     stream.write_or_error({&value, sizeof(value)});
     return stream;
 }
+
+InputStream& operator>>(InputStream& stream, Terraria::Net::Packet::ModuleId& value)
+{
+    stream.read_or_error({&value, sizeof(value)});
+    return stream;
+}
+
+OutputStream& operator<<(OutputStream& stream, Terraria::Net::Packet::ModuleId value)
+{
+    stream.write_or_error({&value, sizeof(value)});
+    return stream;
+}

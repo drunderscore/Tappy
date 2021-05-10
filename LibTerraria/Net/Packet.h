@@ -39,8 +39,14 @@ public:
         PlayerBuffs = 50,
         ClientUUID = 68,
         ReleaseNPC = 71,
+        NetModules = 82,
         ConnectFinished = 129,
         ClientSyncedInventory = 138
+    };
+
+    enum class ModuleId : u16
+    {
+        Text = 1
     };
 
     virtual const char* packet_name() const
@@ -60,6 +66,19 @@ struct AK::Formatter<Terraria::Net::Packet::Id> : AK::Formatter<String>
     }
 };
 
+template<>
+struct AK::Formatter<Terraria::Net::Packet::ModuleId> : AK::Formatter<String>
+{
+    void format(FormatBuilder& builder, Terraria::Net::Packet::ModuleId id)
+    {
+        builder.put_i64(static_cast<u16>(id));
+    }
+};
+
 InputStream& operator>>(InputStream& stream, Terraria::Net::Packet::Id& value);
 
 OutputStream& operator<<(OutputStream& stream, Terraria::Net::Packet::Id value);
+
+InputStream& operator>>(InputStream& stream, Terraria::Net::Packet::ModuleId& value);
+
+OutputStream& operator<<(OutputStream& stream, Terraria::Net::Packet::ModuleId value);

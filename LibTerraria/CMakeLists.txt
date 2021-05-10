@@ -1,4 +1,4 @@
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/Modules)
 
 function(compile_packet_definition source output)
     add_custom_command(
@@ -14,6 +14,12 @@ file(GLOB packet_definitions ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/*.json)
 foreach(file ${packet_definitions})
     get_filename_component(file_name ${file} NAME_WE)
     compile_packet_definition(${file_name}.json ${file_name}.h)
+endforeach()
+
+file(GLOB packet_definitions ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/Modules/*.json)
+foreach(file ${packet_definitions})
+    get_filename_component(file_name ${file} NAME_WE)
+    compile_packet_definition(Modules/${file_name}.json Modules/${file_name}.h)
 endforeach()
 
 add_library(Terraria
@@ -44,6 +50,7 @@ add_library(Terraria
         PlayerHP.h
         PlayerMana.h
         SyncInventorySlot.h
+        Modules/Text.h
         )
 
 target_include_directories(Terraria SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})

@@ -26,6 +26,7 @@
 #include <LibTerraria/Net/Packets/SyncNPC.h>
 #include <LibTerraria/Net/Packets/ReleaseNPC.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Net/Packets/Modules/Text.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -225,6 +226,11 @@ void Client::on_ready_to_read()
         auto proj = Terraria::Net::Packets::SyncProjectile::from_bytes(packet_bytes_stream);
         outln("Syncing projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
               proj->velocity());
+        Terraria::Net::Packets::Modules::Text text;
+        text.set_author(255);
+        text.set_color(Terraria::Color{255, 0, 255});
+        text.set_text("lmao im a message");
+        send(text);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
