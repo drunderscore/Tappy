@@ -31,6 +31,7 @@ public:
         SpawnPlayer,
         SyncPlayer,
         PlayerHP = 16,
+        SyncProjectile = 27,
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,

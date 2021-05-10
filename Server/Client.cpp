@@ -22,6 +22,7 @@
 #include <LibTerraria/Net/Packets/ConnectFinished.h>
 #include <LibTerraria/Net/Packets/TileFrameSection.h>
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
         m_socket(move(socket)),
@@ -174,7 +175,7 @@ void Client::on_ready_to_read()
         static constexpr u16 width = 100;
         static constexpr u16 height = 3;
         static constexpr i32 starting_x = 41;
-        static constexpr i32 starting_y = 50;
+        static constexpr i32 starting_y = 200;
         Terraria::TileMap tiles(width, height);
 
         Terraria::Tile stone;
@@ -214,6 +215,12 @@ void Client::on_ready_to_read()
         if (sync_player->velocity().has_value())
             m_player->set_velocity(*sync_player->velocity());
         // TODO: Do something with potion of return use and home position
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SyncProjectile)
+    {
+        auto proj = Terraria::Net::Packets::SyncProjectile::from_bytes(packet_bytes_stream);
+        outln("Creating projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
+              proj->velocity());
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
