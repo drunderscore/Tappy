@@ -5,6 +5,7 @@
  */
 
 #include <Server/Server.h>
+#include <LibTerraria/Net/Packets/Modules/Text.h>
 
 Server::Server() : m_server(Core::TCPServer::construct())
 {
@@ -34,7 +35,7 @@ Server::Server() : m_server(Core::TCPServer::construct())
         }
 
         auto id_val = *id;
-        auto client = make<Client>(socket.release_nonnull(), id_val);
+        auto client = make<Client>(socket.release_nonnull(), *this, id_val);
 
         client->on_disconnect = [this, id_val](auto reason)
         {
@@ -43,6 +44,18 @@ Server::Server() : m_server(Core::TCPServer::construct())
         };
         m_clients.set(id_val, move(client));
     };
+}
+
+void Server::client_did_send_message(Badge<Client>, const Client& who, const String& message)
+{
+    outln("\u001b[33m{}/{}: {}\u001b[0m", who.player()->character().name(), who.address(), message);
+    Terraria::Net::Packets::Modules::Text text;
+    text.set_text(message);
+    text.set_color({255, 255, 255});
+    text.set_author(who.id());
+
+    for (auto& client : m_clients)
+        client.value->send(text);
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

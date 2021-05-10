@@ -10,6 +10,7 @@
 #include <AK/HashMap.h>
 #include <Server/Client.h>
 #include <LibCore/TCPServer.h>
+#include <AK/Badge.h>
 
 class Server
 {
@@ -19,6 +20,8 @@ public:
     bool listen(AK::IPv4Address addr = {}, u16 port = 7777);
 
     int exec();
+
+    void client_did_send_message(Badge<Client>, const Client&, const String&);
 
 private:
     NonnullRefPtr<Core::TCPServer> m_server;

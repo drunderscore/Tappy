@@ -15,6 +15,8 @@
 #include <LibCore/FileStream.h>
 #include <LibTerraria/Player.h>
 
+class Server;
+
 class Client : public Weakable<Client>
 {
 public:
@@ -24,25 +26,32 @@ public:
         TookTooLongToConnect        // The client took too long to connect
     };
 
-    Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id);
+    Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id);
 
     Function<void(DisconnectReason)> on_disconnect;
 
     u8 id() const
     { return m_id; }
 
-    WeakPtr<Terraria::Player> player()
+    const WeakPtr<Terraria::Player> player() const
     {
         if (!m_player)
             return {};
         return m_player->make_weak_ptr();
     }
 
-private:
+    IPv4Address address() const
+    {
+        return m_socket->source_address().ipv4_address();
+    }
+
     void send(const Terraria::Net::Packet& packet);
+
+private:
 
     void on_ready_to_read();
 
+    Server& m_server;
     NonnullRefPtr<Core::TCPSocket> m_socket;
     Core::InputFileStream m_input_stream;
     Core::OutputFileStream m_output_stream;

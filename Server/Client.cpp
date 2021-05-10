@@ -5,6 +5,7 @@
  */
 
 #include <Server/Client.h>
+#include <Server/Server.h>
 #include <LibTerraria/Net/NetworkText.h>
 #include <LibTerraria/Net/Packets/SetUserSlot.h>
 #include <LibTerraria/Net/Packets/PlayerInfo.h>
@@ -28,11 +29,12 @@
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
 
-Client::Client(NonnullRefPtr<Core::TCPSocket> socket, u8 id) :
+Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
         m_id(id),
         m_input_stream(m_socket),
-        m_output_stream(m_socket)
+        m_output_stream(m_socket),
+        m_server(server)
 {
     m_socket->on_ready_to_read = [this]()
     {
@@ -206,6 +208,11 @@ void Client::on_ready_to_read()
         outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
         Terraria::Net::Packets::ConnectFinished connect_finished;
         send(connect_finished);
+        Terraria::Net::Packets::Modules::Text text;
+        text.set_author(255);
+        text.set_color(Terraria::Color{200, 63, 122});
+        text.set_text("You are playing on a Tappy server.");
+        send(text);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncPlayer)
     {
@@ -226,11 +233,6 @@ void Client::on_ready_to_read()
         auto proj = Terraria::Net::Packets::SyncProjectile::from_bytes(packet_bytes_stream);
         outln("Syncing projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
               proj->velocity());
-        Terraria::Net::Packets::Modules::Text text;
-        text.set_author(255);
-        text.set_color(Terraria::Color{255, 0, 255});
-        text.set_text(String::formatted("haha you synced proj id {}", proj->id()));
-        send(text);
     }
     else if (packet_id == Terraria::Net::Packet::Id::NetModules)
     {
@@ -240,15 +242,7 @@ void Client::on_ready_to_read()
         {
             auto text = Terraria::Net::Packets::Modules::Text::from_bytes(packet_bytes_stream);
             if (text->command_name() == "Say")
-            {
-                outln("\u001b[33m{}/{}: {}\u001b[0m", m_player->character().name(), m_socket->source_address().ipv4_address(),
-                      text->message());
-                Terraria::Net::Packets::Modules::Text text_reply;
-                text_reply.set_author(m_id);
-                text_reply.set_color({255, 255, 255});
-                text_reply.set_text(String::formatted("{}", text->message()));
-                send(text_reply);
-            }
+                m_server.client_did_send_message({}, *this, text->message());
         }
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
