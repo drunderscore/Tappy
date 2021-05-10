@@ -24,7 +24,7 @@ void get_array_info(const String& name, StringView& type, StringView& length)
 class Field
 {
 public:
-    Field(String name, String type) : m_name(move(name)), m_type(move(type))
+    Field(String name, String type, Optional<String> when) : m_name(move(name)), m_type(move(type)), m_when(move(when))
     {}
 
     const String& name() const
@@ -33,9 +33,13 @@ public:
     const String& type() const
     { return m_type; }
 
+    const Optional<String>& when() const
+    { return m_when; }
+
 private:
     String m_name;
     String m_type;
+    Optional<String> m_when;
 };
 
 int main(int argc, char** argv)
@@ -91,7 +95,10 @@ int main(int argc, char** argv)
 
             auto name = value.as_object().get("name").as_string();
             auto type = value.as_object().get("type").as_string();
-            fields.append(Field(move(name), move(type)));
+            auto when_obj = value.as_object().get("when");
+            Optional<String> when = when_obj.type() == AK::JsonValue::Type::String ?
+                    when_obj.as_string() : Optional<String>{};
+            fields.append(Field(move(name), move(type), move(when)));
         });
 
         AK::LexicalPath lexical_path(input_file_path);
@@ -140,6 +147,9 @@ int main(int argc, char** argv)
         outln("{} packet;", class_name);
         for (auto& field : fields)
         {
+            if (field.when().has_value() && *field.when() != "read")
+                continue;
+
             if (field.type() == "String")
             {
                 outln("Terraria::Net::Types::read_string(stream, packet.m_{});", field.name());
@@ -188,6 +198,9 @@ int main(int argc, char** argv)
             outln("stream << module_id;");
         for (auto& field : fields)
         {
+            if (field.when().has_value() && *field.when() != "write")
+                continue;
+
             if (field.type() == "String")
             {
                 outln("Terraria::Net::Types::write_string(stream, m_{});", field.name());

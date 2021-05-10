@@ -229,8 +229,27 @@ void Client::on_ready_to_read()
         Terraria::Net::Packets::Modules::Text text;
         text.set_author(255);
         text.set_color(Terraria::Color{255, 0, 255});
-        text.set_text("lmao im a message");
+        text.set_text(String::formatted("haha you synced proj id {}", proj->id()));
         send(text);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::NetModules)
+    {
+        Terraria::Net::Packet::ModuleId module;
+        packet_bytes_stream >> module;
+        if (module == Terraria::Net::Packet::ModuleId::Text)
+        {
+            auto text = Terraria::Net::Packets::Modules::Text::from_bytes(packet_bytes_stream);
+            if (text->command_name() == "Say")
+            {
+                outln("\u001b[33m{}/{}: {}\u001b[0m", m_player->character().name(), m_socket->source_address().ipv4_address(),
+                      text->message());
+                Terraria::Net::Packets::Modules::Text text_reply;
+                text_reply.set_author(m_id);
+                text_reply.set_color({255, 255, 255});
+                text_reply.set_text(String::formatted("{}", text->message()));
+                send(text_reply);
+            }
+        }
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {

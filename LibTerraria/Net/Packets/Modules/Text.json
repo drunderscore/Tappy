@@ -4,15 +4,28 @@
     [
         {
             "name": "author",
-            "type": "u8"
+            "type": "u8",
+            "when": "write"
         },
         {
             "name": "text",
-            "type": "NetworkText"
+            "type": "NetworkText",
+            "when": "write"
         },
         {
             "name": "color",
-            "type": "Terraria::Color"
+            "type": "Terraria::Color",
+            "when": "write"
+        },
+        {
+            "name": "command_name",
+            "type": "String",
+            "when": "read"
+        },
+        {
+            "name": "message",
+            "type": "String",
+            "when": "read"
         }
     ]
 }
