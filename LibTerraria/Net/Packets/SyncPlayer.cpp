@@ -38,6 +38,7 @@ ByteBuffer SyncPlayer::to_bytes() const
     auto buffer = ByteBuffer::create_uninitialized(256);
     OutputMemoryStream stream(buffer);
     stream << packet_id;
+    stream << m_player_id;
     stream << m_control_bits;
     stream << m_bits_2;
     stream << m_bits_3;
