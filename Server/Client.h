@@ -40,6 +40,13 @@ public:
         return m_player->make_weak_ptr();
     }
 
+    WeakPtr<Terraria::Player> player()
+    {
+        if (!m_player)
+            return {};
+        return m_player->make_weak_ptr();
+    }
+
     IPv4Address address() const
     {
         return m_socket->source_address().ipv4_address();

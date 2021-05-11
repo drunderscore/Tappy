@@ -102,6 +102,7 @@ void Client::on_ready_to_read()
             outln("Slot changed from {} to {}", from, to);
         };
         outln("Got character, created player for {}", m_player->character().name());
+        m_server.client_did_send_player_info({}, *this, *player_info);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncInventorySlot)
     {
@@ -111,6 +112,7 @@ void Client::on_ready_to_read()
             m_player->inventory().insert(inv_slot->slot(),
                                          Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
         }
+        m_server.client_did_sync_inventory_slot({}, *this, *inv_slot);
     }
     else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)
     {
@@ -128,6 +130,8 @@ void Client::on_ready_to_read()
         world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
         outln("world data byte size is {}?", world_data.to_bytes().size());
         send(world_data);
+
+        m_server.client_did_request_world_data({}, *this);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientUUID)
     {
@@ -155,6 +159,7 @@ void Client::on_ready_to_read()
         m_player->set_hp(player_hp->hp());
         m_player->set_max_hp(player_hp->max_hp());
         outln("{} has {}/{} hp", m_id, player_hp->hp(), player_hp->max_hp());
+        m_server.client_did_sync_hp({}, *this, *player_hp);
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerBuffs)
     {
@@ -166,6 +171,7 @@ void Client::on_ready_to_read()
             if (buff_id != 0)
                 outln("Buff {}", buff_id);
         }
+        m_server.client_did_sync_buffs({}, *this, *player_buffs);
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerMana)
     {
@@ -173,6 +179,7 @@ void Client::on_ready_to_read()
         m_player->set_mana(player_mana->mana());
         m_player->set_max_mana(player_mana->max_mana());
         outln("{} has {}/{} mana", m_id, player_mana->mana(), player_mana->max_mana());
+        m_server.client_did_sync_mana({}, *this, *player_mana);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
     {
@@ -205,6 +212,7 @@ void Client::on_ready_to_read()
     }
     else if (packet_id == Terraria::Net::Packet::Id::SpawnPlayer)
     {
+        auto spawn_player = Terraria::Net::Packets::SpawnPlayer::from_bytes(packet_bytes_stream);
         outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
         Terraria::Net::Packets::ConnectFinished connect_finished;
         send(connect_finished);
@@ -213,6 +221,7 @@ void Client::on_ready_to_read()
         text.set_color(Terraria::Color{200, 63, 122});
         text.set_text("You are playing on a Tappy server.");
         send(text);
+        m_server.client_did_spawn_player({}, *this, *spawn_player);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncPlayer)
     {
@@ -227,6 +236,7 @@ void Client::on_ready_to_read()
         if (sync_player->velocity().has_value())
             m_player->set_velocity(*sync_player->velocity());
         // TODO: Do something with potion of return use and home position
+        m_server.client_did_sync_player({}, *this, *sync_player);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncProjectile)
     {
