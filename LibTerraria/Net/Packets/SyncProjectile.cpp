@@ -56,6 +56,31 @@ ByteBuffer SyncProjectile::to_bytes() const
     stream << m_owner;
     stream << m_type;
 
+    u8 flags = 0;
+
+    if (m_ai[0].has_value())
+        flags |= m_ai_1_bit;
+
+    if (m_ai[1].has_value())
+        flags |= m_ai_2_bit;
+
+    if (m_banner_id_to_respond_to.has_value())
+        flags |= m_banner_id_to_respond_to_bit;
+
+    if (m_damage.has_value())
+        flags |= m_damage_bit;
+
+    if (m_knockback.has_value())
+        flags |= m_knockback_bit;
+
+    if (m_original_damage.has_value())
+        flags |= m_original_damage_bit;
+
+    if (m_uuid.has_value())
+        flags |= m_uuid_bit;
+
+    stream << flags;
+
     if (m_ai[0].has_value())
         stream << *m_ai[0];
 
