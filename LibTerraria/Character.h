@@ -63,27 +63,24 @@ public:
     u8 torch_flags() const
     { return m_torch_flags; }
 
-    static Character create_from_packet(const Net::Packets::PlayerInfo& player_info)
+    void update_from_packet(const Net::Packets::PlayerInfo& player_info)
     {
-        Character c;
-        c.m_skin_variant = player_info.skin_variant();
-        c.m_hair = player_info.hair();
-        c.m_name = player_info.name().isolated_copy();
-        c.m_hair_dye = player_info.hair_dye();
-        c.m_hide_visuals = player_info.hide_visuals();
-        c.m_hide_visuals2 = player_info.hide_visuals2();
-        c.m_hide_misc = player_info.hide_misc();
-        c.m_hair_color = player_info.hair_color();
-        c.m_skin_color = player_info.skin_color();
-        c.m_eye_color = player_info.eye_color();
-        c.m_shirt_color = player_info.shirt_color();
-        c.m_undershirt_color = player_info.undershirt_color();
-        c.m_pants_color = player_info.pants_color();
-        c.m_shoe_color = player_info.shoe_color();
-        c.m_difficulty_flags = player_info.difficulty_flags();
-        c.m_torch_flags = player_info.torch_flags();
-
-        return c;
+        m_skin_variant = player_info.skin_variant();
+        m_hair = player_info.hair();
+        m_name = player_info.name().isolated_copy();
+        m_hair_dye = player_info.hair_dye();
+        m_hide_visuals = player_info.hide_visuals();
+        m_hide_visuals2 = player_info.hide_visuals2();
+        m_hide_misc = player_info.hide_misc();
+        m_hair_color = player_info.hair_color();
+        m_skin_color = player_info.skin_color();
+        m_eye_color = player_info.eye_color();
+        m_shirt_color = player_info.shirt_color();
+        m_undershirt_color = player_info.undershirt_color();
+        m_pants_color = player_info.pants_color();
+        m_shoe_color = player_info.shoe_color();
+        m_difficulty_flags = player_info.difficulty_flags();
+        m_torch_flags = player_info.torch_flags();
     }
 
 private:

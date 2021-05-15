@@ -33,36 +33,29 @@ public:
     u8 id() const
     { return m_id; }
 
-    const WeakPtr<Terraria::Player> player() const
-    {
-        if (!m_player)
-            return {};
-        return m_player->make_weak_ptr();
-    }
+    const Terraria::Player& player() const
+    { return m_player; }
 
-    WeakPtr<Terraria::Player> player()
-    {
-        if (!m_player)
-            return {};
-        return m_player->make_weak_ptr();
-    }
+    Terraria::Player& player()
+    { return m_player; }
 
     IPv4Address address() const
     {
         return m_socket->source_address().ipv4_address();
     }
 
-    void send(const Terraria::Net::Packet& packet);
+    void send(const Terraria::Net::Packet&);
+
+    void disconnect(const Terraria::Net::NetworkText&);
 
 private:
-
     void on_ready_to_read();
 
     Server& m_server;
     NonnullRefPtr<Core::TCPSocket> m_socket;
     Core::InputFileStream m_input_stream;
     Core::OutputFileStream m_output_stream;
-    OwnPtr<Terraria::Player> m_player;
+    Terraria::Player m_player;
     Optional<UUID> m_uuid;
     u8 m_id;
 };

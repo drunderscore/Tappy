@@ -91,33 +91,33 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
             continue;
         Terraria::Net::Packets::PlayerInfo info;
         info.set_player_id(kv.value->id());
-        info.set_skin_variant(kv.value->player()->character().skin_variant());
-        info.set_hair(kv.value->player()->character().hair());
-        info.set_name(kv.value->player()->character().name().isolated_copy());
-        info.set_hair_dye(kv.value->player()->character().hair_dye());
-        info.set_hide_visuals(kv.value->player()->character().hide_visuals());
-        info.set_hide_visuals2(kv.value->player()->character().hide_visuals2());
-        info.set_hide_misc(kv.value->player()->character().hide_misc());
-        info.set_hair_color(kv.value->player()->character().hair_color());
-        info.set_skin_color(kv.value->player()->character().skin_color());
-        info.set_eye_color(kv.value->player()->character().eye_color());
-        info.set_shirt_color(kv.value->player()->character().shirt_color());
-        info.set_undershirt_color(kv.value->player()->character().undershirt_color());
-        info.set_pants_color(kv.value->player()->character().pants_color());
-        info.set_shoe_color(kv.value->player()->character().shoe_color());
-        info.set_difficulty_flags(kv.value->player()->character().difficulty_flags());
-        info.set_torch_flags(kv.value->player()->character().torch_flags());
+        info.set_skin_variant(kv.value->player().character().skin_variant());
+        info.set_hair(kv.value->player().character().hair());
+        info.set_name(kv.value->player().character().name().isolated_copy());
+        info.set_hair_dye(kv.value->player().character().hair_dye());
+        info.set_hide_visuals(kv.value->player().character().hide_visuals());
+        info.set_hide_visuals2(kv.value->player().character().hide_visuals2());
+        info.set_hide_misc(kv.value->player().character().hide_misc());
+        info.set_hair_color(kv.value->player().character().hair_color());
+        info.set_skin_color(kv.value->player().character().skin_color());
+        info.set_eye_color(kv.value->player().character().eye_color());
+        info.set_shirt_color(kv.value->player().character().shirt_color());
+        info.set_undershirt_color(kv.value->player().character().undershirt_color());
+        info.set_pants_color(kv.value->player().character().pants_color());
+        info.set_shoe_color(kv.value->player().character().shoe_color());
+        info.set_difficulty_flags(kv.value->player().character().difficulty_flags());
+        info.set_torch_flags(kv.value->player().character().torch_flags());
         who.send(info);
 
         Terraria::Net::Packets::SpawnPlayer spawn;
         spawn.set_player_id(kv.key);
-        spawn.set_spawn_x(kv.value->player()->position().x);
-        spawn.set_spawn_x(kv.value->player()->position().y);
+        spawn.set_spawn_x(kv.value->player().position().x);
+        spawn.set_spawn_x(kv.value->player().position().y);
         spawn.set_remaining_respawn_time(0);
         spawn.set_context(1);
         who.send(spawn);
 
-        kv.value->player()->inventory().for_each([&](auto& slot, auto& item)
+        kv.value->player().inventory().for_each([&](auto& slot, auto& item)
         {
             Terraria::Net::Packets::SyncInventorySlot inv_slot;
             inv_slot.set_player_id(kv.key);

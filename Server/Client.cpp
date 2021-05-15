@@ -96,12 +96,8 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::PlayerInfo)
     {
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
-        m_player = make<Terraria::Player>(Terraria::Character::create_from_packet(*player_info));
-        m_player->inventory().on_selected_slot_change = [](auto from, auto to)
-        {
-            outln("Slot changed from {} to {}", from, to);
-        };
-        outln("Got character, created player for {}", m_player->character().name());
+        m_player.character().update_from_packet(*player_info);
+        outln("Got character, created player for {}", m_player.character().name());
         m_server.client_did_send_player_info({}, *this, *player_info);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncInventorySlot)
@@ -109,8 +105,8 @@ void Client::on_ready_to_read()
         auto inv_slot = Terraria::Net::Packets::SyncInventorySlot::from_bytes(packet_bytes_stream);
         if (inv_slot->id() != Terraria::Item::Id::None)
         {
-            m_player->inventory().insert(inv_slot->slot(),
-                                         Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
+            m_player.inventory().insert(inv_slot->slot(),
+                                        Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
         }
         m_server.client_did_sync_inventory_slot({}, *this, *inv_slot);
     }
@@ -156,29 +152,21 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::PlayerHP)
     {
         auto player_hp = Terraria::Net::Packets::PlayerHP::from_bytes(packet_bytes_stream);
-        m_player->set_hp(player_hp->hp());
-        m_player->set_max_hp(player_hp->max_hp());
-        outln("{} has {}/{} hp", m_id, player_hp->hp(), player_hp->max_hp());
+        m_player.set_hp(player_hp->hp());
+        m_player.set_max_hp(player_hp->max_hp());
         m_server.client_did_sync_hp({}, *this, *player_hp);
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerBuffs)
     {
         auto player_buffs = Terraria::Net::Packets::PlayerBuffs::from_bytes(packet_bytes_stream);
-        player_buffs->buffs().span().copy_to(m_player->buffs().span());
-        outln("Got player buffs, here they are:");
-        for (auto buff_id : m_player->buffs())
-        {
-            if (buff_id != 0)
-                outln("Buff {}", buff_id);
-        }
+        player_buffs->buffs().span().copy_to(m_player.buffs().span());
         m_server.client_did_sync_buffs({}, *this, *player_buffs);
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerMana)
     {
         auto player_mana = Terraria::Net::Packets::PlayerMana::from_bytes(packet_bytes_stream);
-        m_player->set_mana(player_mana->mana());
-        m_player->set_max_mana(player_mana->max_mana());
-        outln("{} has {}/{} mana", m_id, player_mana->mana(), player_mana->max_mana());
+        m_player.set_mana(player_mana->mana());
+        m_player.set_max_mana(player_mana->max_mana());
         m_server.client_did_sync_mana({}, *this, *player_mana);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
@@ -226,15 +214,15 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SyncPlayer)
     {
         auto sync_player = Terraria::Net::Packets::SyncPlayer::from_bytes(packet_bytes_stream);
-        m_player->set_control_bits(sync_player->control_bits());
-        m_player->set_bits_2(sync_player->bits_2());
-        m_player->set_bits_3(sync_player->bits_3());
-        m_player->set_bits_4(sync_player->bits_4());
-        m_player->inventory().set_selected_slot(
+        m_player.set_control_bits(sync_player->control_bits());
+        m_player.set_bits_2(sync_player->bits_2());
+        m_player.set_bits_3(sync_player->bits_3());
+        m_player.set_bits_4(sync_player->bits_4());
+        m_player.inventory().set_selected_slot(
                 static_cast<Terraria::PlayerInventory::Slot>(sync_player->selected_item()));
-        m_player->set_position(sync_player->position());
+        m_player.set_position(sync_player->position());
         if (sync_player->velocity().has_value())
-            m_player->set_velocity(*sync_player->velocity());
+            m_player.set_velocity(*sync_player->velocity());
         // TODO: Do something with potion of return use and home position
         m_server.client_did_sync_player({}, *this, *sync_player);
     }

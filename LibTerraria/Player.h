@@ -18,10 +18,10 @@ class Player : public Weakable<Player>
 public:
     using BuffsArray = Array<u16, 22>;
 
-    explicit Player(Character c) : m_character(move(c))
-    {}
-
     const Character& character() const
+    { return m_character; }
+
+    Character& character()
     { return m_character; }
 
     const PlayerInventory& inventory() const
