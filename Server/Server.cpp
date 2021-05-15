@@ -124,15 +124,15 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
         who.send(spawn);
 
         kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-                                                {
-                                                    Terraria::Net::Packets::SyncInventorySlot inv_slot;
-                                                    inv_slot.set_player_id(kv.key);
-                                                    inv_slot.set_slot(slot);
-                                                    inv_slot.set_id(item.id());
-                                                    inv_slot.set_stack(item.stack());
-                                                    inv_slot.set_prefix(item.prefix());
-                                                    who.send(inv_slot);
-                                                });
+        {
+            Terraria::Net::Packets::SyncInventorySlot inv_slot;
+            inv_slot.set_player_id(kv.key);
+            inv_slot.set_slot(slot);
+            inv_slot.set_id(item.id());
+            inv_slot.set_stack(item.stack());
+            inv_slot.set_prefix(item.prefix());
+            who.send(inv_slot);
+        });
     }
 }
 
