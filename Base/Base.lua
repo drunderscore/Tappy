@@ -36,7 +36,7 @@ end
 function Base.onClientSyncProjectile(client, proj)
     local event = {}
 
-    event.sender = client
+    event.client = client
     -- The projectile being synced
     event.projectile = proj
     -- Sync this projectile to the original sender.
