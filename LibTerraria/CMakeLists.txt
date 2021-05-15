@@ -30,7 +30,6 @@ add_library(Terraria
         PlayerInventory.cpp
         ConnectRequest.h
         SpawnPlayerSelf.h
-        Point.cpp
         Net/Packets/SyncProjectile.cpp
         Net/Packets/SyncNPC.cpp
         ReleaseNPC.h
