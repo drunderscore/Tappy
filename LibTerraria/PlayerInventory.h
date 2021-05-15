@@ -289,7 +289,6 @@ public:
         if (on_insert_item)
             on_insert_item(slot, item);
 
-        outln("Inserting {} of {} into slot {}", item.stack(), item.id(), slot);
         m_items.set(slot, item);
     }
 

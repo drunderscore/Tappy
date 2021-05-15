@@ -14,14 +14,13 @@
 #include <AK/MemoryStream.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Point.h>
+#include <LibTerraria/Projectile.h>
 
 namespace Terraria::Net::Packets
 {
 class SyncProjectile : public Terraria::Net::Packet
 {
 public:
-    using AIArray = Array<Optional<float>, 2>;
-
     SyncProjectile() = default;
 
     const char* packet_name() const override
@@ -33,72 +32,14 @@ public:
 
     ByteBuffer to_bytes() const override;
 
-    i16 id() const
-    { return m_id; }
+    const Projectile& projectile() const
+    { return m_projectile; }
 
-    void set_id(i16 value)
-    { m_id = value; }
-
-    const EntityPoint& position() const
-    { return m_position; }
-
-    const EntityPoint& velocity() const
-    { return m_velocity; }
-
-    EntityPoint& position()
-    { return m_position; }
-
-    EntityPoint& velocity()
-    { return m_velocity; }
-
-    u8 owner() const
-    { return m_owner; }
-
-    void set_owner(u8 value)
-    { m_owner = value; }
-
-    i16 type() const
-    { return m_type; }
-
-    void set_type(i16 value)
-    { m_type = value; }
-
-    const AIArray& ai() const
-    { return m_ai; }
-
-    AIArray& ai()
-    { return m_ai; }
-
-    const Optional<u16>& banner_id_to_respond_to() const
-    { return m_banner_id_to_respond_to; }
-
-    const Optional<i16>& damage() const
-    { return m_damage; }
-
-    Optional<i16>& damage()
-    { return m_damage; }
-
-    const Optional<float>& knockback() const
-    { return m_knockback; }
-
-    const Optional<i16>& original_damage() const
-    { return m_original_damage; }
-
-    const Optional<i16>& uuid() const
-    { return m_uuid; }
+    Projectile& projectile()
+    { return m_projectile; }
 
 private:
-    i16 m_id{};
-    EntityPoint m_position;
-    EntityPoint m_velocity;
-    u8 m_owner{};
-    i16 m_type{};
-    AIArray m_ai{};
-    Optional<u16> m_banner_id_to_respond_to{};
-    Optional<i16> m_damage{};
-    Optional<float> m_knockback{};
-    Optional<i16> m_original_damage{};
-    Optional<i16> m_uuid{};
+    Projectile m_projectile;
 
     static constexpr u8 m_ai_1_bit = 0b0000'0001;
     static constexpr u8 m_ai_2_bit = 0b0000'0010;

@@ -28,6 +28,7 @@
 #include <LibTerraria/Net/Packets/ReleaseNPC.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
+#include <LibTerraria/Net/Packets/Disconnect.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
@@ -49,6 +50,15 @@ void Client::send(const Terraria::Net::Packet& packet)
     m_output_stream << bytes;
 }
 
+void Client::disconnect(const Terraria::Net::NetworkText& reason)
+{
+    Terraria::Net::Packets::Disconnect disconnect;
+    disconnect.set_reason(reason);
+    send(disconnect);
+    if (on_disconnect)
+        on_disconnect(DisconnectReason::DisconnectedByServer);
+}
+
 void Client::on_ready_to_read()
 {
     if (m_socket->eof())
@@ -63,7 +73,7 @@ void Client::on_ready_to_read()
 
     if (m_input_stream.has_any_error())
     {
-        dbgln("Stream errored trying to read packet size");
+        warnln("Stream errored trying to read packet size");
         m_input_stream.handle_any_error();
         return;
     }
@@ -72,7 +82,7 @@ void Client::on_ready_to_read()
     m_input_stream >> packet_id;
     if (m_input_stream.has_any_error())
     {
-        dbgln("Stream errored trying to read packet id");
+        warnln("Stream errored trying to read packet id");
         m_input_stream.handle_any_error();
         return;
     }
@@ -87,7 +97,8 @@ void Client::on_ready_to_read()
     if (packet_id == Terraria::Net::Packet::Id::ConnectRequest)
     {
         auto request = Terraria::Net::Packets::ConnectRequest::from_bytes(packet_bytes_stream);
-        outln("Client {} is connecting with version _{}_", m_id, request->version());
+
+        m_server.client_did_connect_request({}, *this, request->version());
 
         Terraria::Net::Packets::SetUserSlot set_user_slot;
         set_user_slot.set_player_id(m_id);
@@ -112,8 +123,6 @@ void Client::on_ready_to_read()
     }
     else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)
     {
-        outln("Client wants world info, let's try our best");
-
         Terraria::Net::Packets::WorldData world_data;
         world_data.set_max_tiles_x(4200);
         world_data.set_max_tiles_y(1200);
@@ -124,7 +133,6 @@ void Client::on_ready_to_read()
         world_data.set_time(8000);
         world_data.set_day_state(1);
         world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
-        outln("world data byte size is {}?", world_data.to_bytes().size());
         send(world_data);
 
         m_server.client_did_request_world_data({}, *this);
@@ -133,21 +141,9 @@ void Client::on_ready_to_read()
     {
         auto client_uuid = Terraria::Net::Packets::ClientUUID::from_bytes(packet_bytes_stream);
         if (client_uuid->uuid().length() != 36)
-        {
             warnln("Client sent UUID that isn't 36 characters.");
-        }
         else
-        {
             m_uuid = UUID(client_uuid->uuid().view());
-            if (m_uuid.has_value())
-            {
-                outln("Client {} has UUID {}", m_id, m_uuid->to_string());
-            }
-            else
-            {
-                warnln("Client sent invalid UUID that AK couldn't parse.");
-            }
-        }
     }
     else if (packet_id == Terraria::Net::Packet::Id::PlayerHP)
     {
@@ -172,8 +168,6 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
     {
         auto spawn_data = Terraria::Net::Packets::SpawnData::from_bytes(packet_bytes_stream);
-        outln("Client {} wants to spawn at {}, {}", m_id, spawn_data->spawn_x(), spawn_data->spawn_y());
-        outln("okay we'll send some weird tile section, and tell them to spawn themselves");
         static constexpr u16 width = 100;
         static constexpr u16 height = 3;
         static constexpr i32 starting_x = 41;
@@ -229,8 +223,7 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SyncProjectile)
     {
         auto proj = Terraria::Net::Packets::SyncProjectile::from_bytes(packet_bytes_stream);
-        outln("Syncing projectile {} (type {}) at {}, velocity {}", proj->id(), proj->type(), proj->position(),
-              proj->velocity());
+        m_server.client_did_sync_projectile({}, *this, *proj);
     }
     else if (packet_id == Terraria::Net::Packet::Id::NetModules)
     {
@@ -242,6 +235,11 @@ void Client::on_ready_to_read()
             if (text->command_name() == "Say")
                 m_server.client_did_send_message({}, *this, text->message());
         }
+    }
+    else if(packet_id == Terraria::Net::Packet::Id::KillProjectile)
+    {
+        auto kill_proj = Terraria::Net::Packets::KillProjectile::from_bytes(packet_bytes_stream);
+        m_server.client_did_kill_projectile({}, *this, *kill_proj);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {

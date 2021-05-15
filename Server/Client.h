@@ -23,7 +23,7 @@ public:
     enum class DisconnectReason
     {
         EofReached,                 // The TCP socket reached EOF
-        TookTooLongToConnect        // The client took too long to connect
+        DisconnectedByServer
     };
 
     Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id);

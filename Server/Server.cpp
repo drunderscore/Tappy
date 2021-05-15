@@ -6,9 +6,11 @@
 
 #include <Server/Server.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
+#include <Server/Scripting/Engine.h>
 
 Server::Server() : m_server(Core::TCPServer::construct())
 {
+    m_engine = make<Scripting::Engine>(*this);
     m_server->on_ready_to_accept = [this]
     {
         auto socket = m_server->accept();
@@ -48,14 +50,18 @@ Server::Server() : m_server(Core::TCPServer::construct())
 
 void Server::client_did_send_message(Badge<Client>, const Client& who, const String& message)
 {
-    outln("\u001b[33m{}/{}: {}\u001b[0m", who.player()->character().name(), who.address(), message);
-    Terraria::Net::Packets::Modules::Text text;
-    text.set_text(message);
-    text.set_color({255, 255, 255});
-    text.set_author(who.id());
+    m_engine->client_did_send_message({}, who, message);
+}
 
-    for (auto& client : m_clients)
-        client.value->send(text);
+void Server::client_did_sync_projectile(Badge<Client>, const Client& who,
+                                        const Terraria::Net::Packets::SyncProjectile& proj_sync)
+{
+    m_engine->client_did_sync_projectile({}, who, proj_sync);
+}
+
+void Server::client_did_connect_request(Badge<Client>, const Client& client, const String& version)
+{
+    m_engine->client_did_connect_request({}, client, version);
 }
 
 void Server::client_did_sync_player(Badge<Client>, const Client& who, Terraria::Net::Packets::SyncPlayer& sync_player)
@@ -118,15 +124,15 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
         who.send(spawn);
 
         kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-        {
-            Terraria::Net::Packets::SyncInventorySlot inv_slot;
-            inv_slot.set_player_id(kv.key);
-            inv_slot.set_slot(slot);
-            inv_slot.set_id(item.id());
-            inv_slot.set_stack(item.stack());
-            inv_slot.set_prefix(item.prefix());
-            who.send(inv_slot);
-        });
+                                                {
+                                                    Terraria::Net::Packets::SyncInventorySlot inv_slot;
+                                                    inv_slot.set_player_id(kv.key);
+                                                    inv_slot.set_slot(slot);
+                                                    inv_slot.set_id(item.id());
+                                                    inv_slot.set_stack(item.stack());
+                                                    inv_slot.set_prefix(item.prefix());
+                                                    who.send(inv_slot);
+                                                });
     }
 }
 
@@ -186,6 +192,19 @@ void Server::client_did_sync_inventory_slot(Badge<Client>, Client& who,
     }
 }
 
+void Server::client_did_kill_projectile(Badge<Client>, const Client& who,
+                                        const Terraria::Net::Packets::KillProjectile& kill_proj)
+{
+    m_projectiles.remove(kill_proj.projectile_id());
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(kill_proj);
+    }
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))
@@ -200,4 +219,22 @@ bool Server::listen(AK::IPv4Address addr, u16 port)
 int Server::exec()
 {
     return m_event_loop.exec();
+}
+
+const WeakPtr<Client> Server::client(u8 id) const
+{
+    auto client = m_clients.get(id);
+    if (!client.has_value())
+        return {};
+
+    return (*client)->make_weak_ptr();
+}
+
+Vector<WeakPtr<Client>> Server::clients() const
+{
+    Vector<WeakPtr<Client>> clients;
+    for (auto& kv : m_clients)
+        clients.append(kv.value->make_weak_ptr());
+
+    return clients;
 }

@@ -19,6 +19,14 @@
 #include <LibTerraria/Net/Packets/PlayerMana.h>
 #include <LibTerraria/Net/Packets/PlayerHP.h>
 #include <LibTerraria/Net/Packets/PlayerMana.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Projectile.h>
+
+namespace Scripting
+{
+class Engine;
+}
 
 class Server
 {
@@ -47,8 +55,26 @@ public:
 
     void client_did_sync_hp(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerHP&);
 
+    void client_did_sync_projectile(Badge<Client>, const Client&, const Terraria::Net::Packets::SyncProjectile&);
+
+    void client_did_connect_request(Badge<Client>, const Client&, const String& version);
+
+    void client_did_kill_projectile(Badge<Client>, const Client&, const Terraria::Net::Packets::KillProjectile&);
+
+    Vector<WeakPtr<Client>> clients() const;
+
+    const WeakPtr<Client> client(u8 id) const;
+
+    const HashMap<i16, Terraria::Projectile>& projectiles() const
+    { return m_projectiles; }
+
+    HashMap<i16, Terraria::Projectile>& projectiles()
+    { return m_projectiles; }
+
 private:
+    OwnPtr<Scripting::Engine> m_engine;
     NonnullRefPtr<Core::TCPServer> m_server;
     HashMap<u8, NonnullOwnPtr<Client>> m_clients;
     Core::EventLoop m_event_loop;
+    HashMap<i16, Terraria::Projectile> m_projectiles;
 };
