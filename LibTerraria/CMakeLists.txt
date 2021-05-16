@@ -38,11 +38,13 @@ add_library(Terraria
         Net/Packets/SyncPlayer.cpp
         TileFrameSection.h
         ConnectFinished.h
+        PlayerHurt.h
         Disconnect.h
         Net/Packets/TileSection.cpp
         SetUserSlot.h
         PlayerInfo.h
         WorldData.h
+        PlayerDeathReason.cpp
         SpawnData.h
         SpawnPlayer.h
         PlayerBuffs.h

@@ -16,6 +16,7 @@ hookMap["chat"] = {}
 hookMap["syncProjectile"] = {}
 hookMap["connectRequest"] = {}
 hookMap["togglePvp"] = {}
+hookMap["playerHurt"] = {}
 
 function Hooks.add(name, func)
     if type(name) ~= "string" then

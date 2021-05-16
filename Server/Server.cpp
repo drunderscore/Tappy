@@ -213,6 +213,18 @@ void Server::client_did_toggle_pvp(Badge<Client>, const Client& who, const Terra
     m_engine->client_did_toggle_pvp({}, who, toggle);
 }
 
+void Server::client_did_hurt_player(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerHurt& hurt)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(hurt);
+    }
+    m_engine->client_did_hurt_player({}, who, hurt);
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))

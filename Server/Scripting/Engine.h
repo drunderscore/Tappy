@@ -15,6 +15,7 @@
 #include <LibTerraria/Item.h>
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/TogglePvp.h>
+#include <LibTerraria/Net/Packets/PlayerHurt.h>
 
 typedef struct lua_State lua_State;
 
@@ -42,6 +43,8 @@ public:
     void client_did_connect_request(Badge<Server>, const Client&, const String& version);
 
     void client_did_toggle_pvp(Badge<Server>, const Client&, const Terraria::Net::Packets::TogglePvp&);
+
+    void client_did_hurt_player(Badge<Server>, Client&, const Terraria::Net::Packets::PlayerHurt&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;

@@ -246,6 +246,11 @@ void Client::on_ready_to_read()
         auto toggle_pvp = Terraria::Net::Packets::TogglePvp::from_bytes(packet_bytes_stream);
         m_server.client_did_toggle_pvp({}, *this, *toggle_pvp);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerHurt)
+    {
+        auto player_hurt = Terraria::Net::Packets::PlayerHurt::from_bytes(packet_bytes_stream);
+        m_server.client_did_hurt_player({}, *this, *player_hurt);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

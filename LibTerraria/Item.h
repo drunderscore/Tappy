@@ -5299,3 +5299,7 @@ OutputStream& operator<<(OutputStream& stream, Terraria::Item::Id value);
 InputStream& operator>>(InputStream& stream, Terraria::Item::Prefix& value);
 
 OutputStream& operator<<(OutputStream& stream, Terraria::Item::Prefix value);
+
+InputStream& operator>>(InputStream& stream, Optional<Terraria::Item::Id>& value);
+
+InputStream& operator>>(InputStream& stream, Optional<Terraria::Item::Prefix>& value);

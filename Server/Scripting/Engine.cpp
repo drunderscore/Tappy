@@ -158,6 +158,20 @@ void Engine::client_did_toggle_pvp(Badge<Server>, const Client& who, const Terra
     lua_pushboolean(m_state, toggle.pvp());
     lua_call(m_state, 2, 0);
 }
+
+void Engine::client_did_hurt_player(Badge<Server>, Client& who, const Terraria::Net::Packets::PlayerHurt& player_hurt)
+{
+    lua_getfield(m_state, 1, "onPlayerHurt");
+    client_userdata(who.id());
+    client_userdata(player_hurt.player_id());
+    Types::player_death_reason(m_state, player_hurt.reason());
+    lua_pushinteger(m_state, player_hurt.damage());
+    lua_pushinteger(m_state, player_hurt.direction());
+    lua_pushinteger(m_state, player_hurt.flags());
+    lua_pushinteger(m_state, player_hurt.cooldown_counter());
+    lua_call(m_state, 7, 0);
+}
+
 void* Engine::client_userdata(u8 id) const
 {
     auto* client_ud = lua_newuserdata(m_state, sizeof(id));

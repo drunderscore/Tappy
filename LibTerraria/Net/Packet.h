@@ -41,6 +41,7 @@ public:
         ClientUUID = 68,
         ReleaseNPC = 71,
         NetModules = 82,
+        PlayerHurt = 117,
         ConnectFinished = 129,
         ClientSyncedInventory = 138
     };

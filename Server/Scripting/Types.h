@@ -9,6 +9,7 @@
 #include <LibTerraria/Projectile.h>
 #include <AK/String.h>
 #include <LibTerraria/Color.h>
+#include <LibTerraria/PlayerDeathReason.h>
 
 typedef struct lua_State lua_State;
 
@@ -28,5 +29,9 @@ public:
     static void color(lua_State*, const Terraria::Color&);
 
     static Terraria::Color color(lua_State*, int index);
+
+    static void player_death_reason(lua_State*, const Terraria::PlayerDeathReason&);
+
+    static Terraria::PlayerDeathReason player_death_reason(lua_State*, int index);
 };
 }

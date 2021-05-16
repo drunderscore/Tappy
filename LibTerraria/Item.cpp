@@ -30,3 +30,19 @@ OutputStream& operator<<(OutputStream& stream, Terraria::Item::Prefix value)
     stream.write_or_error({&value, sizeof(value)});
     return stream;
 }
+
+InputStream& operator>>(InputStream& stream, Optional<Terraria::Item::Id>& value)
+{
+    Terraria::Item::Id temp;
+    stream >> temp;
+    value = temp;
+    return stream;
+}
+
+InputStream& operator>>(InputStream& stream, Optional<Terraria::Item::Prefix>& value)
+{
+    Terraria::Item::Prefix temp;
+    stream >> temp;
+    value = temp;
+    return stream;
+}

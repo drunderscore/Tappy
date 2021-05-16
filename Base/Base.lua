@@ -79,4 +79,16 @@ function Base.onTogglePvp(client, pvp)
     end
 end
 
+function Base.onPlayerHurt(client, target, reason, damage, direction, flags, cooldownCounter)
+    local event = {}
+    event.client = client
+    event.target = target
+    event.reason = reason
+    event.damage = damage
+    event.direction = direction
+    event.flags = flags
+    event.cooldownCounter = cooldownCounter
+    Hooks.publish("playerHurt", event)
+end
+
 return Base

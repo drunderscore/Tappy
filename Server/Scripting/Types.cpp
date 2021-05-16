@@ -236,4 +236,63 @@ Terraria::Color Types::color(lua_State* state, int index)
 
     return color;
 }
+
+void Types::player_death_reason(lua_State* state, const Terraria::PlayerDeathReason& reason)
+{
+    lua_newtable(state);
+
+    if (reason.player().has_value())
+    {
+        lua_pushstring(state, "player");
+        lua_pushinteger(state, *reason.player());
+        lua_settable(state, -3);
+    }
+    if (reason.npc().has_value())
+    {
+        lua_pushstring(state, "npc");
+        lua_pushinteger(state, *reason.npc());
+        lua_settable(state, -3);
+    }
+    if (reason.projectile().has_value())
+    {
+        lua_pushstring(state, "projectile");
+        lua_pushinteger(state, *reason.projectile());
+        lua_settable(state, -3);
+    }
+    if (reason.other().has_value())
+    {
+        lua_pushstring(state, "other");
+        lua_pushinteger(state, *reason.other());
+        lua_settable(state, -3);
+    }
+    if (reason.custom_reason().has_value())
+    {
+        lua_pushstring(state, "customReason");
+        lua_pushstring(state, (*reason.custom_reason()).characters());
+        lua_settable(state, -3);
+    }
+    if (reason.projectile_type().has_value())
+    {
+        lua_pushstring(state, "projectileType");
+        lua_pushinteger(state, *reason.projectile_type());
+        lua_settable(state, -3);
+    }
+    if (reason.item_id().has_value())
+    {
+        lua_pushstring(state, "itemId");
+        lua_pushinteger(state, static_cast<i16>(*reason.item_id()));
+        lua_settable(state, -3);
+    }
+    if (reason.item_prefix().has_value())
+    {
+        lua_pushstring(state, "itemPrefix");
+        lua_pushinteger(state, static_cast<i8>(*reason.item_prefix()));
+        lua_settable(state, -3);
+    }
+}
+
+Terraria::PlayerDeathReason Types::player_death_reason(lua_State*, int index)
+{
+
+}
 }

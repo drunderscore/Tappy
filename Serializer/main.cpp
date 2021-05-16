@@ -121,6 +121,7 @@ int main(int argc, char** argv)
         outln("#include <LibTerraria/Color.h>");
         outln("#include <LibTerraria/Item.h>");
         outln("#include <LibTerraria/PlayerInventory.h>");
+        outln("#include <LibTerraria/PlayerDeathReason.h>");
         outln();
         outln("// This was auto-generated from {}", lexical_path);
         if (module.has_value())
@@ -153,6 +154,12 @@ int main(int argc, char** argv)
             if (field.type() == "String")
             {
                 outln("Terraria::Net::Types::read_string(stream, packet.m_{});", field.name());
+            }
+            else if (field.type() == "PlayerDeathReason")
+            {
+                outln("auto op_{} = Terraria::PlayerDeathReason::from_bytes(stream);", field.name());
+                outln("if(!op_{}.has_value()) return {{}};", field.name());
+                outln("packet.m_{} = op_{}.value();", field.name(), field.name());
             }
             else if (field.type() == "NetworkText")
             {
@@ -205,6 +212,10 @@ int main(int argc, char** argv)
             {
                 outln("Terraria::Net::Types::write_string(stream, m_{});", field.name());
             }
+            else if (field.type() == "PlayerDeathReason")
+            {
+                outln("stream << m_{}.to_bytes();", field.name());
+            }
             else if (field.type() == "NetworkText")
             {
                 outln("stream.write(m_{}.to_bytes());", field.name());
@@ -240,6 +251,11 @@ int main(int argc, char** argv)
             {
                 outln("const NetworkText& {}() const {{ return m_{}; }}", field.name(), field.name());
                 outln("void set_{}(NetworkText value) {{ m_{} = move(value); }}", field.name(), field.name());
+            }
+            else if (field.type() == "PlayerDeathReason")
+            {
+                outln("const PlayerDeathReason& {}() const {{ return m_{}; }}", field.name(), field.name());
+                outln("void set_{}(PlayerDeathReason value) {{ m_{} = move(value); }}", field.name(), field.name());
             }
             else if (field.type().starts_with("Array"))
             {
