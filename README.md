@@ -1,6 +1,8 @@
 # Tappy
 A Terraria server written in C++.
 
+[![Discord](https://img.shields.io/discord/435913149296803870?style=flat-square)](https://discord.gg/9Bwbm77)
+
 ## Binaries
 No binaries exist yet. You must build it yourself.
 
