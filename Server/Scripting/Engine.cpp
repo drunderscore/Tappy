@@ -269,12 +269,16 @@ int Engine::client_send_message()
 
     auto text = luaL_checkstring(m_state, 2);
     auto author = luaL_optinteger(m_state, 3, 255);
+    Terraria::Color col;
+    if (lua_type(m_state, 4) == LUA_TTABLE)
+        col = Types::color(m_state, 4);
+    else
+        col = {255, 255, 255};
 
     Terraria::Net::Packets::Modules::Text text_packet;
     text_packet.set_text(text);
     text_packet.set_author(author);
-    // TODO: Color parameter
-    text_packet.set_color({255, 255, 255});
+    text_packet.set_color(col);
 
     client->send(text_packet);
 

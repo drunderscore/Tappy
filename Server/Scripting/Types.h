@@ -8,6 +8,7 @@
 
 #include <LibTerraria/Projectile.h>
 #include <AK/String.h>
+#include <LibTerraria/Color.h>
 
 typedef struct lua_State lua_State;
 
@@ -23,5 +24,9 @@ public:
     static void point(lua_State*, const Terraria::EntityPoint&);
 
     static Terraria::EntityPoint point(lua_State*, int index);
+
+    static void color(lua_State*, const Terraria::Color&);
+
+    static Terraria::Color color(lua_State*, int index);
 };
 }

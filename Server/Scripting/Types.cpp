@@ -196,4 +196,44 @@ void Types::projectile(lua_State* state, const Terraria::Projectile& proj)
         lua_settable(state, -3);
     }
 }
+
+void Types::color(lua_State* state, const Terraria::Color& color)
+{
+    lua_createtable(state, 3, 0);
+    lua_pushstring(state, "r");
+    lua_pushinteger(state, color.r);
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "g");
+    lua_pushinteger(state, color.g);
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "b");
+    lua_pushinteger(state, color.b);
+    lua_settable(state, -3);
+}
+
+Terraria::Color Types::color(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::Color color;
+
+    lua_pushstring(state, "r");
+    lua_gettable(state, index);
+    color.r = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "g");
+    lua_gettable(state, index);
+    color.g = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "b");
+    lua_gettable(state, index);
+    color.b = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    return color;
+}
 }
