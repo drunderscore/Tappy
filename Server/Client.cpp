@@ -236,10 +236,15 @@ void Client::on_ready_to_read()
                 m_server.client_did_send_message({}, *this, text->message());
         }
     }
-    else if(packet_id == Terraria::Net::Packet::Id::KillProjectile)
+    else if (packet_id == Terraria::Net::Packet::Id::KillProjectile)
     {
         auto kill_proj = Terraria::Net::Packets::KillProjectile::from_bytes(packet_bytes_stream);
         m_server.client_did_kill_projectile({}, *this, *kill_proj);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::TogglePvp)
+    {
+        auto toggle_pvp = Terraria::Net::Packets::TogglePvp::from_bytes(packet_bytes_stream);
+        m_server.client_did_toggle_pvp({}, *this, *toggle_pvp);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {

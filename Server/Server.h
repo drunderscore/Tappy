@@ -21,6 +21,7 @@
 #include <LibTerraria/Net/Packets/PlayerMana.h>
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Net/Packets/TogglePvp.h>
 #include <LibTerraria/Projectile.h>
 
 namespace Scripting
@@ -60,6 +61,8 @@ public:
     void client_did_connect_request(Badge<Client>, const Client&, const String& version);
 
     void client_did_kill_projectile(Badge<Client>, const Client&, const Terraria::Net::Packets::KillProjectile&);
+
+    void client_did_toggle_pvp(Badge<Client>, const Client&, const Terraria::Net::Packets::TogglePvp&);
 
     Vector<WeakPtr<Client>> clients() const;
 

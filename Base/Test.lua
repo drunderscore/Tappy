@@ -20,7 +20,7 @@ Hooks.add("syncProjectile", function(event)
 end)
 
 Hooks.add("connectRequest", function(event)
-    print("Client " .. event.client:id() .. " is connecting with version " .. event.version)
+    print("Client " .. event.client:id() .. " is connecting with version " .. tostring(event.version))
     -- FIXME: Yeah this doesn't work... we send the disconnect packet, destroy the client, and then try to return the
     -- client packet handler, which is inside the now destroyed client.
     -- event.client:disconnect("will this break")

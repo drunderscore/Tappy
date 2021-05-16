@@ -109,15 +109,20 @@ void Types::point(lua_State* state, const Terraria::EntityPoint& point)
 Terraria::EntityPoint Types::point(lua_State* state, int index)
 {
     luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::EntityPoint point;
+
     lua_pushstring(state, "x");
     lua_gettable(state, index - 1);
-    auto x = luaL_checknumber(state, -1);
+    point.x = luaL_checknumber(state, -1);
     lua_pop(state, 1);
+
     lua_pushstring(state, "y");
     lua_gettable(state, index - 1);
-    auto y = luaL_checknumber(state, -1);
+    point.y = luaL_checknumber(state, -1);
     lua_pop(state, 1);
-    return Terraria::EntityPoint{static_cast<float>(x), static_cast<float>(y)};
+
+    return point;
 }
 
 void Types::projectile(lua_State* state, const Terraria::Projectile& proj)

@@ -47,6 +47,7 @@ Engine::Engine(Server& server) :
                     {"address",        client_address_thunk},
                     {"syncProjectile", client_sync_projectile_thunk},
                     {"killProjectile", client_kill_projectile_thunk},
+                    {"setPvp",         client_set_pvp_thunk},
                     {}
             };
 
@@ -150,6 +151,13 @@ void Engine::client_did_connect_request(Badge<Server>, const Client& client, con
     lua_call(m_state, 2, 0);
 }
 
+void Engine::client_did_toggle_pvp(Badge<Server>, const Client& who, const Terraria::Net::Packets::TogglePvp& toggle)
+{
+    lua_getfield(m_state, 1, "onTogglePvp");
+    client_userdata(who.id());
+    lua_pushboolean(m_state, toggle.pvp());
+    lua_call(m_state, 2, 0);
+}
 void* Engine::client_userdata(u8 id) const
 {
     auto* client_ud = lua_newuserdata(m_state, sizeof(id));
@@ -334,6 +342,39 @@ int Engine::client_kill_projectile()
     kill_proj.set_owner(luaL_checkinteger(m_state, 3));
 
     client->send(kill_proj);
+    return 0;
+}
+
+int Engine::client_set_pvp()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client)
+        return 0;
+
+    auto pvp = lua_toboolean(m_state, 2);
+    client->player().set_pvp(pvp);
+
+    Terraria::Net::Packets::TogglePvp toggle_pvp;
+    toggle_pvp.set_player_id(client->id());
+    toggle_pvp.set_pvp(pvp);
+
+    auto syncOnlyToSelf = lua_toboolean(m_state, 3);
+
+    if (syncOnlyToSelf)
+    {
+        client->send(toggle_pvp);
+    }
+    else
+    {
+        for (auto& c : m_server.clients())
+        {
+            if (c->id() == client->id())
+                continue;
+
+            c->send(toggle_pvp);
+        }
+    }
+
     return 0;
 }
 

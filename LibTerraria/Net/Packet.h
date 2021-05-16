@@ -34,6 +34,7 @@ public:
         SyncNPC = 23,
         SyncProjectile = 27,
         KillProjectile = 29,
+        TogglePvp = 30,
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,

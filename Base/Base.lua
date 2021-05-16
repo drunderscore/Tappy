@@ -64,4 +64,19 @@ function Base.onConnectRequest(client, version)
     Hooks.publish("connectRequest", event)
 end
 
+function Base.onTogglePvp(client, pvp)
+    local event = {}
+
+    event.client = client
+    event.pvp = pvp
+    event.canceled = false
+    Hooks.publish("togglePvp", event)
+
+    if event.canceled then
+        client:setPvp(client, not pvp, true)
+    else
+        client:setPvp(client, pvp)
+    end
+end
+
 return Base

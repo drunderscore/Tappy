@@ -32,6 +32,7 @@ add_library(Terraria
         SpawnPlayerSelf.h
         Net/Packets/SyncProjectile.cpp
         Net/Packets/SyncNPC.cpp
+        TogglePvp.h
         ReleaseNPC.h
         KillProjectile.h
         Net/Packets/SyncPlayer.cpp

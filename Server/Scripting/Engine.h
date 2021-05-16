@@ -14,6 +14,7 @@
 #include <LibTerraria/PlayerInventory.h>
 #include <LibTerraria/Item.h>
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/TogglePvp.h>
 
 typedef struct lua_State lua_State;
 
@@ -39,6 +40,8 @@ public:
     void client_did_sync_projectile(Badge<Server>, const Client&, const Terraria::Net::Packets::SyncProjectile&);
 
     void client_did_connect_request(Badge<Server>, const Client&, const String& version);
+
+    void client_did_toggle_pvp(Badge<Server>, const Client&, const Terraria::Net::Packets::TogglePvp&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;
@@ -78,6 +81,8 @@ private:
     DEFINE_LUA_METHOD(client_sync_projectile);
 
     DEFINE_LUA_METHOD(client_kill_projectile);
+
+    DEFINE_LUA_METHOD(client_set_pvp);
 
     // Player
     DEFINE_LUA_METHOD(player_character);

@@ -14,6 +14,8 @@ local Hooks = {}
 local hookMap = {}
 hookMap["chat"] = {}
 hookMap["syncProjectile"] = {}
+hookMap["connectRequest"] = {}
+hookMap["togglePvp"] = {}
 
 function Hooks.add(name, func)
     if type(name) ~= "string" then

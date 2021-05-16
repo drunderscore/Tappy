@@ -1,0 +1,12 @@
+{
+    "fields": [
+        {
+            "name": "player_id",
+            "type": "u8"
+        },
+        {
+            "name": "pvp",
+            "type": "u8"
+        }
+    ]
+}

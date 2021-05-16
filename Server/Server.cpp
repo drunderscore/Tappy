@@ -124,15 +124,18 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
         who.send(spawn);
 
         kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-        {
-            Terraria::Net::Packets::SyncInventorySlot inv_slot;
-            inv_slot.set_player_id(kv.key);
-            inv_slot.set_slot(slot);
-            inv_slot.set_id(item.id());
-            inv_slot.set_stack(item.stack());
-            inv_slot.set_prefix(item.prefix());
-            who.send(inv_slot);
-        });
+
+        Terraria::Net::Packets::TogglePvp toggle_pvp;
+        toggle_pvp.set_player_id(kv.key);
+        toggle_pvp.set_pvp(kv.value->player().pvp());
+        who.send(toggle_pvp);
+    }
+
+    for (auto& kv : m_projectiles)
+    {
+        Terraria::Net::Packets::SyncProjectile sync_proj;
+        sync_proj.projectile() = kv.value;
+        who.send(sync_proj);
     }
 }
 
@@ -203,6 +206,11 @@ void Server::client_did_kill_projectile(Badge<Client>, const Client& who,
 
         kv.value->send(kill_proj);
     }
+}
+
+void Server::client_did_toggle_pvp(Badge<Client>, const Client& who, const Terraria::Net::Packets::TogglePvp& toggle)
+{
+    m_engine->client_did_toggle_pvp({}, who, toggle);
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

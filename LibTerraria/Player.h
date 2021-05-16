@@ -96,6 +96,12 @@ public:
     void set_bits_4(u8 value)
     { m_bits_4 = value; }
 
+    bool pvp() const
+    { return m_pvp; }
+
+    void set_pvp(bool value)
+    { m_pvp = value; }
+
 private:
     i16 m_hp{};
     i16 m_max_hp{};
@@ -112,5 +118,7 @@ private:
     u8 m_bits_3{};
     u8 m_bits_4{};
     u8 m_selected_item{};
+
+    bool m_pvp{};
 };
 }
