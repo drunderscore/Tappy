@@ -110,6 +110,8 @@ ByteBuffer SyncProjectile::to_bytes() const
     if (projectile().uuid().has_value())
         stream << *projectile().uuid();
 
+    buffer.trim(stream.size());
+
     return buffer;
 }
 }

@@ -153,6 +153,8 @@ ByteBuffer SyncNPC::to_bytes() const
 
     // TODO: If an NPC is catchable, we have to send who released it.
 
+    buffer.trim(stream.size());
+
     return buffer;
 }
 }

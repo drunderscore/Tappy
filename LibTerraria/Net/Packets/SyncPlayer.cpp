@@ -49,6 +49,8 @@ ByteBuffer SyncPlayer::to_bytes() const
     stream << m_potion_of_return_use_position;
     stream << m_potion_of_return_home_position;
 
+    buffer.trim(stream.size());
+
     return buffer;
 }
 }
