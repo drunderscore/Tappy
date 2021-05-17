@@ -73,9 +73,9 @@ function Base.onTogglePvp(client, pvp)
     Hooks.publish("togglePvp", event)
 
     if event.canceled then
-        client:setPvp(client, not pvp, true)
+        client:player():setPvp(client, not pvp, true)
     else
-        client:setPvp(client, pvp)
+        client:player():setPvp(client, pvp)
     end
 end
 

@@ -85,8 +85,6 @@ private:
 
     DEFINE_LUA_METHOD(client_kill_projectile);
 
-    DEFINE_LUA_METHOD(client_set_pvp);
-
     // Player
     DEFINE_LUA_METHOD(player_character);
 
@@ -95,6 +93,8 @@ private:
     DEFINE_LUA_METHOD(player_hp);
 
     DEFINE_LUA_METHOD(player_max_hp);
+
+    DEFINE_LUA_METHOD(player_set_pvp);
 
     // Character
     DEFINE_LUA_METHOD(character_name);

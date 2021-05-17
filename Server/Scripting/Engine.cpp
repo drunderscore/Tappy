@@ -47,14 +47,14 @@ Engine::Engine(Server& server) :
                     {"address",        client_address_thunk},
                     {"syncProjectile", client_sync_projectile_thunk},
                     {"killProjectile", client_kill_projectile_thunk},
-                    {"setPvp",         client_set_pvp_thunk},
                     {}
             };
 
     static const struct luaL_Reg player_lib[] =
             {
                     {"character", player_character_thunk},
-                    {"buffs",     player_buffs_thunk},
+                    {"buffs", player_buffs_thunk},
+                    {"setPvp", player_set_pvp_thunk},
                     {}
             };
 
@@ -363,9 +363,37 @@ int Engine::client_kill_projectile()
     return 0;
 }
 
-int Engine::client_set_pvp()
+int Engine::player_character()
 {
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    character_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    return 1;
+}
+
+int Engine::player_buffs()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        lua_pushnil(m_state);
+    else
+    {
+        auto& buffs = client->player().buffs();
+        lua_newtable(m_state);
+        for (auto i = 0; i < buffs.size(); i++)
+        {
+            auto id = buffs[i];
+            if (id == 0)
+                continue;
+            lua_pushinteger(m_state, id);
+            lua_rawseti(m_state, 2, i + 1);
+        }
+    }
+
+    return 1;
+}
+
+int Engine::player_set_pvp()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
     if (!client)
         return 0;
 
@@ -394,34 +422,6 @@ int Engine::client_set_pvp()
     }
 
     return 0;
-}
-
-int Engine::player_character()
-{
-    character_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
-    return 1;
-}
-
-int Engine::player_buffs()
-{
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
-    if (!client)
-        lua_pushnil(m_state);
-    else
-    {
-        auto& buffs = client->player().buffs();
-        lua_newtable(m_state);
-        for (auto i = 0; i < buffs.size(); i++)
-        {
-            auto id = buffs[i];
-            if (id == 0)
-                continue;
-            lua_pushinteger(m_state, id);
-            lua_rawseti(m_state, 2, i + 1);
-        }
-    }
-
-    return 1;
 }
 
 int Engine::character_name()
