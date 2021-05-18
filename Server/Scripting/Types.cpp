@@ -25,11 +25,11 @@ Terraria::Projectile Types::projectile(lua_State* state, int index, bool takeId)
 
     lua_pushstring(state, "position");
     lua_gettable(state, index);
-    proj.position() = point(state, -1);
+    proj.position() = point(state, lua_gettop(state));
 
     lua_pushstring(state, "velocity");
     lua_gettable(state, index);
-    proj.velocity() = point(state, -1);
+    proj.velocity() = point(state, lua_gettop(state));
 
     lua_pushstring(state, "owner");
     lua_gettable(state, index);
@@ -113,12 +113,12 @@ Terraria::EntityPoint Types::point(lua_State* state, int index)
     Terraria::EntityPoint point;
 
     lua_pushstring(state, "x");
-    lua_gettable(state, index - 1);
+    lua_gettable(state, index);
     point.x = luaL_checknumber(state, -1);
     lua_pop(state, 1);
 
     lua_pushstring(state, "y");
-    lua_gettable(state, index - 1);
+    lua_gettable(state, index);
     point.y = luaL_checknumber(state, -1);
     lua_pop(state, 1);
 

@@ -10,6 +10,7 @@
 #include <LibTerraria/Net/Packets/Modules/Text.h>
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Net/Packets/TeleportEntity.h>
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
 
@@ -47,14 +48,19 @@ Engine::Engine(Server& server) :
                     {"address",        client_address_thunk},
                     {"syncProjectile", client_sync_projectile_thunk},
                     {"killProjectile", client_kill_projectile_thunk},
+                    {"teleport",       client_teleport_thunk},
+                    {"__eq",           client_equals_thunk},
                     {}
             };
 
     static const struct luaL_Reg player_lib[] =
             {
                     {"character", player_character_thunk},
-                    {"buffs", player_buffs_thunk},
-                    {"setPvp", player_set_pvp_thunk},
+                    {"buffs",     player_buffs_thunk},
+                    {"setPvp",    player_set_pvp_thunk},
+                    {"buffs",     player_buffs_thunk},
+                    {"setPvp",    player_set_pvp_thunk},
+                    {"position",  player_position_thunk},
                     {}
             };
 
@@ -391,6 +397,32 @@ int Engine::player_buffs()
     return 1;
 }
 
+int Engine::client_teleport()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client)
+        return 0;
+
+    Terraria::Net::Packets::TeleportEntity teleport_entity;
+    teleport_entity.set_target(client->id());
+    teleport_entity.set_type(Terraria::Net::Packets::TeleportEntity::TeleportType::PlayerToPosition);
+    teleport_entity.position() = Types::point(m_state, 2);
+    teleport_entity.set_style(luaL_optinteger(m_state, 3, 0));
+
+    for (auto& c : m_server.clients())
+        c->send(teleport_entity);
+
+    return 0;
+}
+
+int Engine::client_equals()
+{
+    lua_pushboolean(m_state, *reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")) ==
+                             *reinterpret_cast<u8*>(luaL_checkudata(m_state, 2, "Server::Client")));
+
+    return 1;
+}
+
 int Engine::player_set_pvp()
 {
     auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
@@ -422,6 +454,18 @@ int Engine::player_set_pvp()
     }
 
     return 0;
+}
+
+int Engine::player_position()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+
+    if (!client)
+        lua_pushnil(m_state);
+    else
+        Types::point(m_state, client->player().position());
+
+    return 1;
 }
 
 int Engine::character_name()

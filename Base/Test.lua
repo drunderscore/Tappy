@@ -11,11 +11,26 @@
 
 local Hooks = require("Hooks") -- This let's us know when certain actions happen in-game and hook them
 
-math.randomseed(os.time())
+Hooks.add("chat", function(event)
+    if (string.find(event.message, "/tp") == 1) then
+        event.canceled = true
+        local targetClient
+        for i, c in pairs(Game.clients()) do
+            local partialName = string.sub(event.message, 5)
+            if string.find(c:player():character():name(), partialName) then
+                targetClient = c
+                break
+            end
+        end
 
-Hooks.add("syncProjectile", function(event)
-    if event.projectile.type == 953 then
-        event.client:disconnect("lmao no")
+        if not targetClient then
+            event.client:sendMessage("Unknown player", 255, { r = 255, g = 0, b = 0 })
+        elseif targetClient == event.client then
+            event.client:sendMessage("You cannot teleport to yourself", 255, { r = 255, g = 0, b = 0 })
+        else
+            event.client:sendMessage("Teleporting to " .. targetClient:player():character():name(), 255, { r = 0x55, g = 0xad, b = 0x12 })
+            event.client:teleport(targetClient:player():position())
+        end
     end
 end)
 

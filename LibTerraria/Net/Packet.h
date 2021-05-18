@@ -38,6 +38,7 @@ public:
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,
+        TeleportEntity = 65,
         ClientUUID = 68,
         ReleaseNPC = 71,
         NetModules = 82,

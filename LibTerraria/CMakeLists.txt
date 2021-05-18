@@ -40,6 +40,7 @@ add_library(Terraria
         ConnectFinished.h
         PlayerHurt.h
         Disconnect.h
+        Net/Packets/TeleportEntity.cpp
         Net/Packets/TileSection.cpp
         SetUserSlot.h
         PlayerInfo.h
