@@ -20,10 +20,6 @@
         {
             "name": "flags",
             "type": "u8"
-        },
-        {
-            "name": "cooldown_counter",
-            "type": "i8"
         }
     ]
 }

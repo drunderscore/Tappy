@@ -1,0 +1,25 @@
+{
+    "fields":
+    [
+        {
+            "name": "npc_id",
+            "type": "i16"
+        },
+        {
+            "name": "damage",
+            "type": "i16"
+        },
+        {
+            "name": "knockback",
+            "type": "float"
+        },
+        {
+            "name": "hit_direction",
+            "type": "u8"
+        },
+        {
+            "name": "crit",
+            "type": "u8"
+        }
+    ]
+}

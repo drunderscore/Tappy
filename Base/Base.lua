@@ -91,4 +91,33 @@ function Base.onPlayerHurt(client, target, reason, damage, direction, flags, coo
     Hooks.publish("playerHurt", event)
 end
 
+function Base.onPlayerDeath(client, target, reason, damage, direction, flags)
+    local event = {}
+    event.client = client
+    event.target = target
+    event.reason = reason
+    event.damage = damage
+    event.direction = direction
+    event.flags = flags
+    Hooks.publish("playerDeath", event)
+end
+
+function Base.onDamageNpc(client, npcId, damage, knockback, hitDirection, crit)
+    local event = {}
+    event.client = client
+    event.npcId = npcId
+    event.damage = damage
+    event.knockback = knockback
+    event.hitDirection = hitDirection
+    event.crit = crit
+    Hooks.publish("damageNpc", event)
+end
+
+function Base.onClientFinishConnecting(client)
+    local event = {}
+    event.client = client
+
+    Hooks.publish("finishedConnecting", event)
+end
+
 return Base

@@ -7,13 +7,9 @@
 #pragma once
 
 #include <AK/ByteBuffer.h>
-#include <AK/Optional.h>
-#include <AK/Array.h>
-#include <AK/String.h>
-#include <AK/Random.h>
 #include <AK/MemoryStream.h>
+#include <LibTerraria/NPC.h>
 #include <LibTerraria/Net/Packet.h>
-#include <LibTerraria/Point.h>
 
 namespace Terraria::Net::Packets
 {
@@ -33,54 +29,14 @@ public:
 
     ByteBuffer to_bytes() const override;
 
-    i16 id() const
-    { return m_id; }
+    const NPC& npc() const
+    { return m_npc; }
 
-    const EntityPoint& position() const
-    { return m_position; }
-
-    const EntityPoint& velocity() const
-    { return m_velocity; }
-
-    EntityPoint& position()
-    { return m_position; }
-
-    EntityPoint& velocity()
-    { return m_velocity; }
-
-    u16 target() const
-    { return m_target; }
-
-    i32 hp() const
-    { return m_hp; }
-
-    i16 type() const
-    { return m_type; }
-
-    void set_id(i16 value)
-    { m_id = value; }
-
-    void set_hp(i32 value)
-    { m_hp = value; }
-
-    void set_type(i16 value)
-    { m_type = value; }
+    NPC& npc()
+    { return m_npc; }
 
 private:
-    i16 m_id{};
-    EntityPoint m_position;
-    EntityPoint m_velocity;
-    u16 m_target{};
-    i32 m_hp{};
-    i16 m_type{};
-    bool m_direction{}; // FIXME: Magic value
-    bool m_direction_y{}; // FIXME: Magic value
-    AIArray m_ai{};
-    bool m_sprite_direction{}; // FIXME: Magic value
-    Optional<u8> m_scaled_for_this_many_players{}; // FIXME: This name sucks
-    bool m_spawned_from_statue{};
-    Optional<float> m_strength_multiplier{};
-    Optional<u8> m_release_owner{};
+    NPC m_npc;
 
     static constexpr u8 m_direction_bit = 0b0000'0001;
     static constexpr u8 m_direction_y_bit = 0b0000'0010;

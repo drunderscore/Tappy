@@ -23,6 +23,8 @@
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/TogglePvp.h>
 #include <LibTerraria/Net/Packets/PlayerHurt.h>
+#include <LibTerraria/Net/Packets/PlayerDeath.h>
+#include <LibTerraria/Net/Packets/DamageNPC.h>
 #include <LibTerraria/Projectile.h>
 
 namespace Scripting
@@ -66,6 +68,12 @@ public:
     void client_did_toggle_pvp(Badge<Client>, const Client&, const Terraria::Net::Packets::TogglePvp&);
 
     void client_did_hurt_player(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerHurt&);
+
+    void client_did_player_death(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerDeath&);
+
+    void client_did_damage_npc(Badge<Client>, Client&, const Terraria::Net::Packets::DamageNPC&);
+
+    void client_did_finish_connecting(Badge<Client>, Client&);
 
     Vector<WeakPtr<Client>> clients() const;
 

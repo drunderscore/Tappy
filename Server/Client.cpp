@@ -168,20 +168,27 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
     {
         auto spawn_data = Terraria::Net::Packets::SpawnData::from_bytes(packet_bytes_stream);
-        static constexpr u16 width = 100;
-        static constexpr u16 height = 3;
+        static constexpr u16 width = 200;
+        static constexpr u16 height = 50;
         static constexpr i32 starting_x = 41;
         static constexpr i32 starting_y = 200;
         Terraria::TileMap tiles(width, height);
 
         Terraria::Tile stone;
         stone.id() = Terraria::Tile::Id::Stone;
+        Terraria::Tile dirt;
+        dirt.id() = Terraria::Tile::Id::Dirt;
 
-        for (auto& t : tiles.tiles())
-            t = stone;
-
-        Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
-        send(section);
+        for (auto y = 0; y < tiles.height(); y++)
+        {
+            for (auto x = 0; x < tiles.width(); x++)
+            {
+                if (y > 3)
+                    tiles.at(x, y) = stone;
+                else
+                    tiles.at(x, y) = dirt;
+            }
+        }
 
         Terraria::Net::Packets::TileFrameSection frame_section;
         frame_section.set_start_x(starting_x);
@@ -189,6 +196,10 @@ void Client::on_ready_to_read()
         frame_section.set_end_x(starting_x + width);
         frame_section.set_end_y(starting_x + height);
         send(frame_section);
+
+        Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
+        send(section);
+
         Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
         send(spawn_self);
     }
@@ -196,13 +207,13 @@ void Client::on_ready_to_read()
     {
         auto spawn_player = Terraria::Net::Packets::SpawnPlayer::from_bytes(packet_bytes_stream);
         outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
-        Terraria::Net::Packets::ConnectFinished connect_finished;
-        send(connect_finished);
-        Terraria::Net::Packets::Modules::Text text;
-        text.set_author(255);
-        text.set_color(Terraria::Color{200, 63, 122});
-        text.set_text("You are playing on a Tappy server.");
-        send(text);
+        if (!m_has_finished_connecting)
+        {
+            m_has_finished_connecting = true;
+            m_server.client_did_finish_connecting({}, *this);
+            Terraria::Net::Packets::ConnectFinished connect_finished;
+            send(connect_finished);
+        }
         m_server.client_did_spawn_player({}, *this, *spawn_player);
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncPlayer)
@@ -250,6 +261,16 @@ void Client::on_ready_to_read()
     {
         auto player_hurt = Terraria::Net::Packets::PlayerHurt::from_bytes(packet_bytes_stream);
         m_server.client_did_hurt_player({}, *this, *player_hurt);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerDeath)
+    {
+        auto player_death = Terraria::Net::Packets::PlayerDeath::from_bytes(packet_bytes_stream);
+        m_server.client_did_player_death({}, *this, *player_death);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::DamageNPC)
+    {
+        auto damage_npc = Terraria::Net::Packets::DamageNPC::from_bytes(packet_bytes_stream);
+        m_server.client_did_damage_npc({}, *this, *damage_npc);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {

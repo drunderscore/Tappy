@@ -48,6 +48,9 @@ public:
 
     void disconnect(const Terraria::Net::NetworkText&);
 
+    bool has_finished_connecting() const
+    { return m_has_finished_connecting; }
+
 private:
     void on_ready_to_read();
 
@@ -58,4 +61,5 @@ private:
     Terraria::Player m_player;
     Optional<UUID> m_uuid;
     u8 m_id;
+    bool m_has_finished_connecting{};
 };

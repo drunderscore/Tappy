@@ -295,4 +295,179 @@ Terraria::PlayerDeathReason Types::player_death_reason(lua_State*, int index)
 {
 
 }
+
+void Types::npc(lua_State* state, const Terraria::NPC& npc)
+{
+    lua_newtable(state);
+
+    lua_pushstring(state, "id");
+    lua_pushinteger(state, npc.id());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "position");
+    point(state, npc.position());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "velocity");
+    point(state, npc.velocity());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "target");
+    lua_pushinteger(state, npc.target());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hp");
+    lua_pushinteger(state, npc.hp());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "type");
+    lua_pushinteger(state, npc.type());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "direction");
+    lua_pushboolean(state, npc.direction());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "directionY");
+    lua_pushboolean(state, npc.direction_y());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "ai");
+    lua_newtable(state);
+    for (auto i = 0; i < npc.ai().size(); i++)
+    {
+        auto& ai = npc.ai()[i];
+        if (ai.has_value())
+        {
+            lua_pushnumber(state, *ai);
+            lua_rawseti(state, -2, i + 1);
+        }
+    }
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "spriteDirection");
+    lua_pushboolean(state, npc.sprite_direction());
+    lua_settable(state, -3);
+
+    if (npc.scaled_for_this_many_players().has_value())
+    {
+        lua_pushstring(state, "scaledForThisManyPlayers");
+        lua_pushinteger(state, *npc.scaled_for_this_many_players());
+        lua_settable(state, -3);
+    }
+
+    lua_pushstring(state, "spawnedFromStatue");
+    lua_pushboolean(state, npc.spawned_from_statue());
+    lua_settable(state, -3);
+
+    if (npc.strength_multiplier().has_value())
+    {
+        lua_pushstring(state, "strengthMultiplier");
+        lua_pushnumber(state, *npc.strength_multiplier());
+        lua_settable(state, -3);
+    }
+
+    if (npc.release_owner().has_value())
+    {
+        lua_pushstring(state, "releaseOwner");
+        lua_pushinteger(state, *npc.release_owner());
+        lua_settable(state, -3);
+    }
+}
+
+Terraria::NPC Types::npc(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::NPC npc;
+
+    lua_pushstring(state, "id");
+    lua_gettable(state, index);
+    npc.set_id(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "position");
+    lua_gettable(state, index);
+    npc.position() = point(state, lua_gettop(state));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "velocity");
+    lua_gettable(state, index);
+    npc.velocity() = point(state, lua_gettop(state));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "target");
+    lua_gettable(state, index);
+    npc.set_target(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hp");
+    lua_gettable(state, index);
+    npc.set_hp(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "type");
+    lua_gettable(state, index);
+    npc.set_type(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "direction");
+    lua_gettable(state, index);
+    npc.set_direction(lua_toboolean(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "directionY");
+    lua_gettable(state, index);
+    npc.set_direction_y(lua_toboolean(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "ai");
+    lua_gettable(state, index);
+    if (lua_type(state, -1) == LUA_TTABLE)
+    {
+        for (auto i = 0; i < npc.ai().size(); i++)
+        {
+            lua_rawgeti(state, -1, i + 1);
+            if (lua_isnumber(state, -1))
+                npc.ai()[i] = lua_tonumber(state, -1);
+            lua_pop(state, 1);
+        }
+    }
+
+    lua_pushstring(state, "spriteDirection");
+    lua_gettable(state, index);
+    npc.set_sprite_direction(lua_toboolean(state, -1));
+    lua_pop(state, 1);
+
+    int has_value;
+    int value;
+
+    lua_pushstring(state, "scaledForThisManyPlayers");
+    lua_gettable(state, index);
+    value = lua_tointegerx(state, -1, &has_value);
+    if (has_value)
+        npc.scaled_for_this_many_players() = value;
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "spawnedFromStatue");
+    lua_gettable(state, index);
+    npc.set_spawned_from_statue(lua_toboolean(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "strengthMultiplier");
+    lua_gettable(state, index);
+    float strengthMultiplier = lua_tonumberx(state, -1, &has_value);
+    if (has_value)
+        npc.strength_multiplier() = strengthMultiplier;
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "releaseOwner");
+    lua_gettable(state, index);
+    value = lua_tointegerx(state, -1, &has_value);
+    if (has_value)
+        npc.release_owner() = value;
+    lua_pop(state, 1);
+
+    return npc;
+}
 }

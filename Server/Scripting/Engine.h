@@ -16,6 +16,8 @@
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/TogglePvp.h>
 #include <LibTerraria/Net/Packets/PlayerHurt.h>
+#include <LibTerraria/Net/Packets/PlayerDeath.h>
+#include <LibTerraria/Net/Packets/DamageNPC.h>
 
 typedef struct lua_State lua_State;
 
@@ -45,6 +47,12 @@ public:
     void client_did_toggle_pvp(Badge<Server>, const Client&, const Terraria::Net::Packets::TogglePvp&);
 
     void client_did_hurt_player(Badge<Server>, Client&, const Terraria::Net::Packets::PlayerHurt&);
+
+    void client_did_player_death(Badge<Server>, Client&, const Terraria::Net::Packets::PlayerDeath&);
+
+    void client_did_damage_npc(Badge<Server>, Client&, const Terraria::Net::Packets::DamageNPC&);
+
+    void client_did_finish_connecting(Badge<Server>, Client&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;
@@ -88,6 +96,8 @@ private:
     DEFINE_LUA_METHOD(client_teleport);
 
     DEFINE_LUA_METHOD(client_equals);
+
+    DEFINE_LUA_METHOD(client_sync_npc);
 
     // Player
     DEFINE_LUA_METHOD(player_character);

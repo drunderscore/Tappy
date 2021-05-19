@@ -44,8 +44,10 @@ add_library(Terraria
         Net/Packets/TileSection.cpp
         SetUserSlot.h
         PlayerInfo.h
+        DamageNPC.h
         WorldData.h
         PlayerDeathReason.cpp
+        PlayerDeath.h
         SpawnData.h
         SpawnPlayer.h
         PlayerBuffs.h

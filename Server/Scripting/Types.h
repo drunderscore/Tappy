@@ -7,6 +7,7 @@
 #pragma once
 
 #include <LibTerraria/Projectile.h>
+#include <LibTerraria/NPC.h>
 #include <AK/String.h>
 #include <LibTerraria/Color.h>
 #include <LibTerraria/PlayerDeathReason.h>
@@ -33,5 +34,9 @@ public:
     static void player_death_reason(lua_State*, const Terraria::PlayerDeathReason&);
 
     static Terraria::PlayerDeathReason player_death_reason(lua_State*, int index);
+
+    static void npc(lua_State*, const Terraria::NPC&);
+
+    static Terraria::NPC npc(lua_State*, int index);
 };
 }

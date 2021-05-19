@@ -234,6 +234,35 @@ void Server::client_did_hurt_player(Badge<Client>, Client& who, const Terraria::
     m_engine->client_did_hurt_player({}, who, hurt);
 }
 
+void Server::client_did_player_death(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerDeath& death)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(death);
+    }
+    m_engine->client_did_player_death({}, who, death);
+}
+
+void Server::client_did_damage_npc(Badge<Client>, Client& who, const Terraria::Net::Packets::DamageNPC& damage_npc)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(damage_npc);
+    }
+    m_engine->client_did_damage_npc({}, who, damage_npc);
+}
+
+void Server::client_did_finish_connecting(Badge<Client>, Client& who)
+{
+    m_engine->client_did_finish_connecting({}, who);
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))

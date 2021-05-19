@@ -11,6 +11,7 @@
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/TeleportEntity.h>
+#include <LibTerraria/Net/Packets/SyncNPC.h>
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
 
@@ -50,6 +51,7 @@ Engine::Engine(Server& server) :
                     {"killProjectile", client_kill_projectile_thunk},
                     {"teleport",       client_teleport_thunk},
                     {"__eq",           client_equals_thunk},
+                    {"syncNpc",        client_sync_npc_thunk},
                     {}
             };
 
@@ -176,6 +178,37 @@ void Engine::client_did_hurt_player(Badge<Server>, Client& who, const Terraria::
     lua_pushinteger(m_state, player_hurt.flags());
     lua_pushinteger(m_state, player_hurt.cooldown_counter());
     lua_call(m_state, 7, 0);
+}
+
+void Engine::client_did_player_death(Badge<Server>, Client& who, const Terraria::Net::Packets::PlayerDeath& death)
+{
+    lua_getfield(m_state, 1, "onPlayerDeath");
+    client_userdata(who.id());
+    client_userdata(death.player_id());
+    Types::player_death_reason(m_state, death.reason());
+    lua_pushinteger(m_state, death.damage());
+    lua_pushinteger(m_state, death.direction());
+    lua_pushinteger(m_state, death.flags());
+    lua_call(m_state, 6, 0);
+}
+
+void Engine::client_did_damage_npc(Badge<Server>, Client& who, const Terraria::Net::Packets::DamageNPC& damage_npc)
+{
+    lua_getfield(m_state, 1, "onDamageNpc");
+    client_userdata(who.id());
+    lua_pushinteger(m_state, damage_npc.npc_id());
+    lua_pushinteger(m_state, damage_npc.damage());
+    lua_pushnumber(m_state, damage_npc.knockback());
+    lua_pushinteger(m_state, damage_npc.hit_direction());
+    lua_pushboolean(m_state, damage_npc.crit());
+    lua_call(m_state, 6, 0);
+}
+
+void Engine::client_did_finish_connecting(Badge<Server>, Client& who)
+{
+    lua_getfield(m_state, 1, "onClientFinishConnecting");
+    client_userdata(who.id());
+    lua_call(m_state, 1, 0);
 }
 
 void* Engine::client_userdata(u8 id) const
@@ -421,6 +454,22 @@ int Engine::client_equals()
                              *reinterpret_cast<u8*>(luaL_checkudata(m_state, 2, "Server::Client")));
 
     return 1;
+}
+
+int Engine::client_sync_npc()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client)
+        return 0;
+
+    auto npc = Types::npc(m_state, 2);
+
+    Terraria::Net::Packets::SyncNPC sync_npc;
+    sync_npc.npc() = npc;
+
+    client->send(sync_npc);
+
+    return 0;
 }
 
 int Engine::player_set_pvp()

@@ -33,6 +33,7 @@ public:
         PlayerHP = 16,
         SyncNPC = 23,
         SyncProjectile = 27,
+        DamageNPC = 28,
         KillProjectile = 29,
         TogglePvp = 30,
         PlayerMana = 42,
@@ -43,6 +44,7 @@ public:
         ReleaseNPC = 71,
         NetModules = 82,
         PlayerHurt = 117,
+        PlayerDeath = 118,
         ConnectFinished = 129,
         ClientSyncedInventory = 138
     };
