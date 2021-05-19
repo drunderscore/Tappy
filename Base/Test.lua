@@ -34,6 +34,7 @@ Hooks.add("chat", function(event)
             event.client:teleport(targetClient:player():position())
         end
     elseif string.find(event.message, "/npc") == 1 then
+        event.canceled = true
         local npc = {}
         npc.id = nextNpcId
         npc.position = event.client:player():position()
@@ -52,6 +53,10 @@ Hooks.add("chat", function(event)
         end
 
         nextNpcId = nextNpcId + 1
+    elseif string.find(event.message, "/getpos") == 1 then
+        event.canceled = true
+        local pos = event.client:player():position()
+        event.client:sendMessage("(" .. pos.x .. ", " .. pos.y .. ")")
     end
 end)
 
