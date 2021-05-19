@@ -29,6 +29,7 @@
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
 #include <LibTerraria/Net/Packets/Disconnect.h>
+#include <math.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
@@ -168,7 +169,7 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
     {
         auto spawn_data = Terraria::Net::Packets::SpawnData::from_bytes(packet_bytes_stream);
-        static constexpr u16 width = 200;
+        static constexpr u16 width = 400;
         static constexpr u16 height = 50;
         static constexpr i32 starting_x = 41;
         static constexpr i32 starting_y = 200;
@@ -189,7 +190,7 @@ void Client::on_ready_to_read()
             {
                 if (y == 0)
                     tiles.at(x, y) = grass;
-                else if(y == height - 1)
+                else if (y == height - 1)
                     tiles.at(x, y) = obsidian;
                 else if (y > 3)
                     tiles.at(x, y) = stone;
@@ -202,10 +203,10 @@ void Client::on_ready_to_read()
         send(section);
 
         Terraria::Net::Packets::TileFrameSection frame_section;
-        frame_section.set_start_x(0);
-        frame_section.set_start_y(0);
-        frame_section.set_end_x(1);
-        frame_section.set_end_y(1);
+        frame_section.set_start_x(floor(starting_x / 200));
+        frame_section.set_start_y(floor(starting_y / 150));
+        frame_section.set_end_x(floor((starting_x + width) / 200));
+        frame_section.set_end_y(floor((starting_y + height) / 150));
         send(frame_section);
 
         Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
