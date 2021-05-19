@@ -128,8 +128,8 @@ void Client::on_ready_to_read()
         world_data.set_max_tiles_y(1200);
         world_data.set_world_surface(400);
         world_data.set_world_name("lol im cool");
-        world_data.set_spawn_x(world_data.world_surface() - 5);
-        world_data.set_spawn_y(world_data.max_tiles_y() / 2);
+        world_data.set_spawn_x(100);
+        world_data.set_spawn_y(200);
         world_data.set_time(8000);
         world_data.set_day_state(1);
         world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
@@ -184,21 +184,26 @@ void Client::on_ready_to_read()
             for (auto x = 0; x < tiles.width(); x++)
             {
                 if (y > 3)
+                {
                     tiles.at(x, y) = stone;
+                }
                 else
+                {
                     tiles.at(x, y) = dirt;
+                }
             }
         }
 
-        Terraria::Net::Packets::TileFrameSection frame_section;
-        frame_section.set_start_x(starting_x);
-        frame_section.set_start_y(starting_y);
-        frame_section.set_end_x(starting_x + width);
-        frame_section.set_end_y(starting_x + height);
-        send(frame_section);
 
         Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
         send(section);
+
+        Terraria::Net::Packets::TileFrameSection frame_section;
+        frame_section.set_start_x(0);
+        frame_section.set_start_y(0);
+        frame_section.set_end_x(1);
+        frame_section.set_end_y(1);
+        send(frame_section);
 
         Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
         send(spawn_self);
