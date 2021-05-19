@@ -178,22 +178,25 @@ void Client::on_ready_to_read()
         stone.id() = Terraria::Tile::Id::Stone;
         Terraria::Tile dirt;
         dirt.id() = Terraria::Tile::Id::Dirt;
+        Terraria::Tile grass;
+        grass.id() = Terraria::Tile::Id::Grass;
+        Terraria::Tile obsidian;
+        obsidian.id() = Terraria::Tile::Id::Obsidian;
 
         for (auto y = 0; y < tiles.height(); y++)
         {
             for (auto x = 0; x < tiles.width(); x++)
             {
-                if (y > 3)
-                {
+                if (y == 0)
+                    tiles.at(x, y) = grass;
+                else if(y == height - 1)
+                    tiles.at(x, y) = obsidian;
+                else if (y > 3)
                     tiles.at(x, y) = stone;
-                }
                 else
-                {
                     tiles.at(x, y) = dirt;
-                }
             }
         }
-
 
         Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
         send(section);
