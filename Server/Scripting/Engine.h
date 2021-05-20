@@ -65,6 +65,8 @@ private:
 
     void* character_userdata(u8 id) const;
 
+    void* inventory_userdata(u8 id) const;
+
     DEFINE_LUA_METHOD(at_panic);
 
     // Game
@@ -112,8 +114,17 @@ private:
 
     DEFINE_LUA_METHOD(player_position);
 
+    DEFINE_LUA_METHOD(player_inventory);
+
     // Character
     DEFINE_LUA_METHOD(character_name);
+
+    // Inventory
+    DEFINE_LUA_METHOD(inventory_owner);
+
+    DEFINE_LUA_METHOD(inventory_set_item);
+
+    DEFINE_LUA_METHOD(inventory_item);
 };
 }
 

@@ -38,5 +38,9 @@ public:
     static void npc(lua_State*, const Terraria::NPC&);
 
     static Terraria::NPC npc(lua_State*, int index);
+
+    static void item(lua_State*, const Terraria::Item&);
+
+    static Terraria::Item item(lua_State*, int index);
 };
 }

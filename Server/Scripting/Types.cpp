@@ -470,4 +470,50 @@ Terraria::NPC Types::npc(lua_State* state, int index)
 
     return npc;
 }
+
+void Types::item(lua_State* state, const Terraria::Item& item)
+{
+    lua_createtable(state, 3, 0);
+
+    lua_pushstring(state, "id");
+    lua_pushinteger(state, static_cast<i16>(item.id()));
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "prefix");
+    lua_pushinteger(state, static_cast<i8>(item.prefix()));
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "stack");
+    lua_pushinteger(state, item.stack());
+    lua_settable(state, -3);
+}
+
+Terraria::Item Types::item(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::Item item;
+
+    lua_pushstring(state, "id");
+    lua_gettable(state, index);
+    item.set_id(static_cast<Terraria::Item::Id>(luaL_checkinteger(state, -1)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "stack");
+    lua_gettable(state, index);
+    item.set_stack(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    int value;
+    int has_value;
+
+    lua_pushstring(state, "prefix");
+    lua_gettable(state, index);
+    value = lua_tointegerx(state, -1, &has_value);
+    if (has_value)
+        item.set_prefix(static_cast<Terraria::Item::Prefix>(value));
+    lua_pop(state, 1);
+
+    return item;
+}
 }
