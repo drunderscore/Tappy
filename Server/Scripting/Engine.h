@@ -18,6 +18,7 @@
 #include <LibTerraria/Net/Packets/PlayerHurt.h>
 #include <LibTerraria/Net/Packets/PlayerDeath.h>
 #include <LibTerraria/Net/Packets/DamageNPC.h>
+#include <LibCore/Timer.h>
 
 typedef struct lua_State lua_State;
 
@@ -58,6 +59,7 @@ private:
     static HashMap<lua_State*, Engine*> s_engines;
     lua_State* m_state;
     Server& m_server;
+    Vector<NonnullRefPtr<Core::Timer>> m_timers;
 
     void* client_userdata(u8 id) const;
 
@@ -69,14 +71,17 @@ private:
 
     DEFINE_LUA_METHOD(at_panic);
 
+    // Timer
+    DEFINE_LUA_METHOD(timer_create);
+
     // Game
-    DEFINE_LUA_METHOD(client);
+    DEFINE_LUA_METHOD(game_client);
 
-    DEFINE_LUA_METHOD(clients);
+    DEFINE_LUA_METHOD(game_clients);
 
-    DEFINE_LUA_METHOD(add_projectile);
+    DEFINE_LUA_METHOD(game_add_projectile);
 
-    DEFINE_LUA_METHOD(projectile_exists);
+    DEFINE_LUA_METHOD(game_projectile_exists);
 
     // Client
     DEFINE_LUA_METHOD(client_id);

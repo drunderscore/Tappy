@@ -25,17 +25,23 @@ Engine::Engine(Server& server) :
         m_server(server)
 {
     m_state = luaL_newstate();
-            VERIFY(m_state);
+     VERIFY(m_state);
     s_engines.set(m_state, this);
     lua_atpanic(m_state, at_panic_thunk);
     luaL_openlibs(m_state);
 
     static const struct luaL_Reg game_lib[] =
             {
-                    {"client",           client_thunk},
-                    {"clients",          clients_thunk},
-                    {"addProjectile",    add_projectile_thunk},
-                    {"projectileExists", projectile_exists_thunk},
+                    {"client",           game_client_thunk},
+                    {"clients",          game_clients_thunk},
+                    {"addProjectile",    game_add_projectile_thunk},
+                    {"projectileExists", game_projectile_exists_thunk},
+                    {}
+            };
+
+    static const struct luaL_Reg timer_lib[] =
+            {
+                    {"create",  timer_create_thunk},
                     {}
             };
 
@@ -70,7 +76,7 @@ Engine::Engine(Server& server) :
     static const struct luaL_Reg inventory_lib[] =
             {
                     {"item",     inventory_item_thunk},
-                    {"set_item", inventory_set_item_thunk},
+                    {"setItem", inventory_set_item_thunk},
                     {"owner",    inventory_owner_thunk},
                     {}
             };
@@ -115,6 +121,9 @@ Engine::Engine(Server& server) :
 
     luaL_newlib(m_state, game_lib);
     lua_setglobal(m_state, "Game");
+
+    luaL_newlib(m_state, timer_lib);
+    lua_setglobal(m_state, "Timer");
 
     auto errored = luaL_dofile(m_state, "Base/Base.lua");
     if (errored)
@@ -264,7 +273,37 @@ void* Engine::inventory_userdata(u8 id) const
     return inventory_ud;
 }
 
-int Engine::client()
+int Engine::timer_create()
+{
+    auto function_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
+    auto timer = Core::Timer::construct(luaL_checkinteger(m_state, 1), nullptr, nullptr);
+    timer->on_timeout = [timer, this, function_ref]()
+    {
+        lua_rawgeti(m_state, LUA_REGISTRYINDEX, function_ref);
+        lua_call(m_state, 0, 1);
+        if (lua_toboolean(m_state, -1))
+        {
+            luaL_unref(m_state, LUA_REGISTRYINDEX, function_ref);
+            auto index = m_timers.find_first_index(timer);
+            // If this timer is still ticking, but not in our timers, we've got problems.
+            VERIFY(index.has_value());
+            // FIXME: This is the dumbest fucking thing on planet earth
+            // What person writing C++ specification EVER thought using this oblique and arbitrary
+            // keyword 'mutable' was a good idea to ever do???
+            // If you've been const incorrect for 20+ years, now is not a good time to start.
+            // Because now you're inconsistent with what is expected from everything else.
+            // Fucking idiots.
+            m_timers.at(*index)->stop();
+            m_timers.remove(*index);
+        }
+    };
+
+    m_timers.append(timer);
+
+    return 0;
+}
+
+int Engine::game_client()
 {
     auto id = luaL_checkinteger(m_state, 1);
     auto client = m_server.client(id);
@@ -279,7 +318,7 @@ int Engine::client()
     return 1;
 }
 
-int Engine::clients()
+int Engine::game_clients()
 {
     auto clients = m_server.clients();
     lua_newtable(m_state);
@@ -292,7 +331,7 @@ int Engine::clients()
     return 1;
 }
 
-int Engine::add_projectile()
+int Engine::game_add_projectile()
 {
     int is_integer = false;
     auto id = lua_tointegerx(m_state, 2, &is_integer);
@@ -320,7 +359,7 @@ int Engine::add_projectile()
     return 2;
 }
 
-int Engine::projectile_exists()
+int Engine::game_projectile_exists()
 {
     lua_pushboolean(m_state, m_server.projectiles().contains(luaL_checkinteger(m_state, 1)));
     return 1;
