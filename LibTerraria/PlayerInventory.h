@@ -284,12 +284,12 @@ public:
         _Count
     };
 
-    void insert(Slot slot, Item item)
+    void set_item(Slot slot, Optional<Item> item)
     {
-        if (on_insert_item)
-            on_insert_item(slot, item);
-
-        m_items.set(slot, item);
+        if (!item.has_value())
+            m_items.remove(slot);
+        else
+            m_items.set(slot, *item);
     }
 
     Optional<Item> get(Slot slot) const

@@ -5243,11 +5243,13 @@ public:
         Legendary2 = 84
     };
 
-    Item(Id id, Prefix prefix = Prefix::None, i16 stack = 1) :
+    explicit Item(Id id, Prefix prefix = Prefix::None, i16 stack = 1) :
             m_id(id),
             m_prefix(prefix),
             m_stack(stack)
     {}
+
+    Item() = default;
 
     void set_id(Id id)
     { m_id = id; }
@@ -5269,7 +5271,7 @@ public:
 
 private:
     Id m_id{};
-    Prefix m_prefix;
+    Prefix m_prefix{};
     i16 m_stack{};
 };
 }

@@ -115,11 +115,10 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SyncInventorySlot)
     {
         auto inv_slot = Terraria::Net::Packets::SyncInventorySlot::from_bytes(packet_bytes_stream);
-        if (inv_slot->id() != Terraria::Item::Id::None)
-        {
-            m_player.inventory().insert(inv_slot->slot(),
-                                        Terraria::Item(inv_slot->id(), inv_slot->prefix(), inv_slot->stack()));
-        }
+        if (inv_slot->item().id() == Terraria::Item::Id::None)
+            m_player.inventory().set_item(inv_slot->slot(), {});
+        else
+            m_player.inventory().set_item(inv_slot->slot(), inv_slot->item());
         m_server.client_did_sync_inventory_slot({}, *this, *inv_slot);
     }
     else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)

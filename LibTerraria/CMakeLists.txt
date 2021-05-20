@@ -53,8 +53,8 @@ add_library(Terraria
         PlayerBuffs.h
         ClientUUID.h
         PlayerHP.h
+        Net/Packets/SyncInventorySlot.cpp
         PlayerMana.h
-        SyncInventorySlot.h
         Modules/Text.h
         )
 

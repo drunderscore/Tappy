@@ -128,9 +128,7 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
             Terraria::Net::Packets::SyncInventorySlot inv_slot;
             inv_slot.set_player_id(kv.key);
             inv_slot.set_slot(slot);
-            inv_slot.set_id(item.id());
-            inv_slot.set_stack(item.stack());
-            inv_slot.set_prefix(item.prefix());
+            inv_slot.item() = item;
             who.send(inv_slot);
         });
 
