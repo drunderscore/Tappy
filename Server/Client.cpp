@@ -280,6 +280,11 @@ void Client::on_ready_to_read()
         auto damage_npc = Terraria::Net::Packets::DamageNPC::from_bytes(packet_bytes_stream);
         m_server.client_did_damage_npc({}, *this, *damage_npc);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerItemAnimation)
+    {
+        auto item_anim = Terraria::Net::Packets::PlayerItemAnimation::from_bytes(packet_bytes_stream);
+        m_server.client_did_item_animation({}, *this, *item_anim);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

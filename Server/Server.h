@@ -25,6 +25,7 @@
 #include <LibTerraria/Net/Packets/PlayerHurt.h>
 #include <LibTerraria/Net/Packets/PlayerDeath.h>
 #include <LibTerraria/Net/Packets/DamageNPC.h>
+#include <LibTerraria/Net/Packets/PlayerItemAnimation.h>
 #include <LibTerraria/Projectile.h>
 
 namespace Scripting
@@ -74,6 +75,8 @@ public:
     void client_did_damage_npc(Badge<Client>, Client&, const Terraria::Net::Packets::DamageNPC&);
 
     void client_did_finish_connecting(Badge<Client>, Client&);
+
+    void client_did_item_animation(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerItemAnimation&);
 
     Vector<WeakPtr<Client>> clients() const;
 

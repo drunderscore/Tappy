@@ -36,6 +36,7 @@ public:
         DamageNPC = 28,
         KillProjectile = 29,
         TogglePvp = 30,
+        PlayerItemAnimation = 41,
         PlayerMana = 42,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,

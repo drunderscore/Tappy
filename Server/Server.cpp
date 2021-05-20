@@ -261,6 +261,18 @@ void Server::client_did_finish_connecting(Badge<Client>, Client& who)
     m_engine->client_did_finish_connecting({}, who);
 }
 
+void Server::client_did_item_animation(Badge<Client>, Client& who,
+                                       const Terraria::Net::Packets::PlayerItemAnimation& item_anim)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(item_anim);
+    }
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))
