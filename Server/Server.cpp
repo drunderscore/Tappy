@@ -155,6 +155,8 @@ void Server::client_did_spawn_player(Badge<Client>, Client& client, const Terrar
 
         kv.value->send(spawn);
     }
+
+    m_engine->client_did_spawn_player({}, client, spawn);
 }
 
 void Server::client_did_sync_mana(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerMana& player_mana)

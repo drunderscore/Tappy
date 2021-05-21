@@ -18,6 +18,7 @@
 #include <LibTerraria/Net/Packets/PlayerHurt.h>
 #include <LibTerraria/Net/Packets/PlayerDeath.h>
 #include <LibTerraria/Net/Packets/DamageNPC.h>
+#include <LibTerraria/Net/Packets/SpawnPlayer.h>
 #include <LibCore/Timer.h>
 
 typedef struct lua_State lua_State;
@@ -54,6 +55,8 @@ public:
     void client_did_damage_npc(Badge<Server>, Client&, const Terraria::Net::Packets::DamageNPC&);
 
     void client_did_finish_connecting(Badge<Server>, Client&);
+
+    void client_did_spawn_player(Badge<Server>, Client&, const Terraria::Net::Packets::SpawnPlayer&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;
