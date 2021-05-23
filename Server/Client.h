@@ -14,6 +14,7 @@
 #include <LibCore/TCPSocket.h>
 #include <LibCore/FileStream.h>
 #include <LibTerraria/Player.h>
+#include <LibTerraria/Net/NetworkText.h>
 
 class Server;
 

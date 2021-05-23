@@ -122,6 +122,7 @@ int main(int argc, char** argv)
         outln("#include <LibTerraria/Item.h>");
         outln("#include <LibTerraria/PlayerInventory.h>");
         outln("#include <LibTerraria/PlayerDeathReason.h>");
+        outln("#include <LibTerraria/Character.h>");
         outln();
         outln("// This was auto-generated from {}", lexical_path);
         if (module.has_value())
@@ -237,6 +238,11 @@ int main(int argc, char** argv)
                 outln("const PlayerDeathReason& {}() const {{ return m_{}; }}", field.name(), field.name());
                 outln("void set_{}(PlayerDeathReason value) {{ m_{} = move(value); }}", field.name(), field.name());
             }
+            else if (field.type() == "Terraria::Character")
+            {
+                outln("const Terraria::Character& {}() const {{ return m_{}; }}", field.name(), field.name());
+                outln("void set_{}(Terraria::Character value) {{ m_{} = move(value); }}", field.name(), field.name());
+            }
             else if (field.type().starts_with("Array"))
             {
                 outln("const {}& {}() const {{ return m_{}; }}", field.type(), field.name(), field.name());
@@ -255,7 +261,8 @@ int main(int argc, char** argv)
         for (auto& field : fields)
         {
             // This should be correct for most cases.
-            if (field.type() != "String" && field.type() != "NetworkText" && !field.type().starts_with("Array"))
+            if (field.type() != "String" && field.type() != "NetworkText" && !field.type().starts_with("Array") &&
+                !field.type().starts_with("Terraria::Character"))
                 outln("{} m_{}{{}};", field.type(), field.name());
             else
                 outln("{} m_{};", field.type(), field.name());

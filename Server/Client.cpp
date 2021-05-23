@@ -108,7 +108,7 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::PlayerInfo)
     {
         auto player_info = Terraria::Net::Packets::PlayerInfo::from_bytes(packet_bytes_stream);
-        m_player.character().update_from_packet(*player_info);
+        m_player.character() = player_info->character();
         outln("Got character, created player for {}", m_player.character().name());
         m_server.client_did_send_player_info({}, *this, *player_info);
     }
