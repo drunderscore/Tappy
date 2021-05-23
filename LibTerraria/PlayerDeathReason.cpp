@@ -8,105 +8,104 @@
 #include <LibTerraria/Net/Types.h>
 #include <AK/MemoryStream.h>
 
-namespace Terraria
-{
-Optional<PlayerDeathReason> PlayerDeathReason::from_bytes(InputStream& stream)
-{
-    PlayerDeathReason reason;
+static constexpr u8 m_player_bit = 0b0000'0001;
+static constexpr u8 m_npc_bit = 0b0000'0010;
+static constexpr u8 m_projectile_bit = 0b0000'0100;
+static constexpr u8 m_other_bit = 0b0000'1000;
+static constexpr u8 m_projectile_type_bit = 0b0001'0000;
+static constexpr u8 m_item_type_bit = 0b0010'0000;
+static constexpr u8 m_item_prefix_bit = 0b0100'0000;
+static constexpr u8 m_custom_reason_bit = 0b1000'0000;
 
+InputStream& operator>>(InputStream& stream, Terraria::PlayerDeathReason& value)
+{
     u8 flags;
     stream >> flags;
 
     if ((flags & m_player_bit) == m_player_bit)
-        stream >> reason.m_player;
+        stream >> value.player();
 
     if ((flags & m_npc_bit) == m_npc_bit)
-        stream >> reason.m_npc;
+        stream >> value.npc();
 
     if ((flags & m_projectile_bit) == m_projectile_bit)
-        stream >> reason.m_projectile;
+        stream >> value.projectile();
 
     if ((flags & m_other_bit) == m_other_bit)
-        stream >> reason.m_other;
+        stream >> value.other();
 
     if ((flags & m_projectile_type_bit) == m_projectile_type_bit)
-        stream >> reason.m_projectile_type;
+        stream >> value.projectile_type();
 
     if ((flags & m_item_type_bit) == m_item_type_bit)
-        stream >> reason.m_item_id;
+        stream >> value.item_id();
 
     if ((flags & m_item_prefix_bit) == m_item_prefix_bit)
-        stream >> reason.m_item_prefix;
+        stream >> value.item_prefix();
 
     if ((flags & m_custom_reason_bit) == m_custom_reason_bit)
     {
         String temporary;
-        Net::Types::read_string(stream, temporary);
-        reason.m_custom_reason = move(temporary);
+        Terraria::Net::Types::read_string(stream, temporary);
+        value.custom_reason() = move(temporary);
     }
 
-    return reason;
+    return stream;
 }
 
-ByteBuffer PlayerDeathReason::to_bytes() const
+OutputStream& operator<<(OutputStream& stream, const Terraria::PlayerDeathReason& value)
 {
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
-
     u8 flags = 0;
 
-    if (m_player.has_value())
+    if (value.player().has_value())
         flags |= m_player_bit;
 
-    if (m_npc.has_value())
+    if (value.npc().has_value())
         flags |= m_npc_bit;
 
-    if (m_projectile.has_value())
+    if (value.projectile().has_value())
         flags |= m_projectile_bit;
 
-    if (m_other.has_value())
+    if (value.other().has_value())
         flags |= m_other_bit;
 
-    if (m_projectile_type.has_value())
+    if (value.projectile_type().has_value())
         flags |= m_projectile_type_bit;
 
-    if (m_item_id.has_value())
+    if (value.item_id().has_value())
         flags |= m_item_type_bit;
 
-    if (m_item_prefix.has_value())
+    if (value.item_prefix().has_value())
         flags |= m_item_prefix_bit;
 
-    if (m_custom_reason.has_value())
+    if (value.custom_reason().has_value())
         flags |= m_custom_reason_bit;
 
     stream << flags;
 
     if ((flags & m_player_bit) == m_player_bit)
-        stream << *m_player;
+        stream << *value.player();
 
     if ((flags & m_npc_bit) == m_npc_bit)
-        stream << *m_npc;
+        stream << *value.npc();
 
     if ((flags & m_projectile_bit) == m_projectile_bit)
-        stream << *m_projectile;
+        stream << *value.projectile();
 
     if ((flags & m_other_bit) == m_other_bit)
-        stream << *m_other;
+        stream << *value.projectile_type();
 
     if ((flags & m_projectile_type_bit) == m_projectile_type_bit)
-        stream << *m_projectile_type;
+        stream << *value.projectile_type();
 
     if ((flags & m_item_type_bit) == m_item_type_bit)
-        stream << *m_item_id;
+        stream << *value.item_id();
 
     if ((flags & m_item_prefix_bit) == m_item_prefix_bit)
-        stream << *m_item_prefix;
+        stream << *value.item_prefix();
 
     if ((flags & m_custom_reason_bit) == m_custom_reason_bit)
-        Net::Types::write_string(stream, *m_custom_reason);
+        Terraria::Net::Types::write_string(stream, *value.custom_reason());
 
-    buffer.trim(stream.size());
-
-    return buffer;
-}
+    return stream;
 }

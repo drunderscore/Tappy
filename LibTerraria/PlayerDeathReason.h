@@ -17,10 +17,6 @@ namespace Terraria
 class PlayerDeathReason
 {
 public:
-    static Optional<PlayerDeathReason> from_bytes(InputStream& stream);
-
-    ByteBuffer to_bytes() const;
-
     const Optional<u8>& player() const
     { return m_player; }
 
@@ -78,14 +74,9 @@ private:
     Optional<i16> m_projectile_type;
     Optional<Item::Id> m_item_id;
     Optional<Item::Prefix> m_item_prefix;
-
-    static constexpr u8 m_player_bit = 0b0000'0001;
-    static constexpr u8 m_npc_bit = 0b0000'0010;
-    static constexpr u8 m_projectile_bit = 0b0000'0100;
-    static constexpr u8 m_other_bit = 0b0000'1000;
-    static constexpr u8 m_projectile_type_bit = 0b0001'0000;
-    static constexpr u8 m_item_type_bit = 0b0010'0000;
-    static constexpr u8 m_item_prefix_bit = 0b0100'0000;
-    static constexpr u8 m_custom_reason_bit = 0b1000'0000;
 };
 }
+
+InputStream& operator>>(InputStream& stream, Terraria::PlayerDeathReason& value);
+
+OutputStream& operator<<(OutputStream& stream, const Terraria::PlayerDeathReason& value);

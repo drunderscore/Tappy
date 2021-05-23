@@ -155,18 +155,6 @@ int main(int argc, char** argv)
             {
                 outln("Terraria::Net::Types::read_string(stream, packet.m_{});", field.name());
             }
-            else if (field.type() == "PlayerDeathReason")
-            {
-                outln("auto op_{} = Terraria::PlayerDeathReason::from_bytes(stream);", field.name());
-                outln("if(!op_{}.has_value()) return {{}};", field.name());
-                outln("packet.m_{} = op_{}.value();", field.name(), field.name());
-            }
-            else if (field.type() == "NetworkText")
-            {
-                outln("auto op_{} = Terraria::Net::NetworkText::from_bytes(stream);", field.name());
-                outln("if(!op_{}.has_value()) return {{}};", field.name());
-                outln("packet.m_{} = op_{}.value();", field.name(), field.name());
-            }
             else if (field.type().starts_with("Array"))
             {
                 StringView array_type;
@@ -211,14 +199,6 @@ int main(int argc, char** argv)
             if (field.type() == "String")
             {
                 outln("Terraria::Net::Types::write_string(stream, m_{});", field.name());
-            }
-            else if (field.type() == "PlayerDeathReason")
-            {
-                outln("stream << m_{}.to_bytes();", field.name());
-            }
-            else if (field.type() == "NetworkText")
-            {
-                outln("stream.write(m_{}.to_bytes());", field.name());
             }
             else if (field.type().starts_with("Array"))
             {
