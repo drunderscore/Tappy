@@ -126,10 +126,11 @@ void Client::on_ready_to_read()
         Terraria::Net::Packets::WorldData world_data;
         world_data.set_max_tiles_x(4200);
         world_data.set_max_tiles_y(1200);
-        world_data.set_world_surface(400);
+        world_data.set_world_surface(500);
+        world_data.set_rock_layer(600);
         world_data.set_world_name("lol im cool");
-        world_data.set_spawn_x(100);
-        world_data.set_spawn_y(200);
+        world_data.set_spawn_x(world_data.max_tiles_x() / 2);
+        world_data.set_spawn_y(300);
         world_data.set_time(8000);
         world_data.set_day_state(1);
         world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
@@ -168,45 +169,48 @@ void Client::on_ready_to_read()
     else if (packet_id == Terraria::Net::Packet::Id::SpawnData)
     {
         auto spawn_data = Terraria::Net::Packets::SpawnData::from_bytes(packet_bytes_stream);
-        static constexpr u16 width = 400;
-        static constexpr u16 height = 50;
-        static constexpr i32 starting_x = 41;
-        static constexpr i32 starting_y = 200;
-        Terraria::TileMap tiles(width, height);
-
-        Terraria::Tile stone;
-        stone.id() = Terraria::Tile::Id::Stone;
-        Terraria::Tile dirt;
-        dirt.id() = Terraria::Tile::Id::Dirt;
-        Terraria::Tile grass;
-        grass.id() = Terraria::Tile::Id::Grass;
-        Terraria::Tile obsidian;
-        obsidian.id() = Terraria::Tile::Id::Obsidian;
-
-        for (auto y = 0; y < tiles.height(); y++)
+        for (auto i = 0; i < 10; i++)
         {
-            for (auto x = 0; x < tiles.width(); x++)
+            u16 width = 400;
+            u16 height = 50;
+            i32 starting_x = 41 + (width * i);
+            i32 starting_y = 300;
+            Terraria::TileMap tiles(width, height);
+
+            Terraria::Tile stone;
+            stone.id() = Terraria::Tile::Id::Stone;
+            Terraria::Tile dirt;
+            dirt.id() = Terraria::Tile::Id::Dirt;
+            Terraria::Tile grass;
+            grass.id() = Terraria::Tile::Id::Grass;
+            Terraria::Tile obsidian;
+            obsidian.id() = Terraria::Tile::Id::Obsidian;
+
+            for (auto y = 0; y < tiles.height(); y++)
             {
-                if (y == 0)
-                    tiles.at(x, y) = grass;
-                else if (y == height - 1)
-                    tiles.at(x, y) = obsidian;
-                else if (y > 3)
-                    tiles.at(x, y) = stone;
-                else
-                    tiles.at(x, y) = dirt;
+                for (auto x = 0; x < tiles.width(); x++)
+                {
+                    if (y == 0)
+                        tiles.at(x, y) = grass;
+                    else if (y == height - 1)
+                        tiles.at(x, y) = obsidian;
+                    else if (y > 3)
+                        tiles.at(x, y) = stone;
+                    else
+                        tiles.at(x, y) = dirt;
+                }
             }
+
+            Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
+            send(section);
+
+            Terraria::Net::Packets::TileFrameSection frame_section;
+            frame_section.set_start_x(floor(starting_x / 200));
+            frame_section.set_start_y(floor(starting_y / 150));
+            frame_section.set_end_x(floor((starting_x + width) / 200));
+            frame_section.set_end_y(floor((starting_y + height) / 150));
+            send(frame_section);
         }
-
-        Terraria::Net::Packets::TileSection section(tiles, starting_x, starting_y);
-        send(section);
-
-        Terraria::Net::Packets::TileFrameSection frame_section;
-        frame_section.set_start_x(floor(starting_x / 200));
-        frame_section.set_start_y(floor(starting_y / 150));
-        frame_section.set_end_x(floor((starting_x + width) / 200));
-        frame_section.set_end_y(floor((starting_y + height) / 150));
-        send(frame_section);
 
         Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
         send(spawn_self);
