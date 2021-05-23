@@ -10,6 +10,7 @@
 #include <LibTerraria/NPC.h>
 #include <AK/String.h>
 #include <LibTerraria/Color.h>
+#include <LibTerraria/Character.h>
 #include <LibTerraria/PlayerDeathReason.h>
 
 typedef struct lua_State lua_State;
@@ -42,5 +43,9 @@ public:
     static void item(lua_State*, const Terraria::Item&);
 
     static Terraria::Item item(lua_State*, int index);
+
+    static void character(lua_State*, const Terraria::Character&);
+
+    static Terraria::Character character(lua_State*, int index);
 };
 }

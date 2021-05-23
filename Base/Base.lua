@@ -27,7 +27,7 @@ function Base.onClientChat(client, message)
     if event.canceled then
         return
     end
-    print(Escapes.CYAN .. client:player():character():name() .. "/" .. client:address() .. ": " .. event.message .. Escapes.RESET)
+    print(Escapes.CYAN .. client:player():character().name .. "/" .. client:address() .. ": " .. event.message .. Escapes.RESET)
     for k, c in ipairs(Game.clients()) do
         c:sendMessage(event.message, client:id())
     end

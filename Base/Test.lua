@@ -19,7 +19,7 @@ Hooks.add("chat", function(event)
         local targetClient
         for i, c in pairs(Game.clients()) do
             local partialName = string.sub(event.message, 5)
-            if string.find(c:player():character():name(), partialName) then
+            if string.find(c:player():character().name, partialName) then
                 targetClient = c
                 break
             end
@@ -30,7 +30,7 @@ Hooks.add("chat", function(event)
         elseif targetClient == event.client then
             event.client:sendMessage("You cannot teleport to yourself", 255, { r = 255, g = 0, b = 0 })
         else
-            event.client:sendMessage("Teleporting to " .. targetClient:player():character():name(), 255, { r = 0x55, g = 0xad, b = 0x12 })
+            event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, { r = 0x55, g = 0xad, b = 0x12 })
             event.client:teleport(targetClient:player():position())
         end
     elseif string.find(event.message, "/npc") == 1 then
@@ -70,9 +70,9 @@ end)
 Hooks.add("playerDeath", function(event)
     local text
     if event.reason.player then
-        text = Game.client(event.reason.player):player():character():name() .. " killed " .. event.target:player():character():name()
+        text = Game.client(event.reason.player):player():character().name .. " killed " .. event.target:player():character().name
     else
-        text = event.target:player():character():name() .. " died."
+        text = event.target:player():character().name .. " died."
     end
 
     Utils.broadcast(text, { r = 255, g = 255, b = 10 })
@@ -83,7 +83,8 @@ Hooks.add("damageNpc", function(event)
 end)
 
 Hooks.add("finishedConnecting", function(event)
-    local name = event.client:player():character():name()
+    local thePink = { r = 255, g = 0, b = 255 }
+    local name = event.client:player():character().name
     print(name .. "/" .. event.client:address() .. " finished connecting")
-    Utils.broadcast(name .. " finished connecting.", { r = 255, g = 0, b = 255 })
+    Utils.broadcast(name .. " finished connecting.", thePink)
 end)

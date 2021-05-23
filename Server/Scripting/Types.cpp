@@ -516,4 +516,162 @@ Terraria::Item Types::item(lua_State* state, int index)
 
     return item;
 }
+
+void Types::character(lua_State* state, const Terraria::Character& character)
+{
+    lua_newtable(state);
+
+    lua_pushstring(state, "skinVariant");
+    lua_pushinteger(state, character.skin_variant());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hair");
+    lua_pushinteger(state, character.hair());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "name");
+    lua_pushstring(state, character.name().characters());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hairDye");
+    lua_pushinteger(state, character.hair_dye());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hideVisuals");
+    lua_pushinteger(state, character.hide_visuals());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hideVisuals2");
+    lua_pushinteger(state, character.hide_visuals2());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hideMisc");
+    lua_pushinteger(state, character.hide_misc());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "hairColor");
+    color(state, character.hair_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "skinColor");
+    color(state, character.skin_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "eyeColor");
+    color(state, character.eye_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "shirtColor");
+    color(state, character.shirt_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "undershirtColor");
+    color(state, character.undershirt_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "pantsColor");
+    color(state, character.pants_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "shoeColor");
+    color(state, character.shoe_color());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "difficultyFlags");
+    lua_pushinteger(state, character.difficulty_flags());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "torchFlags");
+    lua_pushinteger(state, character.torch_flags());
+    lua_settable(state, -3);
+}
+
+Terraria::Character Types::character(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::Character character;
+
+    lua_pushstring(state, "skinVariant");
+    lua_gettable(state, index);
+    character.set_skin_variant(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hair");
+    lua_gettable(state, index);
+    character.set_hair(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "name");
+    lua_gettable(state, index);
+    character.set_name(luaL_checkstring(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hairDye");
+    lua_gettable(state, index);
+    character.set_hair_dye(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hideVisuals");
+    lua_gettable(state, index);
+    character.set_hide_visuals(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hideVisuals2");
+    lua_gettable(state, index);
+    character.set_hide_visuals2(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hideMisc");
+    lua_gettable(state, index);
+    character.set_hide_misc(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hairColor");
+    lua_gettable(state, index);
+    character.set_hair_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "skinColor");
+    lua_gettable(state, index);
+    character.set_skin_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "eyeColor");
+    lua_gettable(state, index);
+    character.set_eye_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "shirtColor");
+    lua_gettable(state, index);
+    character.set_shirt_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "undershirtColor");
+    lua_gettable(state, index);
+    character.set_undershirt_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "pantsColor");
+    lua_gettable(state, index);
+    character.set_pants_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "shoeColor");
+    lua_gettable(state, index);
+    character.set_shoe_color(color(state, lua_gettop(state)));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "difficultyFlags");
+    lua_gettable(state, index);
+    character.set_difficulty_flags(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "torchFlags");
+    lua_gettable(state, index);
+    character.set_torch_flags(luaL_checkinteger(state, -1));
+    lua_pop(state, 1);
+
+    return character;
+}
 }

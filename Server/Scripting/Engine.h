@@ -68,8 +68,6 @@ private:
 
     void* player_userdata(u8 id) const;
 
-    void* character_userdata(u8 id) const;
-
     void* inventory_userdata(u8 id) const;
 
     DEFINE_LUA_METHOD(at_panic);
@@ -112,6 +110,8 @@ private:
     // Player
     DEFINE_LUA_METHOD(player_character);
 
+    DEFINE_LUA_METHOD(player_update_character);
+
     DEFINE_LUA_METHOD(player_buffs);
 
     DEFINE_LUA_METHOD(player_hp);
@@ -123,9 +123,6 @@ private:
     DEFINE_LUA_METHOD(player_position);
 
     DEFINE_LUA_METHOD(player_inventory);
-
-    // Character
-    DEFINE_LUA_METHOD(character_name);
 
     // Inventory
     DEFINE_LUA_METHOD(inventory_owner);

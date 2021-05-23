@@ -25,7 +25,7 @@ Engine::Engine(Server& server) :
         m_server(server)
 {
     m_state = luaL_newstate();
-     VERIFY(m_state);
+    VERIFY(m_state);
     s_engines.set(m_state, this);
     lua_atpanic(m_state, at_panic_thunk);
     luaL_openlibs(m_state);
@@ -41,7 +41,7 @@ Engine::Engine(Server& server) :
 
     static const struct luaL_Reg timer_lib[] =
             {
-                    {"create",  timer_create_thunk},
+                    {"create", timer_create_thunk},
                     {}
             };
 
@@ -63,27 +63,23 @@ Engine::Engine(Server& server) :
 
     static const struct luaL_Reg player_lib[] =
             {
-                    {"character", player_character_thunk},
-                    {"buffs",     player_buffs_thunk},
-                    {"setPvp",    player_set_pvp_thunk},
-                    {"buffs",     player_buffs_thunk},
-                    {"setPvp",    player_set_pvp_thunk},
-                    {"position",  player_position_thunk},
-                    {"inventory", player_inventory_thunk},
+                    {"character",       player_character_thunk},
+                    {"buffs",           player_buffs_thunk},
+                    {"setPvp",          player_set_pvp_thunk},
+                    {"buffs",           player_buffs_thunk},
+                    {"setPvp",          player_set_pvp_thunk},
+                    {"position",        player_position_thunk},
+                    {"inventory",       player_inventory_thunk},
+                    {"character",       player_character_thunk},
+                    {"updateCharacter", player_update_character_thunk},
                     {}
             };
 
     static const struct luaL_Reg inventory_lib[] =
             {
-                    {"item",     inventory_item_thunk},
+                    {"item",    inventory_item_thunk},
                     {"setItem", inventory_set_item_thunk},
-                    {"owner",    inventory_owner_thunk},
-                    {}
-            };
-
-    static const struct luaL_Reg character_lib[] =
-            {
-                    {"name", character_name_thunk},
+                    {"owner",   inventory_owner_thunk},
                     {}
             };
 
@@ -101,14 +97,6 @@ Engine::Engine(Server& server) :
     lua_settable(m_state, -3);
 
     luaL_setfuncs(m_state, player_lib, 0);
-    lua_pop(m_state, 1);
-
-    luaL_newmetatable(m_state, "Terraria::Character");
-    lua_pushstring(m_state, "__index");
-    lua_pushvalue(m_state, -2);
-    lua_settable(m_state, -3);
-
-    luaL_setfuncs(m_state, character_lib, 0);
     lua_pop(m_state, 1);
 
     luaL_newmetatable(m_state, "Terraria::PlayerInventory");
@@ -249,15 +237,6 @@ void* Engine::client_userdata(u8 id) const
     auto* client_ud = lua_newuserdata(m_state, sizeof(id));
     memcpy(client_ud, &id, sizeof(id));
     luaL_getmetatable(m_state, "Server::Client");
-    lua_setmetatable(m_state, -2);
-    return client_ud;
-}
-
-void* Engine::character_userdata(u8 id) const
-{
-    auto* client_ud = lua_newuserdata(m_state, sizeof(id));
-    memcpy(client_ud, &id, sizeof(id));
-    luaL_getmetatable(m_state, "Terraria::Character");
     lua_setmetatable(m_state, -2);
     return client_ud;
 }
@@ -476,8 +455,32 @@ int Engine::client_kill_projectile()
 
 int Engine::player_character()
 {
-    character_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        lua_pushnil(m_state);
+    else
+        Types::character(m_state, client->player().character());
+
     return 1;
+}
+
+int Engine::player_update_character()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        return 0;
+
+    auto character = Types::character(m_state, 2);
+    client->player().character() = character;
+
+    Terraria::Net::Packets::PlayerInfo player_info;
+    player_info.set_player_id(client->id());
+    player_info.set_character(character);
+
+    for (auto& c : m_server.clients())
+        c->send(player_info);
+
+    return 0;
 }
 
 int Engine::player_buffs()
@@ -592,17 +595,6 @@ int Engine::player_position()
 int Engine::player_inventory()
 {
     inventory_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
-    return 1;
-}
-
-int Engine::character_name()
-{
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Character")));
-    if (!client)
-        lua_pushnil(m_state);
-    else
-        lua_pushstring(m_state, client->player().character().name().characters());
-
     return 1;
 }
 
