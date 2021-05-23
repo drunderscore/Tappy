@@ -19,6 +19,7 @@ hookMap["togglePvp"] = {}
 hookMap["playerHurt"] = {}
 hookMap["playerDeath"] = {}
 hookMap["damageNpc"] = {}
+hookMap["playerSpawn"] = {}
 
 function Hooks.add(name, func)
     if type(name) ~= "string" then

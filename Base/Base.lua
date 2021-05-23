@@ -120,4 +120,11 @@ function Base.onClientFinishConnecting(client)
     Hooks.publish("finishedConnecting", event)
 end
 
+function Base.onPlayerSpawn(client)
+    local event = {}
+    event.client = client
+
+    Hooks.publish("playerSpawn", event)
+end
+
 return Base
