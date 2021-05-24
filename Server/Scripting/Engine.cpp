@@ -55,7 +55,6 @@ Engine::Engine(Server& server) :
                     {"address",        client_address_thunk},
                     {"syncProjectile", client_sync_projectile_thunk},
                     {"killProjectile", client_kill_projectile_thunk},
-                    {"teleport",       client_teleport_thunk},
                     {"__eq",           client_equals_thunk},
                     {"syncNpc",        client_sync_npc_thunk},
                     {}
@@ -72,6 +71,7 @@ Engine::Engine(Server& server) :
                     {"inventory",       player_inventory_thunk},
                     {"character",       player_character_thunk},
                     {"updateCharacter", player_update_character_thunk},
+                    {"teleport",        player_teleport_thunk},
                     {}
             };
 
@@ -505,24 +505,6 @@ int Engine::player_buffs()
     return 1;
 }
 
-int Engine::client_teleport()
-{
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
-    if (!client)
-        return 0;
-
-    Terraria::Net::Packets::TeleportEntity teleport_entity;
-    teleport_entity.set_target(client->id());
-    teleport_entity.set_type(Terraria::Net::Packets::TeleportEntity::TeleportType::PlayerToPosition);
-    teleport_entity.position() = Types::point(m_state, 2);
-    teleport_entity.set_style(luaL_optinteger(m_state, 3, 0));
-
-    for (auto& c : m_server.clients())
-        c->send(teleport_entity);
-
-    return 0;
-}
-
 int Engine::client_equals()
 {
     lua_pushboolean(m_state, *reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")) ==
@@ -596,6 +578,28 @@ int Engine::player_inventory()
 {
     inventory_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
     return 1;
+}
+
+int Engine::player_teleport()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        return 0;
+
+    auto pos = Types::point(m_state, 2);
+
+    client->player().position() = pos;
+
+    Terraria::Net::Packets::TeleportEntity teleport_entity;
+    teleport_entity.set_target(client->id());
+    teleport_entity.set_type(Terraria::Net::Packets::TeleportEntity::TeleportType::PlayerToPosition);
+    teleport_entity.position() = pos;
+    teleport_entity.set_style(luaL_optinteger(m_state, 3, 0));
+
+    for (auto& c : m_server.clients())
+        c->send(teleport_entity);
+
+    return 0;
 }
 
 int Engine::inventory_owner()

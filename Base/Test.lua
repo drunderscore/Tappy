@@ -16,22 +16,39 @@ local nextNpcId = 1
 Hooks.add("chat", function(event)
     if string.find(event.message, "/tp") == 1 then
         event.canceled = true
-        local targetClient
-        for i, c in pairs(Game.clients()) do
-            local partialName = string.sub(event.message, 5)
-            if string.find(c:player():character().name, partialName) then
-                targetClient = c
-                break
-            end
+        local args = {}
+        for token in string.gmatch(event.message, "[^%s]+") do
+            table.insert(args, token)
         end
 
-        if not targetClient then
-            event.client:sendMessage("Unknown player", 255, { r = 255, g = 0, b = 0 })
-        elseif targetClient == event.client then
-            event.client:sendMessage("You cannot teleport to yourself", 255, { r = 255, g = 0, b = 0 })
+        if #args >= 3 then
+            local x = tonumber(args[2])
+            local y = tonumber(args[3])
+            if not x or not y then
+                event.client:sendMessage("Invalid position", 255, { r = 255, g = 0, b = 0 })
+                return
+            end
+            event.client:sendMessage("Teleporting to " .. x .. ", " .. y, 255, { r = 0x55, g = 0xad, b = 0x12 })
+            event.client:player():teleport({ x = x, y = y })
+        elseif #args >= 2 then
+            local targetClient
+            for _, c in pairs(Game.clients()) do
+                if string.find(c:player():character().name, args[2]) then
+                    targetClient = c
+                    break
+                end
+            end
+
+            if not targetClient then
+                event.client:sendMessage("Unknown player", 255, { r = 255, g = 0, b = 0 })
+            elseif targetClient == event.client then
+                event.client:sendMessage("You cannot teleport to yourself", 255, { r = 255, g = 0, b = 0 })
+            else
+                event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, { r = 0x55, g = 0xad, b = 0x12 })
+                event.client:player():teleport(targetClient:player():position())
+            end
         else
-            event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, { r = 0x55, g = 0xad, b = 0x12 })
-            event.client:teleport(targetClient:player():position())
+            event.client:sendMessage("Not enough arguments", 255, { r = 255, g = 0, b = 0 })
         end
     elseif string.find(event.message, "/npc") == 1 then
         event.canceled = true

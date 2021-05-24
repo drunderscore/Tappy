@@ -101,8 +101,6 @@ private:
 
     DEFINE_LUA_METHOD(client_kill_projectile);
 
-    DEFINE_LUA_METHOD(client_teleport);
-
     DEFINE_LUA_METHOD(client_equals);
 
     DEFINE_LUA_METHOD(client_sync_npc);
@@ -123,6 +121,8 @@ private:
     DEFINE_LUA_METHOD(player_position);
 
     DEFINE_LUA_METHOD(player_inventory);
+
+    DEFINE_LUA_METHOD(player_teleport);
 
     // Inventory
     DEFINE_LUA_METHOD(inventory_owner);

@@ -237,9 +237,9 @@ void Client::on_ready_to_read()
         m_player.set_bits_4(sync_player->bits_4());
         m_player.inventory().set_selected_slot(
                 static_cast<Terraria::PlayerInventory::Slot>(sync_player->selected_item()));
-        m_player.set_position(sync_player->position());
+        m_player.position() = sync_player->position();
         if (sync_player->velocity().has_value())
-            m_player.set_velocity(*sync_player->velocity());
+            m_player.velocity() = *sync_player->velocity();
         // TODO: Do something with potion of return use and home position
         m_server.client_did_sync_player({}, *this, *sync_player);
     }

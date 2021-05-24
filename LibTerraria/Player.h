@@ -66,11 +66,11 @@ public:
     const EntityPoint& velocity() const
     { return m_velocity; }
 
-    void set_position(EntityPoint value)
-    { m_position = value; }
+    EntityPoint& position()
+    { return m_position; }
 
-    void set_velocity(EntityPoint value)
-    { m_velocity = value; }
+    EntityPoint& velocity()
+    { return m_velocity; }
 
     u8 control_bits() const
     { return m_control_bits; }
