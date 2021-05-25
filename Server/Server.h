@@ -26,6 +26,8 @@
 #include <LibTerraria/Net/Packets/PlayerDeath.h>
 #include <LibTerraria/Net/Packets/DamageNPC.h>
 #include <LibTerraria/Net/Packets/PlayerItemAnimation.h>
+#include <LibTerraria/Net/Packets/SpawnData.h>
+#include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 
 namespace Scripting
@@ -78,6 +80,8 @@ public:
 
     void client_did_item_animation(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerItemAnimation&);
 
+    void client_did_request_spawn_sections(Badge<Client>, Client&, const Terraria::Net::Packets::SpawnData&);
+
     Vector<WeakPtr<Client>> clients() const;
 
     const WeakPtr<Client> client(u8 id) const;
@@ -94,4 +98,5 @@ private:
     HashMap<u8, NonnullOwnPtr<Client>> m_clients;
     Core::EventLoop m_event_loop;
     HashMap<i16, Terraria::Projectile> m_projectiles;
+    Terraria::MemoryTileMap m_tile_map;
 };

@@ -28,7 +28,7 @@ ByteBuffer TileSection::to_bytes() const
     stream_deflated << m_tile_map.width();
     stream_deflated << m_tile_map.height();
 
-    for (auto& tile : m_tile_map.tiles())
+    for (const auto& tile : m_tile_map.tiles())
     {
         // There are 3 bitmask headers, of which the first is always present.
         // The first header says if the second header is present.

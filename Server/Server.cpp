@@ -6,10 +6,42 @@
 
 #include <Server/Server.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
+#include <LibTerraria/Net/Packets/TileFrameSection.h>
+#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
+#include <LibTerraria/Net/Packets/TileSection.h>
 #include <Server/Scripting/Engine.h>
+#include <math.h>
 
-Server::Server() : m_server(Core::TCPServer::construct())
+static constexpr u16 width = 4000;
+static constexpr u16 height = 50;
+
+Server::Server() : m_server(Core::TCPServer::construct()),
+                   m_tile_map(width, height)
 {
+    Terraria::Tile stone;
+    stone.id() = Terraria::Tile::Id::Stone;
+    Terraria::Tile dirt;
+    dirt.id() = Terraria::Tile::Id::Dirt;
+    Terraria::Tile grass;
+    grass.id() = Terraria::Tile::Id::Grass;
+    Terraria::Tile obsidian;
+    obsidian.id() = Terraria::Tile::Id::Obsidian;
+
+    for (u16 y = 0; y < m_tile_map.height(); y++)
+    {
+        for (u16 x = 0; x < m_tile_map.width(); x++)
+        {
+            if (y == 0)
+                m_tile_map.at({x, y}) = grass;
+            else if (y == height - 1)
+                m_tile_map.at({x, y}) = obsidian;
+            else if (y > 3)
+                m_tile_map.at({x, y}) = stone;
+            else
+                m_tile_map.at({x, y}) = dirt;
+        }
+    }
+
     m_engine = make<Scripting::Engine>(*this);
     m_server->on_ready_to_accept = [this]
     {
@@ -258,6 +290,25 @@ void Server::client_did_item_animation(Badge<Client>, Client& who,
 
         kv.value->send(item_anim);
     }
+}
+
+void Server::client_did_request_spawn_sections(Badge<Client>, Client& who, const Terraria::Net::Packets::SpawnData&)
+{
+    i32 starting_x = 41;
+    i32 starting_y = 300;
+
+    Terraria::Net::Packets::TileSection section(m_tile_map, starting_x, starting_y);
+    who.send(section);
+
+    Terraria::Net::Packets::TileFrameSection frame_section;
+    frame_section.set_start_x(floor(starting_x / 200));
+    frame_section.set_start_y(floor(starting_y / 150));
+    frame_section.set_end_x(floor((starting_x + width) / 200));
+    frame_section.set_end_y(floor((starting_y + height) / 150));
+    who.send(frame_section);
+
+    Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
+    who.send(spawn_self);
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)
