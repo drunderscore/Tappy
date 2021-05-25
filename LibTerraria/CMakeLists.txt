@@ -53,6 +53,7 @@ add_library(Terraria
         SpawnData.h
         SpawnPlayer.h
         PlayerBuffs.h
+        PlayerItemAnimation.h
         ClientUUID.h
         PlayerHP.h
         Net/Packets/SyncInventorySlot.cpp
