@@ -86,6 +86,6 @@ template<typename T>
 OutputStream& operator<<(OutputStream& stream, Optional<T> value)
 {
     if (value.has_value())
-        stream.write_or_error({&*value, sizeof(T)});
+        stream << *value;
     return stream;
 }
