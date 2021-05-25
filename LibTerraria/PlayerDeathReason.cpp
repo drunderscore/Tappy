@@ -93,7 +93,7 @@ OutputStream& operator<<(OutputStream& stream, const Terraria::PlayerDeathReason
         stream << *value.projectile();
 
     if ((flags & m_other_bit) == m_other_bit)
-        stream << *value.projectile_type();
+        stream << *value.other();
 
     if ((flags & m_projectile_type_bit) == m_projectile_type_bit)
         stream << *value.projectile_type();
