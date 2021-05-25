@@ -51,8 +51,7 @@ ByteBuffer TeleportEntity::to_bytes() const
         flags |= m_extra_info_bit;
 
     static constexpr auto packet_id = Terraria::Net::Packet::Id::TeleportEntity;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
     stream << flags;
     stream << m_target;
@@ -62,8 +61,6 @@ ByteBuffer TeleportEntity::to_bytes() const
     if (m_extra_info.has_value())
         stream << *m_extra_info;
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }

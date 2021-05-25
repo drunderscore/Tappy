@@ -35,8 +35,7 @@ Optional<SyncInventorySlot> SyncInventorySlot::from_bytes(InputStream& stream)
 ByteBuffer SyncInventorySlot::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::SyncInventorySlot;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
 
     stream << m_player_id;
@@ -45,8 +44,6 @@ ByteBuffer SyncInventorySlot::to_bytes() const
     stream << m_item.prefix();
     stream << m_item.id();
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }

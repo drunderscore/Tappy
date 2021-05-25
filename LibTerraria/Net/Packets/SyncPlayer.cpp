@@ -35,8 +35,7 @@ Optional<SyncPlayer> SyncPlayer::from_bytes(InputStream& stream)
 ByteBuffer SyncPlayer::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::SyncPlayer;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
     stream << m_player_id;
     stream << m_control_bits;
@@ -49,8 +48,6 @@ ByteBuffer SyncPlayer::to_bytes() const
     stream << m_potion_of_return_use_position;
     stream << m_potion_of_return_home_position;
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }

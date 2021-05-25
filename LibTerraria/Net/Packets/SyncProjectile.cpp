@@ -55,8 +55,7 @@ Optional<SyncProjectile> SyncProjectile::from_bytes(InputStream& stream)
 ByteBuffer SyncProjectile::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::SyncProjectile;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
     stream << m_projectile.id();
     stream << m_projectile.position();
@@ -110,8 +109,6 @@ ByteBuffer SyncProjectile::to_bytes() const
     if (projectile().uuid().has_value())
         stream << *projectile().uuid();
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }

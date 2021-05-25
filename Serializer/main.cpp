@@ -187,8 +187,7 @@ int main(int argc, char** argv)
             outln("static constexpr auto packet_id = Terraria::Net::Packet::Id::{};", class_name);
         }
 
-        outln("auto buffer = ByteBuffer::create_uninitialized(256);");
-        outln("OutputMemoryStream stream(buffer);");
+        outln("DuplexMemoryStream stream;");
         outln("stream << packet_id;");
         if (module.has_value())
             outln("stream << module_id;");
@@ -216,8 +215,7 @@ int main(int argc, char** argv)
             }
         }
 
-        outln("buffer.trim(stream.size());");
-        outln("return buffer;");
+        outln("return stream.copy_into_contiguous_buffer();");
 
         outln("}}");
         outln();

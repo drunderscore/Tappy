@@ -18,11 +18,8 @@ TileSection::TileSection(const TileMap& tile_map, i32 starting_x, i32 starting_y
 ByteBuffer TileSection::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::TileSection;
-    // FIXME: This size is probably way too big always, or might not be enough. All packets have this problem, this needs a true fix.
-    auto buffer = ByteBuffer::create_uninitialized(KiB * 1024);
-    auto buffer_deflated = ByteBuffer::create_uninitialized(KiB * 1024);
-    OutputMemoryStream stream(buffer);
-    OutputMemoryStream stream_deflated(buffer_deflated);
+    DuplexMemoryStream stream;
+    DuplexMemoryStream stream_deflated;
     stream << packet_id;
 
     stream << static_cast<u8>(1); // Compressed?
@@ -80,12 +77,11 @@ ByteBuffer TileSection::to_bytes() const
     stream_deflated << static_cast<u16>(0);  // Sign Count
     stream_deflated << static_cast<u16>(0);  // Tile Entity Count
 
-    auto buffer_inflate = Compress::DeflateCompressor::compress_all(buffer_deflated);
+    auto buffer_inflate = Compress::DeflateCompressor::compress_all(stream_deflated.copy_into_contiguous_buffer());
 
     stream << buffer_inflate;
 
-    buffer.trim(stream.size());
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 
 }

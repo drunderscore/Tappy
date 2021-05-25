@@ -94,8 +94,7 @@ Optional<SyncNPC> SyncNPC::from_bytes(InputStream& stream)
 ByteBuffer SyncNPC::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::SyncNPC;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
 
     u8 bits_1 = 0;
@@ -178,8 +177,6 @@ ByteBuffer SyncNPC::to_bytes() const
 
     // TODO: If an NPC is catchable, we have to send who released it.
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }
