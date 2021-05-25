@@ -8,11 +8,8 @@ function(target_lagom target)
             # This is pretty much solely for AK
             ${CMAKE_SOURCE_DIR}/serenity/
             ${CMAKE_SOURCE_DIR}/serenity/Userland/Libraries
-            # We need this for the generated Debug.h
-            ${CMAKE_SOURCE_DIR}/serenity/BuildLagom
             )
-    target_link_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/serenity/BuildLagom)
-    target_link_libraries(${target} PRIVATE LagomCore)
+    target_link_libraries(${target} PRIVATE Lagom)
 endfunction()
 
 function(stringify_file variable_name input output)
@@ -25,6 +22,10 @@ function(stringify_file variable_name input output)
     )
 endfunction()
 
+set(BUILD_LAGOM ON)
+include_directories(BEFORE SYSTEM ${CMAKE_BINARY_DIR}/serenity/Meta/Lagom/)
+add_subdirectory(serenity/Meta/Lagom)
+target_compile_options(Lagom PUBLIC -fno-gnu-keywords)
 add_subdirectory(Serializer)
 add_subdirectory(LibTerraria)
 add_subdirectory(Server)

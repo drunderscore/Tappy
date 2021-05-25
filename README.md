@@ -7,20 +7,8 @@ A Terraria server written in C++.
 No binaries exist yet. You must build it yourself.
 
 ## Building
-Please excuse the horrid CMake. There is much work to do.
-
 You need `cmake`, and `ninja`. This project also depends
-on _"Lagom"_ from SerenityOS. Build it like this:
-
-```bash
-cd serenity
-mkdir BuildLagom
-cd BuildLagom
-cmake -G Ninja ../Meta/Lagom
-ninja
-```
-
-Then, you can build Tappy itself.
+on _"Lagom"_ from SerenityOS.
 
 ```bash
 mkdir Build
