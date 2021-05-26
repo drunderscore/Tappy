@@ -677,8 +677,29 @@ public:
     bool is_actuated() const
     { return m_is_actuated; }
 
+    void set_red_wire(bool value)
+    { m_has_red_wire = value; }
+
+    void set_blue_wire(bool value)
+    { m_has_blue_wire = value; }
+
     void set_green_wire(bool value)
     { m_has_green_wire = value; }
+
+    void set_yellow_wire(bool value)
+    { m_has_yellow_wire = value; }
+
+    void set_has_actuator(bool value)
+    { m_has_actuator = value; }
+
+    void set_is_actuated(bool value)
+    { m_is_actuated = value; }
+
+    u8 shape() const
+    { return m_shape; }
+
+    void set_shape(u8 value)
+    { m_shape = value; }
 
 private:
     Optional<Id> m_id;
@@ -690,6 +711,7 @@ private:
     bool m_has_yellow_wire{};
     bool m_has_actuator{};
     bool m_is_actuated{};
+    u8 m_shape{};
     // TODO: Block slope
     // TODO: Liquid
     // TODO: Certain tiles strictly require their frame x and y (aka, UV coordinates). These are called "important frames" by the game.

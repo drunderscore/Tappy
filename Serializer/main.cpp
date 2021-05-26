@@ -246,6 +246,11 @@ int main(int argc, char** argv)
                 outln("const {}& {}() const {{ return m_{}; }}", field.type(), field.name(), field.name());
                 outln("{}& {}() {{ return m_{}; }}", field.type(), field.name(), field.name());
             }
+            else if (field.type().starts_with("Terraria::TilePoint"))
+            {
+                outln("const Terraria::TilePoint& {}() const {{ return m_{}; }}", field.name(), field.name());
+                outln("Terraria::TilePoint& {}() {{ return m_{}; }}", field.name(), field.name());
+            }
             else
             {
                 // Let's be naive and hope this type is trivial

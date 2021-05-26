@@ -245,6 +245,16 @@ void Client::on_ready_to_read()
         auto item_anim = Terraria::Net::Packets::PlayerItemAnimation::from_bytes(packet_bytes_stream);
         m_server.client_did_item_animation({}, *this, *item_anim);
     }
+    else if(packet_id == Terraria::Net::Packet::Id::ModifyTile)
+    {
+        auto modify_tile = Terraria::Net::Packets::ModifyTile::from_bytes(packet_bytes_stream);
+        m_server.client_did_modify_tile({}, *this, *modify_tile);
+    }
+    else if(packet_id == Terraria::Net::Packet::Id::SyncTilePicking)
+    {
+        auto sync_tile_picking = Terraria::Net::Packets::SyncTilePicking::from_bytes(packet_bytes_stream);
+        m_server.client_did_sync_tile_picking({}, *this, *sync_tile_picking);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

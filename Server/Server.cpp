@@ -12,11 +12,8 @@
 #include <Server/Scripting/Engine.h>
 #include <math.h>
 
-static constexpr u16 width = 4000;
-static constexpr u16 height = 50;
-
 Server::Server() : m_server(Core::TCPServer::construct()),
-                   m_tile_map(width, height)
+                   m_tile_map(4200, 1200)
 {
     Terraria::Tile stone;
     stone.id() = Terraria::Tile::Id::Stone;
@@ -27,18 +24,18 @@ Server::Server() : m_server(Core::TCPServer::construct()),
     Terraria::Tile obsidian;
     obsidian.id() = Terraria::Tile::Id::Obsidian;
 
-    for (u16 y = 0; y < m_tile_map.height(); y++)
+    for (u16 y = 0; y < 50; y++)
     {
         for (u16 x = 0; x < m_tile_map.width(); x++)
         {
             if (y == 0)
-                m_tile_map.at({x, y}) = grass;
-            else if (y == height - 1)
-                m_tile_map.at({x, y}) = obsidian;
+                m_tile_map.at(x + 41, y + 300) = grass;
+            else if (y == 50 - 1)
+                m_tile_map.at(x + 41, y + 300) = obsidian;
             else if (y > 3)
-                m_tile_map.at({x, y}) = stone;
+                m_tile_map.at(x + 41, y + 300) = stone;
             else
-                m_tile_map.at({x, y}) = dirt;
+                m_tile_map.at(x + 41, y + 300) = dirt;
         }
     }
 
@@ -294,21 +291,102 @@ void Server::client_did_item_animation(Badge<Client>, Client& who,
 
 void Server::client_did_request_spawn_sections(Badge<Client>, Client& who, const Terraria::Net::Packets::SpawnData&)
 {
-    i32 starting_x = 41;
-    i32 starting_y = 300;
-
-    Terraria::Net::Packets::TileSection section(m_tile_map, starting_x, starting_y);
+    Terraria::Net::Packets::TileSection section(m_tile_map, 0, 0);
     who.send(section);
 
     Terraria::Net::Packets::TileFrameSection frame_section;
-    frame_section.set_start_x(floor(starting_x / 200));
-    frame_section.set_start_y(floor(starting_y / 150));
-    frame_section.set_end_x(floor((starting_x + width) / 200));
-    frame_section.set_end_y(floor((starting_y + height) / 150));
+    frame_section.set_start_x(0);
+    frame_section.set_start_y(0);
+    frame_section.set_end_x(floor(m_tile_map.width()) / 200);
+    frame_section.set_end_y(floor(m_tile_map.height()) / 150);
     who.send(frame_section);
 
     Terraria::Net::Packets::SpawnPlayerSelf spawn_self;
     who.send(spawn_self);
+}
+
+void Server::client_did_modify_tile(Badge<Client>, Client& who, const Terraria::Net::Packets::ModifyTile& modify_tile)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(modify_tile);
+    }
+
+    auto& pos = modify_tile.position();
+
+    switch (modify_tile.action())
+    {
+        case 0:
+            // FIXME: No tile drop
+        case 4:
+            if (!modify_tile.flags_1())
+                m_tile_map.at(pos).id() = {};
+            break;
+        case 1:
+        case 21:
+            m_tile_map.at(pos).id() = static_cast<Terraria::Tile::Id>(modify_tile.flags_1());
+            break;
+        case 2:
+            m_tile_map.at(pos).wall_id() = {};
+            break;
+        case 3:
+        case 22:
+            m_tile_map.at(pos).wall_id() = static_cast<Terraria::Tile::WallId>(modify_tile.flags_1());
+            break;
+        case 5:
+            m_tile_map.at(pos).set_red_wire(true);
+            break;
+        case 6:
+            m_tile_map.at(pos).set_red_wire(false);
+            break;
+        case 7:
+            m_tile_map.at(pos).set_shape(1);
+        case 8:
+            m_tile_map.at(pos).set_has_actuator(true);
+            break;
+        case 9:
+            m_tile_map.at(pos).set_has_actuator(false);
+            break;
+        case 10:
+            m_tile_map.at(pos).set_blue_wire(true);
+            break;
+        case 11:
+            m_tile_map.at(pos).set_blue_wire(false);
+            break;
+        case 12:
+            m_tile_map.at(pos).set_green_wire(true);
+            break;
+        case 13:
+            m_tile_map.at(pos).set_green_wire(false);
+            break;
+        case 14:
+            m_tile_map.at(pos).set_shape(modify_tile.flags_1() + 1);
+            break;
+        case 16:
+            m_tile_map.at(pos).set_yellow_wire(true);
+            break;
+        case 17:
+            m_tile_map.at(pos).set_yellow_wire(false);
+            break;
+        default:
+            warnln("We are not handling tile modification action {}!", modify_tile.action());
+    }
+}
+
+void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,
+                                          const Terraria::Net::Packets::SyncTilePicking& sync_tile_picking)
+{
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(sync_tile_picking);
+    }
+    // TODO: Should we save this in the tile? I'm not sure it really pays to save it, or if the game does at all.
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

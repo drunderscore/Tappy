@@ -58,6 +58,16 @@ public:
         return m_tiles.at(index_for_position(position));
     }
 
+    ALWAYS_INLINE Tile& at(u16 x, u16 y)
+    {
+        return at({x, y});
+    }
+
+    ALWAYS_INLINE const Tile& at(u16 x, u16 y) const
+    {
+        return at({x, y});
+    }
+
     const Span<const Tile> tiles() const override
     {
         return m_tiles.span();

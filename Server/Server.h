@@ -27,6 +27,8 @@
 #include <LibTerraria/Net/Packets/DamageNPC.h>
 #include <LibTerraria/Net/Packets/PlayerItemAnimation.h>
 #include <LibTerraria/Net/Packets/SpawnData.h>
+#include <LibTerraria/Net/Packets/ModifyTile.h>
+#include <LibTerraria/Net/Packets/SyncTilePicking.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 
@@ -81,6 +83,10 @@ public:
     void client_did_item_animation(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerItemAnimation&);
 
     void client_did_request_spawn_sections(Badge<Client>, Client&, const Terraria::Net::Packets::SpawnData&);
+
+    void client_did_modify_tile(Badge<Client>, Client&, const Terraria::Net::Packets::ModifyTile&);
+
+    void client_did_sync_tile_picking(Badge<Client>, Client&, const Terraria::Net::Packets::SyncTilePicking&);
 
     Vector<WeakPtr<Client>> clients() const;
 

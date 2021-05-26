@@ -1,0 +1,17 @@
+{
+    "fields": [
+        {
+            "name": "player_id",
+            "type": "u8"
+        },
+        {
+            "name": "position",
+            "type": "Terraria::TilePoint"
+        },
+        {
+            "name": "damage",
+            "type": "u8"
+        }
+    ]
+}
+

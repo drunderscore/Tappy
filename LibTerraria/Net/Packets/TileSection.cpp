@@ -59,7 +59,41 @@ ByteBuffer TileSection::to_bytes() const
             VERIFY(static_cast<u16>(*wall_id) <= 255);
         }
 
+        if (tile.has_red_wire())
+            header2 |= m_red_wire_bit;
+
+        if (tile.has_blue_wire())
+            header2 |= m_blue_wire_bit;
+
+        if (tile.has_green_wire())
+            header2 |= m_green_wire_bit;
+
+        header2 |= (tile.shape() << m_shape_shift) & m_shape_bits;
+
+        if (tile.has_yellow_wire())
+            header3 |= m_yellow_wire_bit;
+
+        if (tile.has_actuator())
+            header3 |= m_actuator_bit;
+
+        if (tile.is_actuated())
+            header3 |= m_actuated_bit;
+
+        if (header2 != 0)
+            header |= m_header_2_bit;
+
+        if (header3 != 0)
+        {
+            header |= m_header_2_bit;
+            header2 |= m_header_3_bit;
+        }
+
         stream_deflated << header;
+        if (header2 != 0)
+            stream_deflated << header2;
+        if (header3 != 0)
+            stream_deflated << header3;
+
         if (tile_id.has_value())
         {
             if (additional_tile_byte)

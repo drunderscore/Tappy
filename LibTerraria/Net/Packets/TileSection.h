@@ -56,6 +56,8 @@ private:
     static constexpr u8 m_red_wire_bit = 0b0000'0010;
     static constexpr u8 m_blue_wire_bit = 0b0000'0100;
     static constexpr u8 m_green_wire_bit = 0b0000'1000;
+    static constexpr u8 m_shape_bits = 0b0111'0000;
+    static constexpr u8 m_shape_shift = 4;
     // TODO: Slopes
 
     // Header 3

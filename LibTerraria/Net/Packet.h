@@ -31,6 +31,7 @@ public:
         SpawnPlayer,
         SyncPlayer,
         PlayerHP = 16,
+        ModifyTile = 17,
         SyncNPC = 23,
         SyncProjectile = 27,
         DamageNPC = 28,
@@ -46,6 +47,7 @@ public:
         NetModules = 82,
         PlayerHurt = 117,
         PlayerDeath = 118,
+        SyncTilePicking = 125,
         ConnectFinished = 129,
         ClientSyncedInventory = 138
     };
