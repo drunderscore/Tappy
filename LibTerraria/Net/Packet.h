@@ -32,6 +32,7 @@ public:
         SyncPlayer,
         PlayerHP = 16,
         ModifyTile = 17,
+        SyncTileRect = 20,
         SyncNPC = 23,
         SyncProjectile = 27,
         DamageNPC = 28,

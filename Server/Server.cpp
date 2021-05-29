@@ -9,6 +9,7 @@
 #include <LibTerraria/Net/Packets/TileFrameSection.h>
 #include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
 #include <LibTerraria/Net/Packets/TileSection.h>
+#include <LibTerraria/Net/Packets/SyncTileRect.h>
 #include <Server/Scripting/Engine.h>
 #include <math.h>
 
@@ -24,18 +25,20 @@ Server::Server() : m_server(Core::TCPServer::construct()),
     Terraria::Tile obsidian;
     obsidian.block() = Terraria::Tile::Block::Id::Obsidian;
 
-    for (u16 y = 0; y < 50; y++)
+    for (u16 x = 0; x < m_tile_map.width(); x++)
     {
-        for (u16 x = 0; x < m_tile_map.width(); x++)
+        for (u16 y = 0; y < 50; y++)
         {
-            if (y == 0)
-                m_tile_map.at(x + 41, y + 300) = grass;
-            else if (y == 50 - 1)
-                m_tile_map.at(x + 41, y + 300) = obsidian;
-            else if (y > 3)
-                m_tile_map.at(x + 41, y + 300) = stone;
-            else
-                m_tile_map.at(x + 41, y + 300) = dirt;
+            {
+                if (y == 0)
+                    m_tile_map.at(x + 41, y + 300) = grass;
+                else if (y == 50 - 1)
+                    m_tile_map.at(x + 41, y + 300) = obsidian;
+                else if (y > 3)
+                    m_tile_map.at(x + 41, y + 300) = stone;
+                else
+                    m_tile_map.at(x + 41, y + 300) = dirt;
+            }
         }
     }
 
@@ -291,7 +294,7 @@ void Server::client_did_item_animation(Badge<Client>, Client& who,
 
 void Server::client_did_request_spawn_sections(Badge<Client>, Client& who, const Terraria::Net::Packets::SpawnData&)
 {
-    Terraria::Net::Packets::TileSection section(m_tile_map, 0, 0);
+    Terraria::Net::Packets::TileSection section(m_tile_map, 0, 0, m_tile_map.width(), m_tile_map.height());
     who.send(section);
 
     Terraria::Net::Packets::TileFrameSection frame_section;

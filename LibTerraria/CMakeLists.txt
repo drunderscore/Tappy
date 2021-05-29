@@ -42,6 +42,7 @@ add_library(Terraria
         Disconnect.h
         Net/Packets/TeleportEntity.cpp
         Net/Packets/TileSection.cpp
+        Net/Packets/SyncTileRect.cpp
         SetUserSlot.h
         PlayerInfo.h
         DamageNPC.h

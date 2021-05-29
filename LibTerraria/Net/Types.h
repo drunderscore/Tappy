@@ -83,7 +83,7 @@ public:
 }
 
 template<typename T>
-OutputStream& operator<<(OutputStream& stream, Optional<T> value)
+OutputStream& operator<<(OutputStream& stream, const Optional<T> value)
 {
     if (value.has_value())
         stream << *value;
