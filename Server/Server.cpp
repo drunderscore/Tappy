@@ -16,13 +16,13 @@ Server::Server() : m_server(Core::TCPServer::construct()),
                    m_tile_map(4200, 1200)
 {
     Terraria::Tile stone;
-    stone.id() = Terraria::Tile::Id::Stone;
+    stone.block() = Terraria::Tile::Block::Id::Stone;
     Terraria::Tile dirt;
-    dirt.id() = Terraria::Tile::Id::Dirt;
+    dirt.block() = Terraria::Tile::Block::Id::Dirt;
     Terraria::Tile grass;
-    grass.id() = Terraria::Tile::Id::Grass;
+    grass.block() = Terraria::Tile::Block::Id::Grass;
     Terraria::Tile obsidian;
-    obsidian.id() = Terraria::Tile::Id::Obsidian;
+    obsidian.block() = Terraria::Tile::Block::Id::Obsidian;
 
     for (u16 y = 0; y < 50; y++)
     {
@@ -315,65 +315,7 @@ void Server::client_did_modify_tile(Badge<Client>, Client& who, const Terraria::
         kv.value->send(modify_tile);
     }
 
-    auto& pos = modify_tile.position();
-
-    switch (modify_tile.action())
-    {
-        case 0:
-            // FIXME: No tile drop
-        case 4:
-            if (!modify_tile.flags_1())
-                m_tile_map.at(pos).id() = {};
-            break;
-        case 1:
-        case 21:
-            m_tile_map.at(pos).id() = static_cast<Terraria::Tile::Id>(modify_tile.flags_1());
-            break;
-        case 2:
-            m_tile_map.at(pos).wall_id() = {};
-            break;
-        case 3:
-        case 22:
-            m_tile_map.at(pos).wall_id() = static_cast<Terraria::Tile::WallId>(modify_tile.flags_1());
-            break;
-        case 5:
-            m_tile_map.at(pos).set_red_wire(true);
-            break;
-        case 6:
-            m_tile_map.at(pos).set_red_wire(false);
-            break;
-        case 7:
-            m_tile_map.at(pos).set_shape(1);
-        case 8:
-            m_tile_map.at(pos).set_has_actuator(true);
-            break;
-        case 9:
-            m_tile_map.at(pos).set_has_actuator(false);
-            break;
-        case 10:
-            m_tile_map.at(pos).set_blue_wire(true);
-            break;
-        case 11:
-            m_tile_map.at(pos).set_blue_wire(false);
-            break;
-        case 12:
-            m_tile_map.at(pos).set_green_wire(true);
-            break;
-        case 13:
-            m_tile_map.at(pos).set_green_wire(false);
-            break;
-        case 14:
-            m_tile_map.at(pos).set_shape(modify_tile.flags_1() + 1);
-            break;
-        case 16:
-            m_tile_map.at(pos).set_yellow_wire(true);
-            break;
-        case 17:
-            m_tile_map.at(pos).set_yellow_wire(false);
-            break;
-        default:
-            warnln("We are not handling tile modification action {}!", modify_tile.action());
-    }
+    m_tile_map.process_tile_modification(modify_tile);
 }
 
 void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,

@@ -38,14 +38,14 @@ ByteBuffer TileSection::to_bytes() const
         u8 header2 = 0;
         u8 header3 = 0;
 
-        auto& tile_id = tile.id();
+        auto& block = tile.block();
         auto& wall_id = tile.wall_id();
         bool additional_tile_byte = false;
 
-        if (tile_id.has_value())
+        if (block.has_value())
         {
             header |= m_tile_bit;
-            if (static_cast<u16>(*tile_id) > 255)
+            if (static_cast<u16>(block->id()) > 255)
             {
                 header |= m_additional_tile_byte_bit;
                 additional_tile_byte = true;
@@ -68,7 +68,8 @@ ByteBuffer TileSection::to_bytes() const
         if (tile.has_green_wire())
             header2 |= m_green_wire_bit;
 
-        header2 |= (tile.shape() << m_shape_shift) & m_shape_bits;
+        if (tile.block().has_value())
+            header2 |= (tile.block()->shape() << m_shape_shift) & m_shape_bits;
 
         if (tile.has_yellow_wire())
             header3 |= m_yellow_wire_bit;
@@ -94,12 +95,15 @@ ByteBuffer TileSection::to_bytes() const
         if (header3 != 0)
             stream_deflated << header3;
 
-        if (tile_id.has_value())
+        if (block.has_value())
         {
             if (additional_tile_byte)
-                stream_deflated << static_cast<u16>(*tile_id);
+                stream_deflated << static_cast<u16>(block->id());
             else
-                stream_deflated << static_cast<u8>(*tile_id);
+                stream_deflated << static_cast<u8>(block->id());
+
+            stream_deflated << block->frame_x();
+            stream_deflated << block->frame_y();
         }
 
         if (wall_id.has_value())

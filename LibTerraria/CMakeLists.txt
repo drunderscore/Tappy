@@ -49,6 +49,7 @@ add_library(Terraria
         PlayerDeathReason.cpp
         Net/NetworkText.cpp
         Character.cpp
+        TileMap.cpp
         PlayerDeath.h
         SpawnData.h
         ModifyTile.h
@@ -63,6 +64,9 @@ add_library(Terraria
         Modules/Text.h
         )
 
-target_include_directories(Terraria SYSTEM PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(Terraria SYSTEM PRIVATE
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_BINARY_DIR}
+        )
 
 target_lagom(Terraria)
