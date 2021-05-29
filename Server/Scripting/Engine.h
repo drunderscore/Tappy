@@ -105,6 +105,8 @@ private:
 
     DEFINE_LUA_METHOD(client_sync_npc);
 
+    DEFINE_LUA_METHOD(client_sync_tile_rect);
+
     // Player
     DEFINE_LUA_METHOD(player_character);
 

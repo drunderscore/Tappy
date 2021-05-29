@@ -11,6 +11,7 @@
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/TeleportEntity.h>
+#include <LibTerraria/Net/Packets/SyncTileRect.h>
 #include <LibTerraria/Net/Packets/SyncNPC.h>
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
@@ -57,6 +58,7 @@ Engine::Engine(Server& server) :
                     {"killProjectile", client_kill_projectile_thunk},
                     {"__eq",           client_equals_thunk},
                     {"syncNpc",        client_sync_npc_thunk},
+                    {"syncTileRect",   client_sync_tile_rect_thunk},
                     {}
             };
 
@@ -525,6 +527,28 @@ int Engine::client_sync_npc()
     sync_npc.npc() = npc;
 
     client->send(sync_npc);
+
+    return 0;
+}
+
+int Engine::client_sync_tile_rect()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client)
+        return 0;
+
+    u16 x = luaL_checkinteger(m_state, 2);
+    u16 y = luaL_checkinteger(m_state, 3);
+
+    Terraria::Net::Packets::SyncTileRect sync_tile_rect
+            (
+                    m_server.tile_map(),
+                    {x, y},
+                    luaL_checkinteger(m_state, 4),
+                    luaL_checkinteger(m_state, 5)
+            );
+
+    client->send(sync_tile_rect);
 
     return 0;
 }
