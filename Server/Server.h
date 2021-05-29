@@ -101,6 +101,9 @@ public:
     const Terraria::TileMap& tile_map() const
     { return m_tile_map; }
 
+    Terraria::TileMap& tile_map()
+    { return m_tile_map; }
+
 private:
     OwnPtr<Scripting::Engine> m_engine;
     NonnullRefPtr<Core::TCPServer> m_server;

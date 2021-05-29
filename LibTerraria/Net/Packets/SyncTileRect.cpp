@@ -5,6 +5,8 @@
  */
 
 #include <LibTerraria/Net/Packets/SyncTileRect.h>
+#include <AK/MemoryStream.h>
+#include <LibTerraria/Net/Types.h>
 
 namespace Terraria::Net::Packets
 {

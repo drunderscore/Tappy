@@ -10,7 +10,7 @@
 #include <AK/Array.h>
 #include <LibTerraria/Tile.h>
 #include <LibTerraria/Point.h>
-#include <LibTerraria/Net/Packets/ModifyTile.h>
+#include <LibTerraria/TileModification.h>
 
 namespace Terraria
 {
@@ -29,7 +29,7 @@ public:
 
     virtual Span<Tile> tiles() = 0;
 
-    virtual void process_tile_modification(const Terraria::Net::Packets::ModifyTile&);
+    virtual void process_tile_modification(const Terraria::TileModification&);
 
     constexpr size_t index_for_position(const TilePoint& point) const
     {

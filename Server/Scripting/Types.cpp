@@ -97,7 +97,7 @@ Terraria::Projectile Types::projectile(lua_State* state, int index, bool takeId)
 
 void Types::point(lua_State* state, const Terraria::EntityPoint& point)
 {
-    lua_newtable(state);
+    lua_createtable(state, 2, 0);
     lua_pushstring(state, "x");
     lua_pushnumber(state, point.x);
     lua_settable(state, -3);
@@ -673,5 +673,65 @@ Terraria::Character Types::character(lua_State* state, int index)
     lua_pop(state, 1);
 
     return character;
+}
+
+void Types::tile_modification(lua_State* state, const Terraria::TileModification& modification)
+{
+    lua_createtable(state, 5, 0);
+
+    lua_pushstring(state, "action");
+    lua_pushinteger(state, modification.action);
+    lua_settable(state, -3);
+
+    // FIXME: Shouldn't this be a tile position Lua type?
+    lua_pushstring(state, "x");
+    lua_pushinteger(state, modification.position.x);
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "y");
+    lua_pushinteger(state, modification.position.y);
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "flags1");
+    lua_pushinteger(state, modification.flags_1);
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "flags2");
+    lua_pushinteger(state, modification.flags_2);
+    lua_settable(state, -3);
+}
+
+Terraria::TileModification Types::tile_modification(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::TileModification modification;
+
+    lua_pushstring(state, "action");
+    lua_gettable(state, index);
+    modification.action = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "x");
+    lua_gettable(state, index);
+    modification.position.x = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "y");
+    lua_gettable(state, index);
+    modification.position.y = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "flags1");
+    lua_gettable(state, index);
+    modification.flags_1 = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "flags2");
+    lua_gettable(state, index);
+    modification.flags_2 = luaL_checkinteger(state, -1);
+    lua_pop(state, 1);
+
+    return modification;
 }
 }

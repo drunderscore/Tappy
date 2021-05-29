@@ -127,4 +127,26 @@ function Base.onPlayerSpawn(client)
     Hooks.publish("playerSpawn", event)
 end
 
+function Base.onModifyTile(client, modification)
+    local event = {}
+    event.client = client
+    event.canceled = false
+    --- If you've modified the modification in any way, you'll want to sync it back to whoever sent it.
+    event.syncToSender = false
+    event.modification = modification;
+
+    -- FIXME: This should generalized (ex, placeBlock, removeBlock, placeWall, removeWall, etc)
+    Hooks.publish("modifyTile", event)
+
+    if event.canceled then
+        client:syncTileRect(modification.x, modification.y, 3, 3)
+    else
+        client:modifyTile(modification)
+
+        if event.syncToSender then
+            client:syncTileRect(modification.x, modification.y, 3, 3)
+        end
+    end
+end
+
 return Base

@@ -6,6 +6,7 @@
 
 #include <LibTerraria/Net/Packets/TileSection.h>
 #include <LibCompress/Deflate.h>
+#include <AK/MemoryStream.h>
 
 namespace Terraria::Net::Packets
 {
@@ -62,7 +63,7 @@ ByteBuffer TileSection::to_bytes() const
             {
                 header |= m_wall_bit;
                 // FIXME: Support extended wall bytes (and more headers to accomplish the former)
-                        VERIFY(static_cast<u16>(*wall_id) <= 255);
+                VERIFY(static_cast<u16>(*wall_id) <= 255);
             }
 
             if (tile.has_red_wire())

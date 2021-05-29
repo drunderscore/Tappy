@@ -122,7 +122,9 @@ int main(int argc, char** argv)
         outln("#include <LibTerraria/Item.h>");
         outln("#include <LibTerraria/PlayerInventory.h>");
         outln("#include <LibTerraria/PlayerDeathReason.h>");
+        outln("#include <LibTerraria/TileModification.h>");
         outln("#include <LibTerraria/Character.h>");
+        outln("#include <AK/MemoryStream.h>");
         outln();
         outln("// This was auto-generated from {}", lexical_path);
         if (module.has_value())
@@ -250,6 +252,11 @@ int main(int argc, char** argv)
             {
                 outln("const Terraria::TilePoint& {}() const {{ return m_{}; }}", field.name(), field.name());
                 outln("Terraria::TilePoint& {}() {{ return m_{}; }}", field.name(), field.name());
+            }
+            else if (field.type().starts_with("Terraria::TileModification"))
+            {
+                outln("const Terraria::TileModification& {}() const {{ return m_{}; }}", field.name(), field.name());
+                outln("Terraria::TileModification& {}() {{ return m_{}; }}", field.name(), field.name());
             }
             else
             {

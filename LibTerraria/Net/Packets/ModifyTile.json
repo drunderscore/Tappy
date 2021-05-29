@@ -2,20 +2,8 @@
     "fields":
     [
         {
-            "name": "action",
-            "type": "u8"
-        },
-        {
-            "name": "position",
-            "type": "Terraria::TilePoint"
-        },
-        {
-            "name": "flags_1",
-            "type": "i16"
-        },
-        {
-            "name": "flags_2",
-            "type": "u8"
+            "name": "modification",
+            "type": "Terraria::TileModification"
         }
     ]
 }

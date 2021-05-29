@@ -59,6 +59,7 @@ Engine::Engine(Server& server) :
                     {"__eq",           client_equals_thunk},
                     {"syncNpc",        client_sync_npc_thunk},
                     {"syncTileRect",   client_sync_tile_rect_thunk},
+                    {"modifyTile",     client_modify_tile_thunk},
                     {}
             };
 
@@ -232,6 +233,14 @@ void Engine::client_did_spawn_player(Badge<Server>, Client& who, const Terraria:
     lua_getfield(m_state, 1, "onPlayerSpawn");
     client_userdata(who.id());
     lua_call(m_state, 1, 0);
+}
+
+void Engine::client_did_modify_tile(Badge<Server>, Client& who, const Terraria::Net::Packets::ModifyTile& modify)
+{
+    lua_getfield(m_state, 1, "onModifyTile");
+    client_userdata(who.id());
+    Types::tile_modification(m_state, modify.modification());
+    lua_call(m_state, 2, 0);
 }
 
 void* Engine::client_userdata(u8 id) const
@@ -549,6 +558,29 @@ int Engine::client_sync_tile_rect()
             );
 
     client->send(sync_tile_rect);
+
+    return 0;
+}
+
+int Engine::client_modify_tile()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client)
+        return 0;
+
+    auto modification = Types::tile_modification(m_state, 2);
+    Terraria::Net::Packets::ModifyTile modify_tile;
+    modify_tile.modification() = modification;
+
+    for (auto& kv : m_server.clients())
+    {
+        if (kv->id() == client->id())
+            continue;
+
+        kv->send(modify_tile);
+    }
+
+    m_server.tile_map().process_tile_modification(modification);
 
     return 0;
 }

@@ -7,7 +7,6 @@
 #pragma once
 
 #include <AK/ByteBuffer.h>
-#include <AK/MemoryStream.h>
 #include <LibTerraria/NPC.h>
 #include <LibTerraria/Net/Packet.h>
 

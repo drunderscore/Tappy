@@ -6,6 +6,7 @@
 
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <LibTerraria/Net/Types.h>
+#include <AK/MemoryStream.h>
 
 namespace Terraria::Net::Packets
 {

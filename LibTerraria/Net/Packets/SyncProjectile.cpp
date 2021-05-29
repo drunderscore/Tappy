@@ -5,6 +5,7 @@
  */
 
 #include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <AK/MemoryStream.h>
 
 namespace Terraria::Net::Packets
 {

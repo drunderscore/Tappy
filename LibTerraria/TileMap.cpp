@@ -8,18 +8,18 @@
 
 namespace Terraria
 {
-void TileMap::process_tile_modification(const Net::Packets::ModifyTile& modify_tile)
+void TileMap::process_tile_modification(const Terraria::TileModification& modification)
 {
-    auto& pos = modify_tile.position();
+    auto& pos = modification.position;
     auto& tile = at(pos);
 
-    switch (modify_tile.action())
+    switch (modification.action)
     {
         case 0:
             // FIXME: No tile drop
         case 4:
         {
-            auto success = !modify_tile.flags_1();
+            auto success = !modification.flags_1;
             if (success)
                 tile.block() = {};
             else
@@ -33,8 +33,8 @@ void TileMap::process_tile_modification(const Net::Packets::ModifyTile& modify_t
         case 1:
         case 21:
         {
-            auto block_id = static_cast<Terraria::Tile::Block::Id>(modify_tile.flags_1());
-            auto style = modify_tile.flags_2();
+            auto block_id = static_cast<Terraria::Tile::Block::Id>(modification.flags_1);
+            auto style = modification.flags_2;
             tile.block() = block_id;
             if (block_id == Tile::Block::Id::Torches)
             {
@@ -51,7 +51,7 @@ void TileMap::process_tile_modification(const Net::Packets::ModifyTile& modify_t
             break;
         case 3:
         case 22:
-            tile.wall_id() = static_cast<Terraria::Tile::WallId>(modify_tile.flags_1());
+            tile.wall_id() = static_cast<Terraria::Tile::WallId>(modification.flags_1);
             break;
         case 5:
             tile.set_red_wire(true);
@@ -80,7 +80,7 @@ void TileMap::process_tile_modification(const Net::Packets::ModifyTile& modify_t
             tile.set_green_wire(false);
             break;
         case 14:
-            tile.block()->set_shape(modify_tile.flags_1() + 1);
+            tile.block()->set_shape(modification.flags_1 + 1);
             break;
         case 16:
             tile.set_yellow_wire(true);
@@ -89,7 +89,7 @@ void TileMap::process_tile_modification(const Net::Packets::ModifyTile& modify_t
             tile.set_yellow_wire(false);
             break;
         default:
-            dbgln("We are not handling tile modification action {}!", modify_tile.action());
+            dbgln("We are not handling tile modification action {}!", modification.action);
     }
 }
 }

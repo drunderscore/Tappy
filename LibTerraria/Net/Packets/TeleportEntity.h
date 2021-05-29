@@ -8,7 +8,6 @@
 
 #include <AK/ByteBuffer.h>
 #include <AK/Optional.h>
-#include <AK/MemoryStream.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Point.h>
 

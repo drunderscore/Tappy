@@ -141,13 +141,13 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
         who.send(spawn);
 
         kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-        {
-            Terraria::Net::Packets::SyncInventorySlot inv_slot;
-            inv_slot.set_player_id(kv.key);
-            inv_slot.set_slot(slot);
-            inv_slot.item() = item;
-            who.send(inv_slot);
-        });
+                                                {
+                                                    Terraria::Net::Packets::SyncInventorySlot inv_slot;
+                                                    inv_slot.set_player_id(kv.key);
+                                                    inv_slot.set_slot(slot);
+                                                    inv_slot.item() = item;
+                                                    who.send(inv_slot);
+                                                });
 
         Terraria::Net::Packets::TogglePvp toggle_pvp;
         toggle_pvp.set_player_id(kv.key);
@@ -310,15 +310,7 @@ void Server::client_did_request_spawn_sections(Badge<Client>, Client& who, const
 
 void Server::client_did_modify_tile(Badge<Client>, Client& who, const Terraria::Net::Packets::ModifyTile& modify_tile)
 {
-    for (auto& kv : m_clients)
-    {
-        if (kv.key == who.id())
-            continue;
-
-        kv.value->send(modify_tile);
-    }
-
-    m_tile_map.process_tile_modification(modify_tile);
+    m_engine->client_did_modify_tile({}, who, modify_tile);
 }
 
 void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,

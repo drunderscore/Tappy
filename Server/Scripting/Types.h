@@ -12,6 +12,7 @@
 #include <LibTerraria/Color.h>
 #include <LibTerraria/Character.h>
 #include <LibTerraria/PlayerDeathReason.h>
+#include <LibTerraria/TileModification.h>
 
 typedef struct lua_State lua_State;
 
@@ -47,5 +48,9 @@ public:
     static void character(lua_State*, const Terraria::Character&);
 
     static Terraria::Character character(lua_State*, int index);
+
+    static void tile_modification(lua_State*, const Terraria::TileModification&);
+
+    static Terraria::TileModification tile_modification(lua_State*, int index);
 };
 }

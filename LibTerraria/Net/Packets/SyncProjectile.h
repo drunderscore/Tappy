@@ -11,7 +11,6 @@
 #include <AK/Array.h>
 #include <AK/String.h>
 #include <AK/Random.h>
-#include <AK/MemoryStream.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Point.h>
 #include <LibTerraria/Projectile.h>

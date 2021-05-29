@@ -74,6 +74,27 @@ Hooks.add("chat", function(event)
         event.canceled = true
         local pos = event.client:player():position()
         event.client:sendMessage("(" .. pos.x .. ", " .. pos.y .. ")")
+    elseif string.find(event.message, "/i") == 1 then
+        event.canceled = true
+        local args = {}
+        for token in string.gmatch(event.message, "[^%s]+") do
+            table.insert(args, token)
+        end
+
+        if #args < 2 then
+            return
+        end
+        local id = tonumber(args[2])
+        local stack = 1
+        if #args >= 3 then
+            stack = tonumber(args[3]) or 1
+        end
+
+        event.client:player():inventory():setItem(49, { id = id, stack = stack })
+        event.client:sendMessage("Given " .. stack .. " of " .. id, 255, { r = 0x55, g = 0xad, b = 0x12 })
+    elseif string.find(event.message, "/kickme") == 1 then
+        event.canceled = true
+        event.client:disconnect("bye bye.")
     end
 end)
 
@@ -104,4 +125,17 @@ Hooks.add("finishedConnecting", function(event)
     local name = event.client:player():character().name
     print(name .. "/" .. event.client:address() .. " finished connecting")
     Utils.broadcast(name .. " finished connecting.", thePink)
+end)
+
+local modifyTileNagLastTime = {}
+Hooks.add("modifyTile", function(event)
+    local now = os.time()
+    if event.modification.x >= 2090 and event.modification.x <= 2110 and event.modification.y >= 290 and event.modification.y <= 305 then
+        event.canceled = true
+        local lastNag = modifyTileNagLastTime[event.client:id()]
+        if lastNag == nil or now > lastNag + 3 then
+            event.client:sendMessage("You cannot modify that close to the spawn region", 255, { r = 255, g = 0, b = 0 })
+            modifyTileNagLastTime[event.client:id()] = now
+        end
+    end
 end)
