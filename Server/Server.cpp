@@ -120,49 +120,7 @@ void Server::client_did_send_player_info(Badge<Client>, Client& who, const Terra
 
 void Server::client_did_request_world_data(Badge<Client>, Client& who)
 {
-    // FIXME: When should we send player info of existing players?
-    // When a client joins, we have to tell them about all existing players info.
-    // When should we do this? Is this the right place?
-    for (auto& kv : m_clients)
-    {
-        if (kv.key == who.id())
-            continue;
-        Terraria::Net::Packets::PlayerInfo info;
-        info.set_player_id(kv.value->id());
-        info.set_character(kv.value->player().character());
-        who.send(info);
-
-        Terraria::Net::Packets::SpawnPlayer spawn;
-        spawn.set_player_id(kv.key);
-        spawn.set_spawn_x(kv.value->player().position().x);
-        spawn.set_spawn_x(kv.value->player().position().y);
-        spawn.set_remaining_respawn_time(0);
-        spawn.set_context(1);
-        who.send(spawn);
-
-        // @formatter:off
-        kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-        {
-            Terraria::Net::Packets::SyncInventorySlot inv_slot;
-            inv_slot.set_player_id(kv.key);
-            inv_slot.set_slot(slot);
-            inv_slot.item() = item;
-            who.send(inv_slot);
-        });
-        // @formatter:on
-
-        Terraria::Net::Packets::TogglePvp toggle_pvp;
-        toggle_pvp.set_player_id(kv.key);
-        toggle_pvp.set_pvp(kv.value->player().pvp());
-        who.send(toggle_pvp);
-    }
-
-    for (auto& kv : m_projectiles)
-    {
-        Terraria::Net::Packets::SyncProjectile sync_proj;
-        sync_proj.projectile() = kv.value;
-        who.send(sync_proj);
-    }
+    // No longer used but might be in the future?
 }
 
 void Server::client_did_spawn_player(Badge<Client>, Client& client, const Terraria::Net::Packets::SpawnPlayer& spawn)
