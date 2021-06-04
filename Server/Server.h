@@ -88,6 +88,8 @@ public:
 
     void client_did_sync_tile_picking(Badge<Client>, Client&, const Terraria::Net::Packets::SyncTilePicking&);
 
+    void client_did_disconnect(Badge<Client>, Client&, Client::DisconnectReason);
+
     Vector<WeakPtr<Client>> clients() const;
 
     const WeakPtr<Client> client(u8 id) const;

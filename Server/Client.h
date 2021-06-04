@@ -24,12 +24,11 @@ public:
     enum class DisconnectReason
     {
         EofReached,                 // The TCP socket reached EOF
-        DisconnectedByServer
+        DisconnectedByServer,
+        StreamErrored
     };
 
     Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id);
-
-    Function<void(DisconnectReason)> on_disconnect;
 
     u8 id() const
     { return m_id; }

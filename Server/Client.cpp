@@ -49,6 +49,11 @@ void Client::send(const Terraria::Net::Packet& packet)
     auto bytes = packet.to_bytes();
     m_output_stream << static_cast<u16>(bytes.size() + 2);
     m_output_stream << bytes;
+    if (m_output_stream.has_any_error())
+    {
+        warnln("Stream errored trying to send data");
+        m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
+    }
 }
 
 void Client::disconnect(const Terraria::Net::NetworkText& reason)
@@ -56,16 +61,14 @@ void Client::disconnect(const Terraria::Net::NetworkText& reason)
     Terraria::Net::Packets::Disconnect disconnect;
     disconnect.set_reason(reason);
     send(disconnect);
-    if (on_disconnect)
-        on_disconnect(DisconnectReason::DisconnectedByServer);
+    m_server.client_did_disconnect({}, *this, DisconnectReason::DisconnectedByServer);
 }
 
 void Client::on_ready_to_read()
 {
     if (m_socket->eof())
     {
-        if (on_disconnect)
-            on_disconnect(DisconnectReason::EofReached);
+        m_server.client_did_disconnect({}, *this, DisconnectReason::EofReached);
         return;
     }
 
@@ -76,6 +79,7 @@ void Client::on_ready_to_read()
     {
         warnln("Stream errored trying to read packet size");
         m_input_stream.handle_any_error();
+        m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
         return;
     }
 
@@ -85,6 +89,7 @@ void Client::on_ready_to_read()
     {
         warnln("Stream errored trying to read packet id");
         m_input_stream.handle_any_error();
+        m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
         return;
     }
 

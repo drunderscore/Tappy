@@ -68,15 +68,7 @@ Server::Server() : m_server(Core::TCPServer::construct()),
             return;
         }
 
-        auto id_val = *id;
-        auto client = make<Client>(socket.release_nonnull(), *this, id_val);
-
-        client->on_disconnect = [this, id_val](auto reason)
-        {
-            outln("Client {} has disconnected.", id_val);
-            m_clients.remove(id_val);
-        };
-        m_clients.set(id_val, move(client));
+        m_clients.set(*id, make<Client>(socket.release_nonnull(), *this, *id));
     };
 }
 
@@ -324,6 +316,12 @@ void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,
         kv.value->send(sync_tile_picking);
     }
     // TODO: Should we save this in the tile? I'm not sure it really pays to save it, or if the game does at all.
+}
+
+void Server::client_did_disconnect(Badge<Client>, Client& who, Client::DisconnectReason)
+{
+    outln("Client {}/{} disconnected.", who.id(), who.address());
+    m_clients.remove(who.id());
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)
