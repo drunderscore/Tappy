@@ -51,6 +51,7 @@ public:
         PlayerDeath = 118,
         SyncTilePicking = 125,
         ConnectFinished = 129,
+        PlayerDead = 135,
         ClientSyncedInventory = 138
     };
 

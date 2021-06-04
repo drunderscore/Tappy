@@ -30,6 +30,8 @@
 #include <LibTerraria/Net/Packets/Modules/Text.h>
 #include <LibTerraria/Net/Packets/Disconnect.h>
 #include <math.h>
+#include <LibTerraria/Net/Packets/PlayerActive.h>
+#include <LibTerraria/Net/Packets/PlayerDead.h>
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
@@ -65,6 +67,75 @@ void Client::disconnect(const Terraria::Net::NetworkText& reason)
     disconnect.set_reason(reason);
     send(disconnect);
     m_server.client_did_disconnect({}, *this, DisconnectReason::DisconnectedByServer);
+}
+
+void Client::full_sync(Client& to)
+{
+    Terraria::Net::Packets::PlayerActive player_active;
+    player_active.set_player_id(m_id);
+    player_active.set_active(1);
+    to.send(player_active);
+
+    Terraria::Net::Packets::PlayerInfo player_info;
+    player_info.set_player_id(m_id);
+    player_info.set_character(m_player.character());
+    to.send(player_info);
+
+    Terraria::Net::Packets::SyncPlayer sync_player;
+    sync_player.set_player_id(m_id);
+    sync_player.set_control_bits(m_player.control_bits());
+    sync_player.set_bits_2(m_player.bits_2());
+    sync_player.set_bits_3(m_player.bits_3());
+    sync_player.set_bits_4(m_player.bits_4());
+    sync_player.set_selected_item(static_cast<u8>(m_player.inventory().selected_slot()));
+    sync_player.position() = m_player.position();
+    sync_player.velocity() = m_player.velocity();
+    // TODO: Potion of return information
+    to.send(sync_player);
+
+    if (m_player.hp() <= 0)
+    {
+        Terraria::Net::Packets::PlayerDead player_dead;
+        player_dead.set_player_id(m_id);
+        to.send(player_dead);
+    }
+
+    Terraria::Net::Packets::PlayerHP player_hp;
+    player_hp.set_player_id(m_id);
+    player_hp.set_hp(m_player.hp());
+    player_hp.set_max_hp(m_player.max_hp());
+    to.send(player_hp);
+
+    Terraria::Net::Packets::TogglePvp toggle_pvp;
+    toggle_pvp.set_player_id(m_id);
+    toggle_pvp.set_pvp(m_player.pvp());
+    send(toggle_pvp);
+
+    // TODO: Player teams
+
+    Terraria::Net::Packets::PlayerMana player_mana;
+    player_mana.set_player_id(m_id);
+    player_mana.set_mana(m_player.mana());
+    player_mana.set_max_mana(m_player.max_mana());
+    to.send(player_mana);
+
+    Terraria::Net::Packets::PlayerBuffs player_buffs;
+    player_buffs.set_player_id(m_id);
+    player_buffs.buffs() = m_player.buffs();
+    to.send(player_buffs);
+
+    // TODO: Player chest index (the currently open chest)
+
+    Terraria::Net::Packets::SyncInventorySlot sync_inventory_slot;
+    sync_inventory_slot.set_player_id(m_id);
+    // @formatter:off
+    m_player.inventory().for_each([&](auto slot, auto item)
+    {
+        sync_inventory_slot.set_slot(slot);
+        sync_inventory_slot.item() = item;
+        to.send(sync_inventory_slot);
+    });
+    // @formatter:on
 }
 
 void Client::on_ready_to_read()
@@ -188,10 +259,10 @@ void Client::on_ready_to_read()
         outln("Wants to spawn player, probably themselves. Fuck that, let's just tell them to finish.");
         if (!m_has_finished_connecting)
         {
-            m_has_finished_connecting = true;
             m_server.client_did_finish_connecting({}, *this);
             Terraria::Net::Packets::ConnectFinished connect_finished;
             send(connect_finished);
+            m_has_finished_connecting = true;
         }
         m_server.client_did_spawn_player({}, *this, *spawn_player);
     }
@@ -256,12 +327,12 @@ void Client::on_ready_to_read()
         auto item_anim = Terraria::Net::Packets::PlayerItemAnimation::from_bytes(packet_bytes_stream);
         m_server.client_did_item_animation({}, *this, *item_anim);
     }
-    else if(packet_id == Terraria::Net::Packet::Id::ModifyTile)
+    else if (packet_id == Terraria::Net::Packet::Id::ModifyTile)
     {
         auto modify_tile = Terraria::Net::Packets::ModifyTile::from_bytes(packet_bytes_stream);
         m_server.client_did_modify_tile({}, *this, *modify_tile);
     }
-    else if(packet_id == Terraria::Net::Packet::Id::SyncTilePicking)
+    else if (packet_id == Terraria::Net::Packet::Id::SyncTilePicking)
     {
         auto sync_tile_picking = Terraria::Net::Packets::SyncTilePicking::from_bytes(packet_bytes_stream);
         m_server.client_did_sync_tile_picking({}, *this, *sync_tile_picking);

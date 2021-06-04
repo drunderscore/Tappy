@@ -11,6 +11,7 @@
 #include <LibTerraria/Net/Packets/TileSection.h>
 #include <LibTerraria/Net/Packets/SyncTileRect.h>
 #include <LibTerraria/Net/Packets/PlayerActive.h>
+#include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <Server/Scripting/Engine.h>
 #include <math.h>
 
@@ -91,6 +92,9 @@ void Server::client_did_connect_request(Badge<Client>, const Client& client, con
 
 void Server::client_did_sync_player(Badge<Client>, const Client& who, Terraria::Net::Packets::SyncPlayer& sync_player)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -102,6 +106,9 @@ void Server::client_did_sync_player(Badge<Client>, const Client& who, Terraria::
 
 void Server::client_did_send_player_info(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerInfo& info)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -133,14 +140,16 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
         spawn.set_context(1);
         who.send(spawn);
 
+        // @formatter:off
         kv.value->player().inventory().for_each([&](auto& slot, auto& item)
-                                                {
-                                                    Terraria::Net::Packets::SyncInventorySlot inv_slot;
-                                                    inv_slot.set_player_id(kv.key);
-                                                    inv_slot.set_slot(slot);
-                                                    inv_slot.item() = item;
-                                                    who.send(inv_slot);
-                                                });
+        {
+            Terraria::Net::Packets::SyncInventorySlot inv_slot;
+            inv_slot.set_player_id(kv.key);
+            inv_slot.set_slot(slot);
+            inv_slot.item() = item;
+            who.send(inv_slot);
+        });
+        // @formatter:on
 
         Terraria::Net::Packets::TogglePvp toggle_pvp;
         toggle_pvp.set_player_id(kv.key);
@@ -171,6 +180,9 @@ void Server::client_did_spawn_player(Badge<Client>, Client& client, const Terrar
 
 void Server::client_did_sync_mana(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerMana& player_mana)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -182,6 +194,9 @@ void Server::client_did_sync_mana(Badge<Client>, Client& who, const Terraria::Ne
 
 void Server::client_did_sync_hp(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerHP& player_hp)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -193,6 +208,9 @@ void Server::client_did_sync_hp(Badge<Client>, Client& who, const Terraria::Net:
 
 void Server::client_did_sync_buffs(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerBuffs& buffs)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -205,6 +223,9 @@ void Server::client_did_sync_buffs(Badge<Client>, Client& who, const Terraria::N
 void Server::client_did_sync_inventory_slot(Badge<Client>, Client& who,
                                             const Terraria::Net::Packets::SyncInventorySlot& inv_slot)
 {
+    if (!who.has_finished_connecting())
+        return;
+
     for (auto& kv : m_clients)
     {
         if (kv.key == who.id())
@@ -229,6 +250,7 @@ void Server::client_did_kill_projectile(Badge<Client>, const Client& who,
 
 void Server::client_did_toggle_pvp(Badge<Client>, const Client& who, const Terraria::Net::Packets::TogglePvp& toggle)
 {
+    // Is it okay that this isn't behind a has_finished_connecting()?
     m_engine->client_did_toggle_pvp({}, who, toggle);
 }
 
@@ -270,8 +292,15 @@ void Server::client_did_damage_npc(Badge<Client>, Client& who, const Terraria::N
 
 void Server::client_did_finish_connecting(Badge<Client>, Client& who)
 {
-    // TODO: We should send PlayerActive here, but it looks like we're sending all the other data too soon (as it arrives),
-    // so when we send PlayerActive it resets all of it...
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        who.full_sync(*kv.value);
+        kv.value->full_sync(who);
+    }
+
     m_engine->client_did_finish_connecting({}, who);
 }
 

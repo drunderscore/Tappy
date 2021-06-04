@@ -54,6 +54,8 @@ public:
     bool in_process_of_disconnecting() const
     { return m_in_process_of_disconnecting; }
 
+    void full_sync(Client& to);
+
 private:
     void on_ready_to_read();
 

@@ -29,6 +29,24 @@ public:
 
     ByteBuffer to_bytes() const override;
 
+    void set_player_id(u8 value)
+    { m_player_id = value; }
+
+    void set_control_bits(u8 value)
+    { m_control_bits = value; }
+
+    void set_bits_2(u8 value)
+    { m_bits_2 = value; }
+
+    void set_bits_3(u8 value)
+    { m_bits_3 = value; }
+
+    void set_bits_4(u8 value)
+    { m_bits_4 = value; }
+
+    void set_selected_item(u8 value)
+    { m_selected_item = value; }
+
     u8 player_id() const
     { return m_player_id; }
 
@@ -57,6 +75,18 @@ public:
     { return m_potion_of_return_use_position; }
 
     const Optional<EntityPoint>& potion_of_return_home_position() const
+    { return m_potion_of_return_home_position; }
+
+    EntityPoint& position()
+    { return m_position; }
+
+    Optional<EntityPoint>& velocity()
+    { return m_velocity; }
+
+    Optional<EntityPoint>& potion_of_return_use_position()
+    { return m_potion_of_return_use_position; }
+
+    Optional<EntityPoint>& potion_of_return_home_position()
     { return m_potion_of_return_home_position; }
 
 private:
