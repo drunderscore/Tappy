@@ -52,6 +52,7 @@ void Client::send(const Terraria::Net::Packet& packet)
     if (m_output_stream.has_any_error())
     {
         warnln("Stream errored trying to send data");
+        m_output_stream.handle_any_error();
         m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
     }
 }
