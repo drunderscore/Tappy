@@ -598,21 +598,14 @@ int Engine::player_set_pvp()
     toggle_pvp.set_player_id(client->id());
     toggle_pvp.set_pvp(pvp);
 
-    auto syncOnlyToSelf = lua_toboolean(m_state, 3);
+    auto syncToSelf = lua_toboolean(m_state, 3);
 
-    if (syncOnlyToSelf)
+    for (auto& c : m_server.clients())
     {
-        client->send(toggle_pvp);
-    }
-    else
-    {
-        for (auto& c : m_server.clients())
-        {
-            if (c->id() == client->id())
-                continue;
+        if (!syncToSelf && c->id() == client->id())
+            continue;
 
-            c->send(toggle_pvp);
-        }
+        c->send(toggle_pvp);
     }
 
     return 0;
