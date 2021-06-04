@@ -51,6 +51,9 @@ public:
     bool has_finished_connecting() const
     { return m_has_finished_connecting; }
 
+    bool in_process_of_disconnecting() const
+    { return m_in_process_of_disconnecting; }
+
 private:
     void on_ready_to_read();
 
@@ -62,4 +65,5 @@ private:
     Optional<UUID> m_uuid;
     u8 m_id;
     bool m_has_finished_connecting{};
+    bool m_in_process_of_disconnecting{};
 };

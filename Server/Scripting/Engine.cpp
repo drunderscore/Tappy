@@ -329,8 +329,11 @@ int Engine::game_clients()
     lua_newtable(m_state);
     for (auto& c : clients)
     {
-        client_userdata(c->id());
-        lua_rawseti(m_state, 1, c->id() + 1);
+        if(!c->in_process_of_disconnecting())
+        {
+            client_userdata(c->id());
+            lua_rawseti(m_state, 1, c->id() + 1);
+        }
     }
 
     return 1;
@@ -378,8 +381,8 @@ int Engine::client_id()
 
 int Engine::client_is_connected()
 {
-    lua_pushboolean(m_state,
-                    !m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client"))).is_null());
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    lua_pushboolean(m_state, !client.is_null() && !client->in_process_of_disconnecting());
 
     return 1;
 }
