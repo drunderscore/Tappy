@@ -6,6 +6,9 @@
 
 #include <LibTerraria/TileMap.h>
 
+// FIXME: Do what Serenity does with their debug macros
+#define SLOPE_DEBUG 0
+
 namespace Terraria
 {
 void TileMap::process_tile_modification(const Terraria::TileModification& modification)
@@ -61,6 +64,7 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
             break;
         case 7:
             tile.block()->set_shape(1);
+            dbgln_if(SLOPE_DEBUG, "Tile modify 7 with {}, we set the shape to 1", modification.flags_1);
         case 8:
             tile.set_has_actuator(true);
             break;
@@ -80,7 +84,12 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
             tile.set_green_wire(false);
             break;
         case 14:
-            tile.block()->set_shape(modification.flags_1 + 1);
+        {
+            auto shape = modification.flags_1 == 0 ? 0 : modification.flags_1 + 1;
+            tile.block()->set_shape(shape);
+            dbgln_if(SLOPE_DEBUG, "Tile modify 14 with {}, we set the shape to {}",
+                     modification.flags_1, shape);
+        }
             break;
         case 16:
             tile.set_yellow_wire(true);
