@@ -259,6 +259,13 @@ void Server::client_did_finish_connecting(Badge<Client>, Client& who)
         kv.value->full_sync(who);
     }
 
+    for (auto& kv : m_projectiles)
+    {
+        Terraria::Net::Packets::SyncProjectile sync_projectile;
+        sync_projectile.projectile() = kv.value;
+        who.send(sync_projectile);
+    }
+
     m_engine->client_did_finish_connecting({}, who);
 }
 
