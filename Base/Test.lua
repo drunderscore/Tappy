@@ -134,7 +134,7 @@ Hooks.add("modifyTile", function(event)
         event.canceled = true
         local lastNag = modifyTileNagLastTime[event.client:id()]
         if lastNag == nil or now > lastNag + 3 then
-            event.client:sendMessage("You cannot modify that close to the spawn region", 255, Color.RED)
+            event.client:sendMessage("You cannot modify that close to the spawn region", 255, Colors.RED)
             modifyTileNagLastTime[event.client:id()] = now
         end
     end
