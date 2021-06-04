@@ -64,6 +64,7 @@ add_library(Terraria
         Net/Packets/SyncInventorySlot.cpp
         PlayerMana.h
         Modules/Text.h
+        PlayerActive.h
         )
 
 target_include_directories(Terraria SYSTEM PRIVATE

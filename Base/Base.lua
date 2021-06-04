@@ -149,4 +149,12 @@ function Base.onModifyTile(client, modification)
     end
 end
 
+function Base.onClientDisconnect(client, reason)
+    local event = {}
+    event.client = client
+    event.reason = reason
+
+    Hooks.publish("disconnect", event)
+end
+
 return Base

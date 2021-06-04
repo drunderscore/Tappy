@@ -61,6 +61,8 @@ public:
 
     void client_did_modify_tile(Badge<Server>, Client&, const Terraria::Net::Packets::ModifyTile&);
 
+    void client_did_disconnect(Badge<Server>, Client&, Client::DisconnectReason);
+
 private:
     static HashMap<lua_State*, Engine*> s_engines;
     lua_State* m_state;

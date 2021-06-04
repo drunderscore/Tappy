@@ -10,6 +10,7 @@
 #include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
 #include <LibTerraria/Net/Packets/TileSection.h>
 #include <LibTerraria/Net/Packets/SyncTileRect.h>
+#include <LibTerraria/Net/Packets/PlayerActive.h>
 #include <Server/Scripting/Engine.h>
 #include <math.h>
 
@@ -269,6 +270,8 @@ void Server::client_did_damage_npc(Badge<Client>, Client& who, const Terraria::N
 
 void Server::client_did_finish_connecting(Badge<Client>, Client& who)
 {
+    // TODO: We should send PlayerActive here, but it looks like we're sending all the other data too soon (as it arrives),
+    // so when we send PlayerActive it resets all of it...
     m_engine->client_did_finish_connecting({}, who);
 }
 
@@ -318,10 +321,19 @@ void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,
     // TODO: Should we save this in the tile? I'm not sure it really pays to save it, or if the game does at all.
 }
 
-void Server::client_did_disconnect(Badge<Client>, Client& who, Client::DisconnectReason)
+void Server::client_did_disconnect(Badge<Client>, Client& who, Client::DisconnectReason reason)
 {
-    outln("Client {}/{} disconnected.", who.id(), who.address());
-    m_clients.remove(who.id());
+    m_engine->client_did_disconnect({}, who, reason);
+    auto id = who.id();
+    outln("Client {}/{} disconnected.", id, who.address());
+    m_clients.remove(id);
+
+    Terraria::Net::Packets::PlayerActive player_active;
+    player_active.set_player_id(id);
+    player_active.set_active(0);
+
+    for (auto& kv : m_clients)
+        kv.value->send(player_active);
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

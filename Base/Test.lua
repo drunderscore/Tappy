@@ -127,6 +127,17 @@ Hooks.add("finishedConnecting", function(event)
     Utils.broadcast(name .. " finished connecting.", Colors.MAGENTA)
 end)
 
+Hooks.add("disconnect", function(event)
+    local name = event.client:player():character().name
+    -- FIXME: The Lua API should not have to keep track of whether a client is really connected or in the process of
+    -- disconnecting.
+    for _, c in pairs(Game.clients()) do
+        if c ~= event.client then
+            c:sendMessage(name .. " disconnected.", 255, Colors.TEAL)
+        end
+    end
+end)
+
 local modifyTileNagLastTime = {}
 Hooks.add("modifyTile", function(event)
     local now = os.time()

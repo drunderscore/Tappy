@@ -30,6 +30,7 @@ public:
         TileFrameSection,
         SpawnPlayer,
         SyncPlayer,
+        PlayerActive = 14,
         PlayerHP = 16,
         ModifyTile = 17,
         SyncTileRect = 20,

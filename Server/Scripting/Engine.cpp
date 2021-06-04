@@ -243,6 +243,14 @@ void Engine::client_did_modify_tile(Badge<Server>, Client& who, const Terraria::
     lua_call(m_state, 2, 0);
 }
 
+void Engine::client_did_disconnect(Badge<Server>, Client& who, Client::DisconnectReason reason)
+{
+    lua_getfield(m_state, 1, "onClientDisconnect");
+    client_userdata(who.id());
+    lua_pushinteger(m_state, static_cast<lua_Integer>(reason));
+    lua_call(m_state, 2, 0);
+}
+
 void* Engine::client_userdata(u8 id) const
 {
     auto* client_ud = lua_newuserdata(m_state, sizeof(id));
