@@ -11,6 +11,7 @@
 
 local Hooks = require("Hooks") -- This let's us know when certain actions happen in-game and hook them
 local Utils = require("Utilities")
+local Colors = require("Colors")
 local nextNpcId = 1
 
 Hooks.add("chat", function(event)
@@ -25,10 +26,10 @@ Hooks.add("chat", function(event)
             local x = tonumber(args[2])
             local y = tonumber(args[3])
             if not x or not y then
-                event.client:sendMessage("Invalid position", 255, { r = 255, g = 0, b = 0 })
+                event.client:sendMessage("Invalid position", 255, Colors.RED)
                 return
             end
-            event.client:sendMessage("Teleporting to " .. x .. ", " .. y, 255, { r = 0x55, g = 0xad, b = 0x12 })
+            event.client:sendMessage("Teleporting to " .. x .. ", " .. y, 255, Colors.YELLOW)
             event.client:player():teleport({ x = x, y = y })
         elseif #args >= 2 then
             local targetClient
@@ -40,15 +41,15 @@ Hooks.add("chat", function(event)
             end
 
             if not targetClient then
-                event.client:sendMessage("Unknown player", 255, { r = 255, g = 0, b = 0 })
+                event.client:sendMessage("Unknown player", 255, Colors.RED)
             elseif targetClient == event.client then
-                event.client:sendMessage("You cannot teleport to yourself", 255, { r = 255, g = 0, b = 0 })
+                event.client:sendMessage("You cannot teleport to yourself", 255, Colors.RED)
             else
-                event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, { r = 0x55, g = 0xad, b = 0x12 })
+                event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, Colors.YELLOW)
                 event.client:player():teleport(targetClient:player():position())
             end
         else
-            event.client:sendMessage("Not enough arguments", 255, { r = 255, g = 0, b = 0 })
+            event.client:sendMessage("Not enough arguments", 255, Colors.RED)
         end
     elseif string.find(event.message, "/npc") == 1 then
         event.canceled = true
@@ -91,7 +92,7 @@ Hooks.add("chat", function(event)
         end
 
         event.client:player():inventory():setItem(49, { id = id, stack = stack })
-        event.client:sendMessage("Given " .. stack .. " of " .. id, 255, { r = 0x55, g = 0xad, b = 0x12 })
+        event.client:sendMessage("Given " .. stack .. " of " .. id, 255, Colors.YELLOW)
     elseif string.find(event.message, "/kickme") == 1 then
         event.canceled = true
         event.client:disconnect("bye bye.")
@@ -113,7 +114,7 @@ Hooks.add("playerDeath", function(event)
         text = event.target:player():character().name .. " died."
     end
 
-    Utils.broadcast(text, { r = 255, g = 255, b = 10 })
+    Utils.broadcast(text, Colors.SPRINGGREEN)
 end)
 
 Hooks.add("damageNpc", function(event)
@@ -121,10 +122,9 @@ Hooks.add("damageNpc", function(event)
 end)
 
 Hooks.add("finishedConnecting", function(event)
-    local thePink = { r = 255, g = 0, b = 255 }
     local name = event.client:player():character().name
     print(name .. "/" .. event.client:address() .. " finished connecting")
-    Utils.broadcast(name .. " finished connecting.", thePink)
+    Utils.broadcast(name .. " finished connecting.", Colors.MAGENTA)
 end)
 
 local modifyTileNagLastTime = {}
@@ -134,7 +134,7 @@ Hooks.add("modifyTile", function(event)
         event.canceled = true
         local lastNag = modifyTileNagLastTime[event.client:id()]
         if lastNag == nil or now > lastNag + 3 then
-            event.client:sendMessage("You cannot modify that close to the spawn region", 255, { r = 255, g = 0, b = 0 })
+            event.client:sendMessage("You cannot modify that close to the spawn region", 255, Color.RED)
             modifyTileNagLastTime[event.client:id()] = now
         end
     end
