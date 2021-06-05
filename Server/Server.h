@@ -31,6 +31,7 @@
 #include <LibTerraria/Net/Packets/SyncTilePicking.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
+#include <LibTerraria/World.h>
 
 namespace Scripting
 {
@@ -101,10 +102,13 @@ public:
     { return m_projectiles; }
 
     const Terraria::TileMap& tile_map() const
-    { return m_tile_map; }
+    { return *m_world->tile_map(); }
 
     Terraria::TileMap& tile_map()
-    { return m_tile_map; }
+    { return *m_world->tile_map(); }
+
+    const RefPtr<Terraria::World> world() const
+    { return m_world; }
 
 private:
     OwnPtr<Scripting::Engine> m_engine;
@@ -112,5 +116,5 @@ private:
     HashMap<u8, NonnullOwnPtr<Client>> m_clients;
     Core::EventLoop m_event_loop;
     HashMap<i16, Terraria::Projectile> m_projectiles;
-    Terraria::MemoryTileMap m_tile_map;
+    RefPtr<Terraria::World> m_world;
 };

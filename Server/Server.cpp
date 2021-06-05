@@ -13,36 +13,27 @@
 #include <LibTerraria/Net/Packets/PlayerActive.h>
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <Server/Scripting/Engine.h>
-#include <math.h>
+#include <LibTerraria/Net/Packets/WorldData.h>
 
-Server::Server() : m_server(Core::TCPServer::construct()),
-                   m_tile_map(4200, 1200)
+Server::Server() : m_server(Core::TCPServer::construct())
 {
-    Terraria::Tile stone;
-    stone.block() = Terraria::Tile::Block::Id::Stone;
-    Terraria::Tile dirt;
-    dirt.block() = Terraria::Tile::Block::Id::Dirt;
-    Terraria::Tile grass;
-    grass.block() = Terraria::Tile::Block::Id::Grass;
-    Terraria::Tile obsidian;
-    obsidian.block() = Terraria::Tile::Block::Id::Obsidian;
-
-    for (u16 x = 0; x < m_tile_map.width(); x++)
+    auto file = Core::File::open("Test.wld", Core::IODevice::OpenMode::ReadOnly);
+    if (file.is_error())
     {
-        for (u16 y = 0; y < 50; y++)
-        {
-            {
-                if (y == 0)
-                    m_tile_map.at(x + 41, y + 300) = grass;
-                else if (y == 50 - 1)
-                    m_tile_map.at(x + 41, y + 300) = obsidian;
-                else if (y > 3)
-                    m_tile_map.at(x + 41, y + 300) = stone;
-                else
-                    m_tile_map.at(x + 41, y + 300) = dirt;
-            }
-        }
+        warnln("Failed to open world: {}", file.error());
+        VERIFY_NOT_REACHED();
     }
+    auto file_bytes = file.value()->read_all();
+    auto stream = InputMemoryStream(file_bytes);
+
+    auto world_or_error = Terraria::World::try_load_world(stream);
+    if (world_or_error.is_error())
+    {
+        warnln("Failed to load world: {}", world_or_error.error());
+        VERIFY_NOT_REACHED();
+    }
+
+    m_world = world_or_error.release_value();
 
     m_engine = make<Scripting::Engine>(*this);
     m_server->on_ready_to_accept = [this]
@@ -120,7 +111,18 @@ void Server::client_did_send_player_info(Badge<Client>, Client& who, const Terra
 
 void Server::client_did_request_world_data(Badge<Client>, Client& who)
 {
-    // No longer used but might be in the future?
+    Terraria::Net::Packets::WorldData world_data;
+    world_data.set_max_tiles_x(m_world->m_max_tiles_x);
+    world_data.set_max_tiles_y(m_world->m_max_tiles_y);
+    world_data.set_world_surface(m_world->m_surface);
+    world_data.set_rock_layer(m_world->m_rock_layer);
+    world_data.set_world_name(m_world->name());
+    world_data.set_spawn_x(m_world->m_spawn_tile.x);
+    world_data.set_spawn_y(m_world->m_spawn_tile.y);
+    world_data.set_time(8000);
+    world_data.set_day_state(1);
+    world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
+    who.send(world_data);
 }
 
 void Server::client_did_spawn_player(Badge<Client>, Client& client, const Terraria::Net::Packets::SpawnPlayer& spawn)
@@ -283,14 +285,17 @@ void Server::client_did_item_animation(Badge<Client>, Client& who,
 
 void Server::client_did_request_spawn_sections(Badge<Client>, Client& who, const Terraria::Net::Packets::SpawnData&)
 {
-    Terraria::Net::Packets::TileSection section(m_tile_map, 0, 0, m_tile_map.width(), m_tile_map.height());
-    who.send(section);
+    for (int i = 0; i < m_world->tile_map()->width() / 100; i++)
+    {
+        Terraria::Net::Packets::TileSection tile_section(tile_map(), i * 100, 0, 100, m_world->tile_map()->height());
+        who.send(tile_section);
+    }
 
     Terraria::Net::Packets::TileFrameSection frame_section;
     frame_section.set_start_x(0);
     frame_section.set_start_y(0);
-    frame_section.set_end_x(floor(m_tile_map.width()) / 200);
-    frame_section.set_end_y(floor(m_tile_map.height()) / 150);
+    frame_section.set_end_x(tile_map().width() / 200);
+    frame_section.set_end_y(tile_map().height() / 150);
     who.send(frame_section);
 
     Terraria::Net::Packets::SpawnPlayerSelf spawn_self;

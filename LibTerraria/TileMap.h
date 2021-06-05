@@ -14,7 +14,7 @@
 
 namespace Terraria
 {
-class TileMap
+class TileMap : public RefCounted<TileMap>
 {
 public:
     virtual u16 width() const = 0;
@@ -41,7 +41,7 @@ public:
 
     virtual void process_tile_modification(const Terraria::TileModification&);
 
-    constexpr size_t index_for_position(const TilePoint& point) const
+    ALWAYS_INLINE constexpr size_t index_for_position(const TilePoint& point) const
     {
         return point.x + (width() * point.y);
     }
@@ -94,6 +94,7 @@ public:
 private:
     const u16 m_width;
     const u16 m_height;
-    Vector<Tile> m_tiles;
+    static constexpr size_t tile_inline_capacity = MiB * 2;
+    Vector<Tile, tile_inline_capacity> m_tiles;
 };
 }

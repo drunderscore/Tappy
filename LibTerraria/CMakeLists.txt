@@ -66,6 +66,8 @@ add_library(Terraria
         Modules/Text.h
         PlayerActive.h
         PlayerDead.h
+        World.cpp
+        FileMetadata.cpp
         )
 
 target_include_directories(Terraria SYSTEM PRIVATE

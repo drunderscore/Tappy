@@ -205,19 +205,6 @@ void Client::on_ready_to_read()
     }
     else if (packet_id == Terraria::Net::Packet::Id::RequestWorldData)
     {
-        Terraria::Net::Packets::WorldData world_data;
-        world_data.set_max_tiles_x(4200);
-        world_data.set_max_tiles_y(1200);
-        world_data.set_world_surface(500);
-        world_data.set_rock_layer(600);
-        world_data.set_world_name("lol im cool");
-        world_data.set_spawn_x(world_data.max_tiles_x() / 2);
-        world_data.set_spawn_y(300);
-        world_data.set_time(8000);
-        world_data.set_day_state(1);
-        world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
-        send(world_data);
-
         m_server.client_did_request_world_data({}, *this);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientUUID)

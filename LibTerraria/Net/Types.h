@@ -57,8 +57,7 @@ public:
             stream >> b;
             value |= (b & 0x7F) << shift;
             shift += 7;
-        }
-        while ((b & 0x80) != 0);
+        } while ((b & 0x80) != 0);
         return shift / 7;
     }
 

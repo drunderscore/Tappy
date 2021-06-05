@@ -329,7 +329,7 @@ int Engine::game_clients()
     lua_newtable(m_state);
     for (auto& c : clients)
     {
-        if(!c->in_process_of_disconnecting())
+        if (!c->in_process_of_disconnecting())
         {
             client_userdata(c->id());
             lua_rawseti(m_state, 1, c->id() + 1);
