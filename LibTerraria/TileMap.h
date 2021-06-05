@@ -25,6 +25,16 @@ public:
 
     virtual Tile& at(const TilePoint& position) = 0;
 
+    ALWAYS_INLINE Tile& at(u16 x, u16 y)
+    {
+        return at({x, y});
+    }
+
+    ALWAYS_INLINE const Tile& at(u16 x, u16 y) const
+    {
+        return at({x, y});
+    }
+
     virtual const Span<const Tile> tiles() const = 0;
 
     virtual Span<Tile> tiles() = 0;

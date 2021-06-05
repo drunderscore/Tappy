@@ -31,11 +31,11 @@ ByteBuffer TileSection::to_bytes() const
     stream_deflated << m_width;
     stream_deflated << m_height;
 
-    for (u16 y = m_starting_y; y < m_height; y++)
+    for (u16 y = 0; y < m_height; y++)
     {
-        for (u16 x = m_starting_x; x < m_width; x++)
+        for (u16 x = 0; x < m_width; x++)
         {
-            const auto& tile = m_tile_map.at({x, y});
+            const auto& tile = m_tile_map.at(x + m_starting_x, y + m_starting_y);
 
             // There are 3 bitmask headers, of which the first is always present.
             // The first header says if the second header is present.
@@ -48,6 +48,7 @@ ByteBuffer TileSection::to_bytes() const
             auto& block = tile.block();
             auto& wall_id = tile.wall_id();
             bool additional_tile_byte = false;
+            bool additional_wall_byte = false;
 
             if (block.has_value())
             {
@@ -62,8 +63,11 @@ ByteBuffer TileSection::to_bytes() const
             if (wall_id.has_value())
             {
                 header |= m_wall_bit;
-                // FIXME: Support extended wall bytes (and more headers to accomplish the former)
-                VERIFY(static_cast<u16>(*wall_id) <= 255);
+                if (static_cast<u16>(*wall_id) > 255)
+                {
+                    header3 |= m_additional_wall_byte_bit;
+                    additional_wall_byte = true;
+                }
             }
 
             if (tile.has_red_wire())
@@ -115,6 +119,11 @@ ByteBuffer TileSection::to_bytes() const
 
             if (wall_id.has_value())
                 stream_deflated << static_cast<u8>(*wall_id);
+
+            // TODO: Liquids
+
+            if (additional_wall_byte)
+                stream_deflated << static_cast<u8>(static_cast<u16>(*wall_id) >> 8);
         }
     }
 
