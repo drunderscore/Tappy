@@ -697,40 +697,70 @@ public:
     { return m_wall_id; }
 
     bool has_red_wire() const
-    { return m_has_red_wire; }
+    { return (m_flags & m_red_wire_bit) == m_red_wire_bit; }
 
     bool has_blue_wire() const
-    { return m_has_blue_wire; }
+    { return (m_flags & m_blue_wire_bit) == m_blue_wire_bit; }
 
     bool has_green_wire() const
-    { return m_has_green_wire; }
+    { return (m_flags & m_green_wire_bit) == m_green_wire_bit; }
 
     bool has_yellow_wire() const
-    { return m_has_yellow_wire; }
+    { return (m_flags & m_yellow_wire_bit) == m_yellow_wire_bit; }
 
     bool has_actuator() const
-    { return m_has_actuator; }
+    { return (m_flags & m_actuator_bit) == m_actuator_bit; }
 
     bool is_actuated() const
-    { return m_is_actuated; }
+    { return (m_flags & m_actuated_bit) == m_actuated_bit; }
 
     void set_red_wire(bool value)
-    { m_has_red_wire = value; }
+    {
+        if (value)
+            m_flags |= m_red_wire_bit;
+        else
+            m_flags &= ~m_red_wire_bit;
+    }
 
     void set_blue_wire(bool value)
-    { m_has_blue_wire = value; }
+    {
+        if (value)
+            m_flags |= m_blue_wire_bit;
+        else
+            m_flags &= ~m_blue_wire_bit;
+    }
 
     void set_green_wire(bool value)
-    { m_has_green_wire = value; }
+    {
+        if (value)
+            m_flags |= m_green_wire_bit;
+        else
+            m_flags &= ~m_green_wire_bit;
+    }
 
     void set_yellow_wire(bool value)
-    { m_has_yellow_wire = value; }
+    {
+        if (value)
+            m_flags |= m_yellow_wire_bit;
+        else
+            m_flags &= ~m_yellow_wire_bit;
+    }
 
     void set_has_actuator(bool value)
-    { m_has_actuator = value; }
+    {
+        if (value)
+            m_flags |= m_actuator_bit;
+        else
+            m_flags &= ~m_actuator_bit;
+    }
 
     void set_is_actuated(bool value)
-    { m_is_actuated = value; }
+    {
+        if (value)
+            m_flags |= m_actuated_bit;
+        else
+            m_flags &= ~m_actuated_bit;
+    }
 
     static constexpr i16 frame_x_for_style(i16 style)
     {
@@ -743,15 +773,16 @@ public:
     }
 
 private:
+    u8 m_flags{};
     Optional<Block> m_block;
     Optional<WallId> m_wall_id;
-    // TODO: Optimize with bitfield?
-    bool m_has_red_wire{};
-    bool m_has_blue_wire{};
-    bool m_has_green_wire{};
-    bool m_has_yellow_wire{};
-    bool m_has_actuator{};
-    bool m_is_actuated{};
     // TODO: Liquid
+
+    static constexpr u8 m_red_wire_bit = 0b0000'0001;
+    static constexpr u8 m_blue_wire_bit = 0b0000'0010;
+    static constexpr u8 m_green_wire_bit = 0b0000'0100;
+    static constexpr u8 m_yellow_wire_bit = 0b0000'1000;
+    static constexpr u8 m_actuator_bit = 0b0001'0000;
+    static constexpr u8 m_actuated_bit = 0b0010'0000;
 };
 }
