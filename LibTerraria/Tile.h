@@ -762,6 +762,24 @@ public:
             m_flags &= ~m_actuated_bit;
     }
 
+    // FIXME: Magic value
+    // _technically_ don't need the mask as it's at the end and all the other bytes fall off after shifting...
+    u8 liquid() const
+    { return (m_flags & m_liquid_bits) >> m_liquid_shift; }
+
+    void set_liquid(u8 value)
+    {
+        // Remove the previous bits
+        m_flags &= ~m_liquid_bits;
+        m_flags |= ((value << m_liquid_shift) & m_liquid_bits);
+    }
+
+    u8 liquid_amount() const
+    { return m_liquid_amount; }
+
+    void set_liquid_amount(u8 value)
+    { m_liquid_amount = value; }
+
     static constexpr i16 frame_x_for_style(i16 style)
     {
         return style * 18;
@@ -774,6 +792,7 @@ public:
 
 private:
     u8 m_flags{};
+    u8 m_liquid_amount{};
     Optional<Block> m_block;
     Optional<WallId> m_wall_id;
     // TODO: Liquid
@@ -784,5 +803,7 @@ private:
     static constexpr u8 m_yellow_wire_bit = 0b0000'1000;
     static constexpr u8 m_actuator_bit = 0b0001'0000;
     static constexpr u8 m_actuated_bit = 0b0010'0000;
+    static constexpr u8 m_liquid_bits = 0b1100'0000;
+    static constexpr u8 m_liquid_shift = 6;
 };
 }

@@ -70,6 +70,9 @@ ByteBuffer TileSection::to_bytes() const
                 }
             }
 
+            if (tile.liquid_amount() != 0)
+                header |= tile.liquid() << m_liquid_shift;
+
             if (tile.has_red_wire())
                 header2 |= m_red_wire_bit;
 
@@ -120,7 +123,8 @@ ByteBuffer TileSection::to_bytes() const
             if (wall_id.has_value())
                 stream_deflated << static_cast<u8>(*wall_id);
 
-            // TODO: Liquids
+            if (tile.liquid_amount() != 0)
+                stream_deflated << tile.liquid_amount();
 
             if (additional_wall_byte)
                 stream_deflated << static_cast<u8>(static_cast<u16>(*wall_id) >> 8);
