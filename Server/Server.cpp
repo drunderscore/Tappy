@@ -333,6 +333,19 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
 
     for (auto& kv : m_clients)
         kv.value->send(player_active);
+
+    // Let's remove all of this client's projectiles when they are disconnected
+    for (auto& kv : m_projectiles)
+    {
+        if (kv.value.owner() == id)
+        {
+            Terraria::Net::Packets::KillProjectile kill_projectile;
+            kill_projectile.set_projectile_id(kv.key);
+            kill_projectile.set_owner(id);
+            for (auto& client_kv : m_clients)
+                client_kv.value->send(kill_projectile);
+        }
+    }
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)
