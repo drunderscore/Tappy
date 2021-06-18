@@ -38,8 +38,11 @@ namespace Scripting
 class Engine;
 }
 
-class Server
+class Server : public Core::Object
 {
+    // @formatter:off
+    C_OBJECT(Server);
+    // @formatter:on
 public:
     Server();
 

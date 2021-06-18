@@ -26,65 +26,70 @@ Engine::Engine(Server& server) :
         m_server(server)
 {
     m_state = luaL_newstate();
+    // @formatter:off
     VERIFY(m_state);
+    // @formatter:on
     s_engines.set(m_state, this);
     lua_atpanic(m_state, at_panic_thunk);
     luaL_openlibs(m_state);
 
+    // @formatter:off
     static const struct luaL_Reg game_lib[] =
-            {
-                    {"client",           game_client_thunk},
-                    {"clients",          game_clients_thunk},
-                    {"addProjectile",    game_add_projectile_thunk},
-                    {"projectileExists", game_projectile_exists_thunk},
-                    {}
-            };
+    {
+        {"client",           game_client_thunk},
+        {"clients",          game_clients_thunk},
+        {"addProjectile",    game_add_projectile_thunk},
+        {"projectileExists", game_projectile_exists_thunk},
+        {}
+    };
 
     static const struct luaL_Reg timer_lib[] =
-            {
-                    {"create", timer_create_thunk},
-                    {}
-            };
+    {
+        {"create", timer_create_thunk},
+        {}
+    };
 
     static const struct luaL_Reg client_lib[] =
-            {
-                    {"id",             client_id_thunk},
-                    {"isConnected",    client_is_connected_thunk},
-                    {"sendMessage",    client_send_message_thunk},
-                    {"disconnect",     client_disconnect_thunk},
-                    {"player",         client_player_thunk},
-                    {"address",        client_address_thunk},
-                    {"syncProjectile", client_sync_projectile_thunk},
-                    {"killProjectile", client_kill_projectile_thunk},
-                    {"__eq",           client_equals_thunk},
-                    {"syncNpc",        client_sync_npc_thunk},
-                    {"syncTileRect",   client_sync_tile_rect_thunk},
-                    {"modifyTile",     client_modify_tile_thunk},
-                    {}
-            };
+    {
+        {"id",             client_id_thunk},
+        {"isConnected",    client_is_connected_thunk},
+        {"sendMessage",    client_send_message_thunk},
+        {"disconnect",     client_disconnect_thunk},
+        {"player",         client_player_thunk},
+        {"address",        client_address_thunk},
+        {"syncProjectile", client_sync_projectile_thunk},
+        {"killProjectile", client_kill_projectile_thunk},
+        {"__eq",           client_equals_thunk},
+        {"syncNpc",        client_sync_npc_thunk},
+        {"syncTileRect",   client_sync_tile_rect_thunk},
+        {"modifyTile",     client_modify_tile_thunk},
+        {"uuid",           client_uuid_thunk},
+        {}
+    };
 
     static const struct luaL_Reg player_lib[] =
-            {
-                    {"character",       player_character_thunk},
-                    {"buffs",           player_buffs_thunk},
-                    {"setPvp",          player_set_pvp_thunk},
-                    {"buffs",           player_buffs_thunk},
-                    {"setPvp",          player_set_pvp_thunk},
-                    {"position",        player_position_thunk},
-                    {"inventory",       player_inventory_thunk},
-                    {"character",       player_character_thunk},
-                    {"updateCharacter", player_update_character_thunk},
-                    {"teleport",        player_teleport_thunk},
-                    {}
-            };
+    {
+        {"character",       player_character_thunk},
+        {"buffs",           player_buffs_thunk},
+        {"setPvp",          player_set_pvp_thunk},
+        {"buffs",           player_buffs_thunk},
+        {"setPvp",          player_set_pvp_thunk},
+        {"position",        player_position_thunk},
+        {"inventory",       player_inventory_thunk},
+        {"character",       player_character_thunk},
+        {"updateCharacter", player_update_character_thunk},
+        {"teleport",        player_teleport_thunk},
+        {}
+    };
 
     static const struct luaL_Reg inventory_lib[] =
-            {
-                    {"item",    inventory_item_thunk},
-                    {"setItem", inventory_set_item_thunk},
-                    {"owner",   inventory_owner_thunk},
-                    {}
-            };
+    {
+        {"item",    inventory_item_thunk},
+        {"setItem", inventory_set_item_thunk},
+        {"owner",   inventory_owner_thunk},
+        {}
+    };
+    // @formatter:on
 
     luaL_newmetatable(m_state, "Server::Client");
     lua_pushstring(m_state, "__index");
@@ -123,6 +128,8 @@ Engine::Engine(Server& server) :
         VERIFY_NOT_REACHED();
     }
 
+    m_base_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
+
     if constexpr (LOAD_TEST_SCRIPT)
     {
         errored = luaL_dofile(m_state, "Base/Test.lua");
@@ -137,6 +144,8 @@ Engine::Engine(Server& server) :
 Engine::~Engine()
 {
     s_engines.remove(m_state);
+    luaL_unref(m_state, LUA_REGISTRYINDEX, m_base_ref);
+    m_base_ref = 0;
     lua_close(m_state);
 }
 
@@ -153,7 +162,8 @@ int Engine::at_panic()
 
 void Engine::client_did_send_message(Badge<Server>, const Client& who, const String& message)
 {
-    lua_getfield(m_state, 1, "onClientChat");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientChat");
     client_userdata(who.id());
     lua_pushstring(m_state, message.characters());
     lua_call(m_state, 2, 0);
@@ -162,7 +172,8 @@ void Engine::client_did_send_message(Badge<Server>, const Client& who, const Str
 void Engine::client_did_sync_projectile(Badge<Server>, const Client& who,
                                         const Terraria::Net::Packets::SyncProjectile& proj_sync)
 {
-    lua_getfield(m_state, 1, "onClientSyncProjectile");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientSyncProjectile");
     client_userdata(who.id());
     Types::projectile(m_state, proj_sync.projectile());
     lua_call(m_state, 2, 0);
@@ -170,7 +181,8 @@ void Engine::client_did_sync_projectile(Badge<Server>, const Client& who,
 
 void Engine::client_did_connect_request(Badge<Server>, const Client& client, const String& version)
 {
-    lua_getfield(m_state, 1, "onConnectRequest");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onConnectRequest");
     client_userdata(client.id());
     lua_pushstring(m_state, version.characters());
     lua_call(m_state, 2, 0);
@@ -178,7 +190,8 @@ void Engine::client_did_connect_request(Badge<Server>, const Client& client, con
 
 void Engine::client_did_toggle_pvp(Badge<Server>, const Client& who, const Terraria::Net::Packets::TogglePvp& toggle)
 {
-    lua_getfield(m_state, 1, "onTogglePvp");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onTogglePvp");
     client_userdata(who.id());
     lua_pushboolean(m_state, toggle.pvp());
     lua_call(m_state, 2, 0);
@@ -186,7 +199,8 @@ void Engine::client_did_toggle_pvp(Badge<Server>, const Client& who, const Terra
 
 void Engine::client_did_hurt_player(Badge<Server>, Client& who, const Terraria::Net::Packets::PlayerHurt& player_hurt)
 {
-    lua_getfield(m_state, 1, "onPlayerHurt");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onPlayerHurt");
     client_userdata(who.id());
     client_userdata(player_hurt.player_id());
     Types::player_death_reason(m_state, player_hurt.reason());
@@ -199,7 +213,8 @@ void Engine::client_did_hurt_player(Badge<Server>, Client& who, const Terraria::
 
 void Engine::client_did_player_death(Badge<Server>, Client& who, const Terraria::Net::Packets::PlayerDeath& death)
 {
-    lua_getfield(m_state, 1, "onPlayerDeath");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onPlayerDeath");
     client_userdata(who.id());
     client_userdata(death.player_id());
     Types::player_death_reason(m_state, death.reason());
@@ -211,7 +226,8 @@ void Engine::client_did_player_death(Badge<Server>, Client& who, const Terraria:
 
 void Engine::client_did_damage_npc(Badge<Server>, Client& who, const Terraria::Net::Packets::DamageNPC& damage_npc)
 {
-    lua_getfield(m_state, 1, "onDamageNpc");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onDamageNpc");
     client_userdata(who.id());
     lua_pushinteger(m_state, damage_npc.npc_id());
     lua_pushinteger(m_state, damage_npc.damage());
@@ -223,21 +239,24 @@ void Engine::client_did_damage_npc(Badge<Server>, Client& who, const Terraria::N
 
 void Engine::client_did_finish_connecting(Badge<Server>, Client& who)
 {
-    lua_getfield(m_state, 1, "onClientFinishConnecting");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientFinishConnecting");
     client_userdata(who.id());
     lua_call(m_state, 1, 0);
 }
 
 void Engine::client_did_spawn_player(Badge<Server>, Client& who, const Terraria::Net::Packets::SpawnPlayer&)
 {
-    lua_getfield(m_state, 1, "onPlayerSpawn");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onPlayerSpawn");
     client_userdata(who.id());
     lua_call(m_state, 1, 0);
 }
 
 void Engine::client_did_modify_tile(Badge<Server>, Client& who, const Terraria::Net::Packets::ModifyTile& modify)
 {
-    lua_getfield(m_state, 1, "onModifyTile");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onModifyTile");
     client_userdata(who.id());
     Types::tile_modification(m_state, modify.modification());
     lua_call(m_state, 2, 0);
@@ -245,7 +264,8 @@ void Engine::client_did_modify_tile(Badge<Server>, Client& who, const Terraria::
 
 void Engine::client_did_disconnect(Badge<Server>, Client& who, Client::DisconnectReason reason)
 {
-    lua_getfield(m_state, 1, "onClientDisconnect");
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientDisconnect");
     client_userdata(who.id());
     lua_pushinteger(m_state, static_cast<lua_Integer>(reason));
     lua_call(m_state, 2, 0);
@@ -278,6 +298,11 @@ void* Engine::inventory_userdata(u8 id) const
     return inventory_ud;
 }
 
+void Engine::push_base_table() const
+{
+    lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_base_ref);
+}
+
 int Engine::timer_create()
 {
     auto function_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
@@ -290,8 +315,12 @@ int Engine::timer_create()
         {
             luaL_unref(m_state, LUA_REGISTRYINDEX, function_ref);
             auto index = m_timers.find_first_index(timer);
+
             // If this timer is still ticking, but not in our timers, we've got problems.
+            // @formatter:off
             VERIFY(index.has_value());
+            // @formatter:on
+
             // FIXME: This is the dumbest fucking thing on planet earth
             // What person writing C++ specification EVER thought using this oblique and arbitrary
             // keyword 'mutable' was a good idea to ever do???
@@ -560,13 +589,15 @@ int Engine::client_sync_tile_rect()
     u16 x = luaL_checkinteger(m_state, 2);
     u16 y = luaL_checkinteger(m_state, 3);
 
+    // @formatter:off
     Terraria::Net::Packets::SyncTileRect sync_tile_rect
-            (
-                    m_server.tile_map(),
-                    {x, y},
-                    luaL_checkinteger(m_state, 4),
-                    luaL_checkinteger(m_state, 5)
-            );
+    (
+        m_server.tile_map(),
+        {x, y},
+        luaL_checkinteger(m_state, 4),
+        luaL_checkinteger(m_state, 5)
+    );
+    // @formatter:onn
 
     client->send(sync_tile_rect);
 
@@ -594,6 +625,17 @@ int Engine::client_modify_tile()
     m_server.tile_map().process_tile_modification(modification);
 
     return 0;
+}
+
+int Engine::client_uuid()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")));
+    if (!client || !client->uuid().has_value())
+        lua_pushnil(m_state);
+    else
+        lua_pushstring(m_state, client->uuid()->to_string().characters());
+
+    return 1;
 }
 
 int Engine::player_set_pvp()
@@ -713,6 +755,11 @@ int Engine::inventory_set_item()
         c->send(inv_slot);
 
     return 0;
+}
+
+Engine::UsingBaseTable::~UsingBaseTable()
+{
+    lua_pop(m_engine.m_state, 1);
 }
 
 }

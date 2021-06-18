@@ -68,12 +68,15 @@ private:
     lua_State* m_state;
     Server& m_server;
     Vector<NonnullRefPtr<Core::Timer>> m_timers;
+    int m_base_ref{};
 
     void* client_userdata(u8 id) const;
 
     void* player_userdata(u8 id) const;
 
     void* inventory_userdata(u8 id) const;
+
+    ALWAYS_INLINE void push_base_table() const;
 
     DEFINE_LUA_METHOD(at_panic);
 
@@ -114,6 +117,8 @@ private:
 
     DEFINE_LUA_METHOD(client_modify_tile);
 
+    DEFINE_LUA_METHOD(client_uuid);
+
     // Player
     DEFINE_LUA_METHOD(player_character);
 
@@ -139,6 +144,18 @@ private:
     DEFINE_LUA_METHOD(inventory_set_item);
 
     DEFINE_LUA_METHOD(inventory_item);
+
+    class UsingBaseTable
+    {
+        friend Engine;
+
+        UsingBaseTable(const Engine& engine) : m_engine(engine)
+        { engine.push_base_table(); }
+
+        ~UsingBaseTable();
+
+        const Engine& m_engine;
+    };
 };
 }
 

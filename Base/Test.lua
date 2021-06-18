@@ -101,8 +101,8 @@ end)
 
 Hooks.add("connectRequest", function(event)
     print("Client " .. event.client:id() .. " is connecting with version " .. tostring(event.version))
-    -- FIXME: Yeah this doesn't work... we send the disconnect packet, destroy the client, and then try to return the
-    -- client packet handler, which is inside the now destroyed client.
+    -- We can even disconnect a client while they are connecting.
+    -- This involves causing an event to fire within an event, and making sure we don't destroy the client too soon.
     -- event.client:disconnect("will this break")
 end)
 
@@ -129,6 +129,9 @@ end)
 
 Hooks.add("disconnect", function(event)
     local name = event.client:player():character().name
+    if name == nil then
+        return
+    end
     Utils.broadcast(name .. " disconnected.", Colors.TEAL)
 end)
 

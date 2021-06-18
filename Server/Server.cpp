@@ -322,30 +322,37 @@ void Server::client_did_sync_tile_picking(Badge<Client>, Client& who,
 
 void Server::client_did_disconnect(Badge<Client>, Client& who, Client::DisconnectReason reason)
 {
-    m_engine->client_did_disconnect({}, who, reason);
     auto id = who.id();
-    outln("Client {}/{} disconnected.", id, who.address());
-    m_clients.remove(id);
+    auto addr = who.address();
+    m_engine->client_did_disconnect({}, who, reason);
 
-    Terraria::Net::Packets::PlayerActive player_active;
-    player_active.set_player_id(id);
-    player_active.set_active(0);
-
-    for (auto& kv : m_clients)
-        kv.value->send(player_active);
-
-    // Let's remove all of this client's projectiles when they are disconnected
-    for (auto& kv : m_projectiles)
+    // @formatter:off
+    deferred_invoke([this, id, addr](auto&)
     {
-        if (kv.value.owner() == id)
+        outln("Client {}/{} disconnected.", id, addr);
+        m_clients.remove(id);
+
+        Terraria::Net::Packets::PlayerActive player_active;
+        player_active.set_player_id(id);
+        player_active.set_active(0);
+
+        for (auto& kv : m_clients)
+            kv.value->send(player_active);
+
+        // Let's remove all of this client's projectiles when they are disconnected
+        for (auto& kv : m_projectiles)
         {
-            Terraria::Net::Packets::KillProjectile kill_projectile;
-            kill_projectile.set_projectile_id(kv.key);
-            kill_projectile.set_owner(id);
-            for (auto& client_kv : m_clients)
-                client_kv.value->send(kill_projectile);
+            if (kv.value.owner() == id)
+            {
+                Terraria::Net::Packets::KillProjectile kill_projectile;
+                kill_projectile.set_projectile_id(kv.key);
+                kill_projectile.set_owner(id);
+                for (auto& client_kv : m_clients)
+                    client_kv.value->send(kill_projectile);
+            }
         }
-    }
+    });
+    // @formatter:on
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

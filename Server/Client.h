@@ -56,6 +56,9 @@ public:
 
     void full_sync(Client& to);
 
+    const Optional<UUID>& uuid() const
+    { return m_uuid; }
+
 private:
     void on_ready_to_read();
 
