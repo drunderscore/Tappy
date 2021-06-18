@@ -51,11 +51,10 @@ void Client::send(const Terraria::Net::Packet& packet)
     auto bytes = packet.to_bytes();
     m_output_stream << static_cast<u16>(bytes.size() + 2);
     m_output_stream << bytes;
-    if (m_output_stream.has_any_error())
+    if (m_output_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to send data");
-        m_output_stream.handle_any_error();
         m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
     }
 }
@@ -150,22 +149,20 @@ void Client::on_ready_to_read()
     u16 packet_size;
     m_input_stream >> packet_size;
 
-    if (m_input_stream.has_any_error())
+    if (m_input_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to read packet size");
-        m_input_stream.handle_any_error();
         m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
         return;
     }
 
     Terraria::Net::Packet::Id packet_id;
     m_input_stream >> packet_id;
-    if (m_input_stream.has_any_error())
+    if (m_input_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to read packet id");
-        m_input_stream.handle_any_error();
         m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
         return;
     }
@@ -331,5 +328,13 @@ void Client::on_ready_to_read()
     else
     {
         warnln("Unhandled packet {}", packet_id);
+    }
+
+    if (packet_bytes_stream.handle_any_error())
+    {
+        m_in_process_of_disconnecting = true;
+        warnln("Stream errored trying to read packet data");
+        m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
+        return;
     }
 }
