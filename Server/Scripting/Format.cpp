@@ -33,7 +33,7 @@ String format(lua_State* state, int index)
         auto append_string = [&values, &param](const char* value)
         {
             auto value_index = values.size();
-            values.append(reinterpret_cast<u64>((value ? true_string : false_string).characters()));
+            values.append(reinterpret_cast<u64>(value));
 
             param.type = AK::TypeErasedParameter::Type::Custom;
             param.value = reinterpret_cast<void*>(&values.at(value_index));
