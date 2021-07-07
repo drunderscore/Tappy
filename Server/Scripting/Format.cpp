@@ -18,8 +18,6 @@ namespace Scripting
 String format(lua_State* state, int index)
 {
     auto format_string = luaL_checkstring(state, index);
-    outln("format str is {}", format_string);
-    // lua_gettop(state) - index
     Vector<u64, 16> values;
     Vector<AK::TypeErasedParameter, 16> type_erased_parameters;
 
