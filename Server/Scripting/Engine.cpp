@@ -74,12 +74,12 @@ Engine::Engine(Server& server) :
         {"buffs",           player_buffs_thunk},
         {"setPvp",          player_set_pvp_thunk},
         {"buffs",           player_buffs_thunk},
-        {"setPvp",          player_set_pvp_thunk},
         {"position",        player_position_thunk},
         {"inventory",       player_inventory_thunk},
         {"character",       player_character_thunk},
         {"updateCharacter", player_update_character_thunk},
         {"teleport",        player_teleport_thunk},
+        {"setTeam",         player_set_team_thunk},
         {}
     };
 
@@ -278,6 +278,15 @@ void Engine::client_did_disconnect(Badge<Server>, Client& who, Client::Disconnec
     lua_getfield(m_state, -1, "onClientDisconnect");
     client_userdata(who.id());
     lua_pushinteger(m_state, static_cast<lua_Integer>(reason));
+    lua_call(m_state, 2, 0);
+}
+
+void Engine::client_did_sync_player_team(Badge<Server>, Client& who, const Terraria::Net::Packets::PlayerTeam& packet)
+{
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientSyncPlayerTeam");
+    client_userdata(who.id());
+    lua_pushinteger(m_state, static_cast<lua_Integer>(packet.team()));
     lua_call(m_state, 2, 0);
 }
 
@@ -710,6 +719,35 @@ int Engine::player_teleport()
 
     for (auto& c : m_server.clients())
         c->send(teleport_entity);
+
+    return 0;
+}
+
+int Engine::player_set_team()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        return 0;
+
+    auto team = luaL_checkinteger(m_state, 2);
+    if (team < 0 || team > static_cast<u8>(Terraria::Player::Team::__Count))
+        VERIFY_NOT_REACHED();
+
+    client->player().set_team(static_cast<Terraria::Player::Team>(team));
+
+    Terraria::Net::Packets::PlayerTeam player_team;
+    player_team.set_player_id(client->id());
+    player_team.set_team(client->player().team());
+
+    auto syncToSelf = lua_toboolean(m_state, 3);
+
+    for (auto& c : m_server.clients())
+    {
+        if (!syncToSelf && c->id() == client->id())
+            continue;
+
+        c->send(player_team);
+    }
 
     return 0;
 }

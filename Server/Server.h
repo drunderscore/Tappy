@@ -31,6 +31,7 @@
 #include <LibTerraria/Net/Packets/SyncTilePicking.h>
 #include <LibTerraria/Net/Packets/AddPlayerBuff.h>
 #include <LibTerraria/Net/Packets/SyncTalkNPC.h>
+#include <LibTerraria/Net/Packets/PlayerTeam.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
@@ -99,6 +100,8 @@ public:
     void client_did_add_player_buff(Badge<Client>, Client&, const Terraria::Net::Packets::AddPlayerBuff&);
 
     void client_did_sync_talk_npc(Badge<Client>, Client&, const Terraria::Net::Packets::SyncTalkNPC&);
+
+    void client_did_sync_player_team(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerTeam&);
 
     Vector<WeakPtr<Client>> clients() const;
 

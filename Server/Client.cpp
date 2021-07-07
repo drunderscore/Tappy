@@ -342,6 +342,11 @@ void Client::on_ready_to_read()
         auto sync_talk_npc = Terraria::Net::Packets::SyncTalkNPC::from_bytes(packet_bytes_stream);
         m_server.client_did_sync_talk_npc({}, *this, *sync_talk_npc);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::PlayerTeam)
+    {
+        auto player_team = Terraria::Net::Packets::PlayerTeam::from_bytes(packet_bytes_stream);
+        m_server.client_did_sync_player_team({}, *this, *player_team);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

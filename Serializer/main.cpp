@@ -121,6 +121,7 @@ int main(int argc, char** argv)
         outln("#include <LibTerraria/Color.h>");
         outln("#include <LibTerraria/Item.h>");
         outln("#include <LibTerraria/PlayerInventory.h>");
+        outln("#include <LibTerraria/Player.h>");
         outln("#include <LibTerraria/PlayerDeathReason.h>");
         outln("#include <LibTerraria/TileModification.h>");
         outln("#include <LibTerraria/Character.h>");

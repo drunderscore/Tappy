@@ -152,6 +152,10 @@ Hooks.add("disconnect", function(event)
     Utils.broadcast(format("{} disconnected.", name), Colors.TEAL)
 end)
 
+Hooks.add("changeTeam", function(event)
+    Utils.broadcast(format("{} is now on team {}", event.client:player():character().name, event.team))
+end)
+
 local modifyTileNagLastTime = {}
 Hooks.add("modifyTile", function(event)
     local now = os.time()

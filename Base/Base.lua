@@ -157,4 +157,15 @@ function Base.onClientDisconnect(client, reason)
     Hooks.publish("disconnect", event)
 end
 
+function Base.onClientSyncPlayerTeam(client, team)
+    local event = {}
+    event.client = client
+    event.team = team
+    event.syncToSender = false
+
+    Hooks.publish("changeTeam", event)
+
+    client:player():setTeam(event.team, event.syncToSender)
+end
+
 return Base

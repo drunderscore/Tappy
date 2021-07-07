@@ -20,6 +20,7 @@
 #include <LibTerraria/Net/Packets/DamageNPC.h>
 #include <LibTerraria/Net/Packets/SpawnPlayer.h>
 #include <LibTerraria/Net/Packets/ModifyTile.h>
+#include <LibTerraria/Net/Packets/PlayerTeam.h>
 #include <LibCore/Timer.h>
 
 typedef struct lua_State lua_State;
@@ -62,6 +63,8 @@ public:
     void client_did_modify_tile(Badge<Server>, Client&, const Terraria::Net::Packets::ModifyTile&);
 
     void client_did_disconnect(Badge<Server>, Client&, Client::DisconnectReason);
+
+    void client_did_sync_player_team(Badge<Server>, Client&, const Terraria::Net::Packets::PlayerTeam&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;
@@ -139,6 +142,8 @@ private:
     DEFINE_LUA_METHOD(player_inventory);
 
     DEFINE_LUA_METHOD(player_teleport);
+
+    DEFINE_LUA_METHOD(player_set_team);
 
     // Inventory
     DEFINE_LUA_METHOD(inventory_owner);

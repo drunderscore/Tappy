@@ -18,6 +18,17 @@ class Player : public Weakable<Player>
 public:
     using BuffsArray = Array<u16, 22>;
 
+    enum class Team : u8
+    {
+        None = 0,
+        Red,
+        Green,
+        Blue,
+        Yellow,
+        Pink,
+        __Count
+    };
+
     const Character& character() const
     { return m_character; }
 
@@ -108,6 +119,12 @@ public:
     Optional<i16>& talk_npc()
     { return m_talk_npc; }
 
+    Team team() const
+    { return m_team; }
+
+    void set_team(Team value)
+    { m_team = value; }
+
 private:
     i16 m_hp{};
     i16 m_max_hp{};
@@ -119,6 +136,7 @@ private:
     EntityPoint m_position{};
     EntityPoint m_velocity{};
     Optional<i16> m_talk_npc{};
+    Team m_team{};
 
     u8 m_control_bits{};
     u8 m_bits_2{};
@@ -129,3 +147,8 @@ private:
     bool m_pvp{};
 };
 }
+
+
+InputStream& operator>>(InputStream& stream, Terraria::Player::Team& value);
+
+OutputStream& operator<<(OutputStream& stream, Terraria::Player::Team value);

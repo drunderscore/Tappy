@@ -42,6 +42,7 @@ public:
         SyncTalkNPC = 40,
         PlayerItemAnimation = 41,
         PlayerMana = 42,
+        PlayerTeam = 45,
         SpawnPlayerSelf = 49,
         PlayerBuffs = 50,
         AddPlayerBuff = 55,

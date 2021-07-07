@@ -401,6 +401,11 @@ void Server::client_did_sync_talk_npc(Badge<Client>, Client& who, const Terraria
     }
 }
 
+void Server::client_did_sync_player_team(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerTeam& packet)
+{
+    m_engine->client_did_sync_player_team({}, who, packet);
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))

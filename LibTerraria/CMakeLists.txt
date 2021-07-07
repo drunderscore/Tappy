@@ -47,6 +47,7 @@ add_library(Terraria
         PlayerInfo.h
         DamageNPC.h
         WorldData.h
+        Player.cpp
         PlayerDeathReason.cpp
         Net/NetworkText.cpp
         Character.cpp
@@ -54,6 +55,7 @@ add_library(Terraria
         PlayerDeath.h
         SpawnData.h
         ModifyTile.h
+        PlayerTeam.h
         SyncTalkNPC.h
         SyncTilePicking.h
         SpawnPlayer.h
