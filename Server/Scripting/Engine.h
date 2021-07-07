@@ -80,6 +80,8 @@ private:
 
     DEFINE_LUA_METHOD(at_panic);
 
+    DEFINE_LUA_METHOD(format);
+
     // Timer
     DEFINE_LUA_METHOD(timer_create);
 

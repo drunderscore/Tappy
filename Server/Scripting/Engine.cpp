@@ -15,6 +15,7 @@
 #include <LibTerraria/Net/Packets/SyncNPC.h>
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
+#include <Server/Scripting/Format.h>
 
 #define LOAD_TEST_SCRIPT 1
 
@@ -121,6 +122,9 @@ Engine::Engine(Server& server) :
     luaL_newlib(m_state, timer_lib);
     lua_setglobal(m_state, "Timer");
 
+    lua_pushcfunction(m_state, format_thunk);
+    lua_setglobal(m_state, "format");
+
     auto errored = luaL_dofile(m_state, "Base/Base.lua");
     if (errored)
     {
@@ -139,6 +143,12 @@ Engine::Engine(Server& server) :
             VERIFY_NOT_REACHED();
         }
     }
+}
+
+int Engine::format()
+{
+    lua_pushstring(m_state, Scripting::format(m_state, 1).characters());
+    return 1;
 }
 
 Engine::~Engine()

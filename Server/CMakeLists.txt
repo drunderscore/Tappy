@@ -4,6 +4,7 @@ add_executable(Server
         Server.cpp
         Scripting/Engine.cpp
         Scripting/Types.cpp
+        Scripting/Format.cpp
         )
 
 target_lagom(Server)
