@@ -119,9 +119,12 @@ void Client::full_sync(Client& to)
     Terraria::Net::Packets::TogglePvp toggle_pvp;
     toggle_pvp.set_player_id(m_id);
     toggle_pvp.set_pvp(m_player.pvp());
-    send(toggle_pvp);
+    to.send(toggle_pvp);
 
-    // TODO: Player teams
+    Terraria::Net::Packets::PlayerTeam player_team;
+    player_team.set_player_id(m_id);
+    player_team.set_team(m_player.team());
+    to.send(toggle_pvp);
 
     Terraria::Net::Packets::PlayerMana player_mana;
     player_mana.set_player_id(m_id);
