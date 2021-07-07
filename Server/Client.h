@@ -62,6 +62,8 @@ public:
 private:
     void on_ready_to_read();
 
+    void send_keep_alive();
+
     Server& m_server;
     NonnullRefPtr<Core::TCPSocket> m_socket;
     Core::InputFileStream m_input_stream;
@@ -71,4 +73,5 @@ private:
     u8 m_id;
     bool m_has_finished_connecting{};
     bool m_in_process_of_disconnecting{};
+    RefPtr<Core::Timer> m_keep_alive_timer;
 };

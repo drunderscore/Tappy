@@ -33,6 +33,8 @@
 #include <LibTerraria/Net/Packets/PlayerActive.h>
 #include <LibTerraria/Net/Packets/PlayerDead.h>
 
+#define USE_BOGUS_KEEP_ALIVE_PACKET 1
+
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
         m_id(id),
@@ -44,6 +46,15 @@ Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
     {
         on_ready_to_read();
     };
+
+    if constexpr(USE_BOGUS_KEEP_ALIVE_PACKET)
+    {
+        m_keep_alive_timer = Core::Timer::create_repeating(5000, [this]
+        {
+            send_keep_alive();
+        });
+        m_keep_alive_timer->start();
+    }
 }
 
 void Client::send(const Terraria::Net::Packet& packet)
@@ -337,4 +348,13 @@ void Client::on_ready_to_read()
         m_server.client_did_disconnect({}, *this, DisconnectReason::StreamErrored);
         return;
     }
+}
+
+void Client::send_keep_alive()
+{
+    // This is our way of keeping the client connection alive
+    // The client will think the server has disconnected after 7200 ticks (120 seconds) of no data received.
+    // Packet ID 0 is unused, so we just send it as bogus, and it knows we're still here.
+    m_output_stream << static_cast<u16>(3);
+    m_output_stream << static_cast<u8>(0);
 }

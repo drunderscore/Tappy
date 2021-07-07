@@ -23,8 +23,6 @@ String format(lua_State* state, int index)
 
     auto top = lua_gettop(state);
 
-    // FIXME: code duplication when doing strings nils and bools
-
     for (auto i = index + 1; i <= top; i++)
     {
         auto type = lua_type(state, i);
