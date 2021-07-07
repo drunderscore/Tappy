@@ -80,6 +80,8 @@ Engine::Engine(Server& server) :
         {"updateCharacter", player_update_character_thunk},
         {"teleport",        player_teleport_thunk},
         {"setTeam",         player_set_team_thunk},
+        {"setHealth",       player_set_health_thunk},
+        {"setMana",         player_set_mana_thunk},
         {}
     };
 
@@ -747,6 +749,70 @@ int Engine::player_set_team()
             continue;
 
         c->send(player_team);
+    }
+
+    return 0;
+}
+
+int Engine::player_set_health()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        return 0;
+
+    auto health = luaL_checkinteger(m_state, 2);
+    auto max_health = luaL_optinteger(m_state, 3, -1);
+    if (max_health == -1)
+        max_health = client->player().max_hp();
+
+    client->player().set_hp(health);
+    client->player().set_max_hp(max_health);
+
+    Terraria::Net::Packets::PlayerHP player_hp;
+    player_hp.set_player_id(client->id());
+    player_hp.set_hp(health);
+    player_hp.set_max_hp(max_health);
+
+    auto syncToSelf = lua_toboolean(m_state, 4);
+
+    for (auto& c : m_server.clients())
+    {
+        if (!syncToSelf && c->id() == client->id())
+            continue;
+
+        c->send(player_hp);
+    }
+
+    return 0;
+}
+
+int Engine::player_set_mana()
+{
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    if (!client)
+        return 0;
+
+    auto mana = luaL_checkinteger(m_state, 2);
+    auto max_mana = luaL_optinteger(m_state, 3, -1);
+    if (max_mana == -1)
+        max_mana = client->player().max_hp();
+
+    client->player().set_mana(mana);
+    client->player().set_max_mana(max_mana);
+
+    Terraria::Net::Packets::PlayerMana player_mana;
+    player_mana.set_player_id(client->id());
+    player_mana.set_mana(mana);
+    player_mana.set_max_mana(max_mana);
+
+    auto syncToSelf = lua_toboolean(m_state, 4);
+
+    for (auto& c : m_server.clients())
+    {
+        if (!syncToSelf && c->id() == client->id())
+            continue;
+
+        c->send(player_mana);
     }
 
     return 0;

@@ -145,6 +145,10 @@ private:
 
     DEFINE_LUA_METHOD(player_set_team);
 
+    DEFINE_LUA_METHOD(player_set_health);
+
+    DEFINE_LUA_METHOD(player_set_mana);
+
     // Inventory
     DEFINE_LUA_METHOD(inventory_owner);
 
