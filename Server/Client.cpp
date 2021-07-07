@@ -332,6 +332,16 @@ void Client::on_ready_to_read()
         auto sync_tile_picking = Terraria::Net::Packets::SyncTilePicking::from_bytes(packet_bytes_stream);
         m_server.client_did_sync_tile_picking({}, *this, *sync_tile_picking);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::AddPlayerBuff)
+    {
+        auto add_player_buff = Terraria::Net::Packets::AddPlayerBuff::from_bytes(packet_bytes_stream);
+        m_server.client_did_add_player_buff({}, *this, *add_player_buff);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SyncTalkNPC)
+    {
+        auto sync_talk_npc = Terraria::Net::Packets::SyncTalkNPC::from_bytes(packet_bytes_stream);
+        m_server.client_did_sync_talk_npc({}, *this, *sync_talk_npc);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

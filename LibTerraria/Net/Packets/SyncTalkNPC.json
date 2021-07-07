@@ -1,0 +1,13 @@
+{
+  "fields":
+  [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "talk_npc",
+      "type": "i16"
+    }
+  ]
+}

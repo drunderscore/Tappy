@@ -29,6 +29,8 @@
 #include <LibTerraria/Net/Packets/SpawnData.h>
 #include <LibTerraria/Net/Packets/ModifyTile.h>
 #include <LibTerraria/Net/Packets/SyncTilePicking.h>
+#include <LibTerraria/Net/Packets/AddPlayerBuff.h>
+#include <LibTerraria/Net/Packets/SyncTalkNPC.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
@@ -93,6 +95,10 @@ public:
     void client_did_sync_tile_picking(Badge<Client>, Client&, const Terraria::Net::Packets::SyncTilePicking&);
 
     void client_did_disconnect(Badge<Client>, Client&, Client::DisconnectReason);
+
+    void client_did_add_player_buff(Badge<Client>, Client&, const Terraria::Net::Packets::AddPlayerBuff&);
+
+    void client_did_sync_talk_npc(Badge<Client>, Client&, const Terraria::Net::Packets::SyncTalkNPC&);
 
     Vector<WeakPtr<Client>> clients() const;
 

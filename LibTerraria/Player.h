@@ -102,6 +102,12 @@ public:
     void set_pvp(bool value)
     { m_pvp = value; }
 
+    const Optional<i16>& talk_npc() const
+    { return m_talk_npc; }
+
+    Optional<i16>& talk_npc()
+    { return m_talk_npc; }
+
 private:
     i16 m_hp{};
     i16 m_max_hp{};
@@ -112,6 +118,7 @@ private:
     BuffsArray m_buffs{}; // The network is limited to 22 concurrent buffs.
     EntityPoint m_position{};
     EntityPoint m_velocity{};
+    Optional<i16> m_talk_npc{};
 
     u8 m_control_bits{};
     u8 m_bits_2{};

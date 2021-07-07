@@ -1,0 +1,17 @@
+{
+  "fields":
+  [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "buff",
+      "type": "u16"
+    },
+    {
+      "name": "duration",
+      "type": "i32"
+    }
+  ]
+}

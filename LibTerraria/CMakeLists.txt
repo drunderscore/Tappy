@@ -54,8 +54,10 @@ add_library(Terraria
         PlayerDeath.h
         SpawnData.h
         ModifyTile.h
+        SyncTalkNPC.h
         SyncTilePicking.h
         SpawnPlayer.h
+        AddPlayerBuff.h
         PlayerBuffs.h
         TileModification.cpp
         PlayerItemAnimation.h

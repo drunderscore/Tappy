@@ -355,6 +355,52 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
     // @formatter:on
 }
 
+void Server::client_did_add_player_buff(Badge<Client>, Client& who, const Terraria::Net::Packets::AddPlayerBuff& packet)
+{
+    auto target = client(packet.player_id());
+    if (!target)
+    {
+        warnln("Client {} sent add player buff for non-existent client {}", who.id(), packet.player_id());
+        return;
+    }
+
+    // FIXME: this is a pretty yucky way of doing this
+    // TODO: Implement duration here!
+    for (auto& buff : target->player().buffs())
+    {
+        if (buff == 0)
+        {
+            buff = packet.buff();
+            break;
+        }
+    }
+
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(packet);
+    }
+}
+
+void Server::client_did_sync_talk_npc(Badge<Client>, Client& who, const Terraria::Net::Packets::SyncTalkNPC& packet)
+{
+    auto talk_npc = packet.talk_npc();
+    if (talk_npc == -1)
+        who.player().talk_npc() = {};
+    else
+        who.player().talk_npc() = talk_npc;
+
+    for (auto& kv : m_clients)
+    {
+        if (kv.key == who.id())
+            continue;
+
+        kv.value->send(packet);
+    }
+}
+
 bool Server::listen(AK::IPv4Address addr, u16 port)
 {
     if (!m_server->listen(addr, port))
