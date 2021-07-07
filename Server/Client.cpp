@@ -33,7 +33,7 @@
 #include <LibTerraria/Net/Packets/PlayerActive.h>
 #include <LibTerraria/Net/Packets/PlayerDead.h>
 
-#define USE_BOGUS_KEEP_ALIVE_PACKET 1
+#define USE_BOGUS_KEEP_ALIVE_PACKET 0
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
         m_socket(move(socket)),
