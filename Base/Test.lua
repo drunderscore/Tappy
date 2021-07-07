@@ -13,9 +13,33 @@ local Hooks = require("Hooks") -- This let's us know when certain actions happen
 local Utils = require("Utilities")
 local Colors = require("Colors")
 local nextNpcId = 1
+local Commands = require("Commands")
+
+Commands.register("pos", function(client)
+    local pos = client:player():position()
+    client:sendMessage(format("{}, {}", pos.x, pos.y), 255, Colors.YELLOW)
+end)
+
+Commands.register("tp", function(client, target)
+    if client == target then
+        client:sendMessage("You cannot teleport to yourself", 255, Colors.RED)
+        return
+    end
+    client:sendMessage(format("Teleporting to {}", target:player():character().name), 255, Colors.YELLOW)
+    client:player():teleport(target:player():position())
+end, {"client"})
+
+Commands.register("kickme", function(client, msg)
+    msg = msg or "okay, you asked for it"
+    client:disconnect(msg)
+end)
+
+Commands.register("echo", function(client, arg1, arg2)
+    client:sendMessage(format("arg1 is '{}', arg2 is '{}'", arg1, arg2))
+end)
 
 Hooks.add("chat", function(event)
-    if string.find(event.message, "/tp") == 1 then
+    if string.find(event.message, "/tp") == 1 and false then
         event.canceled = true
         local args = {}
         for token in string.gmatch(event.message, "[^%s]+") do
@@ -29,7 +53,7 @@ Hooks.add("chat", function(event)
                 event.client:sendMessage("Invalid position", 255, Colors.RED)
                 return
             end
-            event.client:sendMessage("Teleporting to " .. x .. ", " .. y, 255, Colors.YELLOW)
+            event.client:sendMessage(format("Teleporting to {}, {}", x, y), 255, Colors.YELLOW)
             event.client:player():teleport({ x = x, y = y })
         elseif #args >= 2 then
             local targetClient
@@ -45,7 +69,7 @@ Hooks.add("chat", function(event)
             elseif targetClient == event.client then
                 event.client:sendMessage("You cannot teleport to yourself", 255, Colors.RED)
             else
-                event.client:sendMessage("Teleporting to " .. targetClient:player():character().name, 255, Colors.YELLOW)
+                event.client:sendMessage(format("Teleporting to {}", targetClient:player():character().name), 255, Colors.YELLOW)
                 event.client:player():teleport(targetClient:player():position())
             end
         else
@@ -71,10 +95,6 @@ Hooks.add("chat", function(event)
         end
 
         nextNpcId = nextNpcId + 1
-    elseif string.find(event.message, "/getpos") == 1 then
-        event.canceled = true
-        local pos = event.client:player():position()
-        event.client:sendMessage("(" .. pos.x .. ", " .. pos.y .. ")")
     elseif string.find(event.message, "/i") == 1 then
         event.canceled = true
         local args = {}
@@ -92,15 +112,12 @@ Hooks.add("chat", function(event)
         end
 
         event.client:player():inventory():setItem(49, { id = id, stack = stack })
-        event.client:sendMessage("Given " .. stack .. " of " .. id, 255, Colors.YELLOW)
-    elseif string.find(event.message, "/kickme") == 1 then
-        event.canceled = true
-        event.client:disconnect("bye bye.")
+        event.client:sendMessage(format("Given {} of {}", stack, id), 255, Colors.YELLOW)
     end
 end)
 
 Hooks.add("connectRequest", function(event)
-    print("Client " .. event.client:id() .. " is connecting with version " .. tostring(event.version))
+    print(format("Client {} is connecting with version {}", event.client:id(), event.version))
     -- We can even disconnect a client while they are connecting.
     -- This involves causing an event to fire within an event, and making sure we don't destroy the client too soon.
     -- event.client:disconnect("will this break")
@@ -109,22 +126,22 @@ end)
 Hooks.add("playerDeath", function(event)
     local text
     if event.reason.player then
-        text = Game.client(event.reason.player):player():character().name .. " killed " .. event.target:player():character().name
+        text = format("{} killed {}", Game.client(event.reason.player):player():character().name, event.target:player():character().name)
     else
-        text = event.target:player():character().name .. " died."
+        text = format("{} died.", event.target:player():character().name)
     end
 
     Utils.broadcast(text, Colors.SPRINGGREEN)
 end)
 
 Hooks.add("damageNpc", function(event)
-    print("Hit NPC " .. event.npcId .. " for " .. event.damage .. " damage")
+    print(format("Hit NPC {} for {} damage", event.npcId, event.damage))
 end)
 
 Hooks.add("finishedConnecting", function(event)
     local name = event.client:player():character().name
-    print(name .. "/" .. event.client:address() .. " finished connecting")
-    Utils.broadcast(name .. " finished connecting.", Colors.MAGENTA)
+    print(format("{}/{} finished connecting", name, event.client:address()))
+    Utils.broadcast(format("{} finished connecting.", name), Colors.MAGENTA)
 end)
 
 Hooks.add("disconnect", function(event)
@@ -132,7 +149,7 @@ Hooks.add("disconnect", function(event)
     if name == nil then
         return
     end
-    Utils.broadcast(name .. " disconnected.", Colors.TEAL)
+    Utils.broadcast(format("{} disconnected.", name), Colors.TEAL)
 end)
 
 local modifyTileNagLastTime = {}

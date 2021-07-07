@@ -18,4 +18,14 @@ function Utilities.broadcast(text, color)
     end
 end
 
+function Utilities.findClients(partOfName)
+    local found = {}
+    for _, c in pairs(Game.clients()) do
+        if string.find(c:player():character().name, partOfName) then
+            table.insert(found, c)
+        end
+    end
+    return found
+end
+
 return Utilities
