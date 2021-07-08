@@ -47,7 +47,7 @@ class Server : public Core::Object
     C_OBJECT(Server);
     // @formatter:on
 public:
-    Server();
+    Server(RefPtr<Terraria::World>);
 
     bool listen(AK::IPv4Address addr = {}, u16 port = 7777);
 

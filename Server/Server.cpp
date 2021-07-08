@@ -15,26 +15,10 @@
 #include <Server/Scripting/Engine.h>
 #include <LibTerraria/Net/Packets/WorldData.h>
 
-Server::Server() : m_server(Core::TCPServer::construct())
+Server::Server(RefPtr<Terraria::World> world)
+        : m_server(Core::TCPServer::construct()),
+          m_world(world)
 {
-    auto file = Core::File::open("Test.wld", Core::IODevice::OpenMode::ReadOnly);
-    if (file.is_error())
-    {
-        warnln("Failed to open world: {}", file.error());
-        VERIFY_NOT_REACHED();
-    }
-    auto file_bytes = file.value()->read_all();
-    auto stream = InputMemoryStream(file_bytes);
-
-    auto world_or_error = Terraria::World::try_load_world(stream);
-    if (world_or_error.is_error())
-    {
-        warnln("Failed to load world: {}", world_or_error.error());
-        VERIFY_NOT_REACHED();
-    }
-
-    m_world = world_or_error.release_value();
-
     m_engine = make<Scripting::Engine>(*this);
     m_server->on_ready_to_accept = [this]
     {
