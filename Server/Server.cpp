@@ -101,8 +101,8 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
     world_data.set_world_surface(m_world->m_surface);
     world_data.set_rock_layer(m_world->m_rock_layer);
     world_data.set_world_name(m_world->name());
-    world_data.set_spawn_x(m_world->m_spawn_tile.x);
-    world_data.set_spawn_y(m_world->m_spawn_tile.y);
+    world_data.set_spawn_x(m_world->m_spawn_tile.x());
+    world_data.set_spawn_y(m_world->m_spawn_tile.y());
     world_data.set_time(8000);
     world_data.set_day_state(1);
     world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);

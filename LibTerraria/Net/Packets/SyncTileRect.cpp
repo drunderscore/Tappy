@@ -21,9 +21,9 @@ ByteBuffer SyncTileRect::to_bytes() const
     stream << m_change_type;
 
     // Unlike TileSection, this packet is written x by y.
-    for (u16 x = m_position.x; x < m_position.x + m_width; x++)
+    for (u16 x = m_position.x(); x < m_position.x() + m_width; x++)
     {
-        for (u16 y = m_position.y; y < m_position.y + m_height; y++)
+        for (u16 y = m_position.y(); y < m_position.y() + m_height; y++)
         {
             const auto& tile = m_tile_map.at({x, y});
 

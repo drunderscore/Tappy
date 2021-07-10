@@ -99,10 +99,10 @@ void Types::point(lua_State* state, const Terraria::EntityPoint& point)
 {
     lua_createtable(state, 2, 0);
     lua_pushstring(state, "x");
-    lua_pushnumber(state, point.x);
+    lua_pushnumber(state, point.x());
     lua_settable(state, -3);
     lua_pushstring(state, "y");
-    lua_pushnumber(state, point.y);
+    lua_pushnumber(state, point.y());
     lua_settable(state, -3);
 }
 
@@ -114,12 +114,12 @@ Terraria::EntityPoint Types::point(lua_State* state, int index)
 
     lua_pushstring(state, "x");
     lua_gettable(state, index);
-    point.x = luaL_checknumber(state, -1);
+    point.set_x(luaL_checknumber(state, -1));
     lua_pop(state, 1);
 
     lua_pushstring(state, "y");
     lua_gettable(state, index);
-    point.y = luaL_checknumber(state, -1);
+    point.set_y(luaL_checknumber(state, -1));
     lua_pop(state, 1);
 
     return point;
@@ -685,11 +685,11 @@ void Types::tile_modification(lua_State* state, const Terraria::TileModification
 
     // FIXME: Shouldn't this be a tile position Lua type?
     lua_pushstring(state, "x");
-    lua_pushinteger(state, modification.position.x);
+    lua_pushinteger(state, modification.position.x());
     lua_settable(state, -3);
 
     lua_pushstring(state, "y");
-    lua_pushinteger(state, modification.position.y);
+    lua_pushinteger(state, modification.position.y());
     lua_settable(state, -3);
 
     lua_pushstring(state, "flags1");
@@ -714,12 +714,12 @@ Terraria::TileModification Types::tile_modification(lua_State* state, int index)
 
     lua_pushstring(state, "x");
     lua_gettable(state, index);
-    modification.position.x = luaL_checkinteger(state, -1);
+    modification.position.set_x(luaL_checkinteger(state, -1));
     lua_pop(state, 1);
 
     lua_pushstring(state, "y");
     lua_gettable(state, index);
-    modification.position.y = luaL_checkinteger(state, -1);
+    modification.position.set_y(luaL_checkinteger(state, -1));
     lua_pop(state, 1);
 
     lua_pushstring(state, "flags1");

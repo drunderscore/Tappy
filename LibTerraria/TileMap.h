@@ -43,7 +43,7 @@ public:
 
     ALWAYS_INLINE constexpr size_t index_for_position(const TilePoint& point) const
     {
-        return point.x + (width() * point.y);
+        return point.x() + (width() * point.y());
     }
 };
 
