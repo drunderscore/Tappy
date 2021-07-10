@@ -65,6 +65,7 @@ add_library(Terraria
         PlayerItemAnimation.h
         ClientUUID.h
         PlayerHP.h
+        Net/Packets/SyncItem.h
         Net/Packets/SyncInventorySlot.cpp
         PlayerMana.h
         Modules/Text.h
