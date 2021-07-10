@@ -32,6 +32,7 @@
 #include <LibTerraria/Net/Packets/AddPlayerBuff.h>
 #include <LibTerraria/Net/Packets/SyncTalkNPC.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
+#include <LibTerraria/Net/Packets/SyncItem.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
@@ -103,6 +104,8 @@ public:
 
     void client_did_sync_player_team(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerTeam&);
 
+    void client_did_sync_item(Badge<Client>, Client&, Terraria::Net::Packets::SyncItem&);
+
     Vector<WeakPtr<Client>> clients() const;
 
     const WeakPtr<Client> client(u8 id) const;
@@ -128,5 +131,7 @@ private:
     HashMap<u8, NonnullOwnPtr<Client>> m_clients;
     Core::EventLoop m_event_loop;
     HashMap<i16, Terraria::Projectile> m_projectiles;
+    HashMap<i16, Terraria::DroppedItem> m_dropped_items;
+    HashMap<i16, RefPtr<Core::Timer>> m_dropped_item_owner_transfer_timers;
     RefPtr<Terraria::World> m_world;
 };

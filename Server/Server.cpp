@@ -14,6 +14,7 @@
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <Server/Scripting/Engine.h>
 #include <LibTerraria/Net/Packets/WorldData.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 
 Server::Server(RefPtr<Terraria::World> world)
         : m_server(Core::TCPServer::construct()),
@@ -388,6 +389,86 @@ void Server::client_did_sync_talk_npc(Badge<Client>, Client& who, const Terraria
 void Server::client_did_sync_player_team(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerTeam& packet)
 {
     m_engine->client_did_sync_player_team({}, who, packet);
+}
+
+void Server::client_did_sync_item(Badge<Client>, Client& who, Terraria::Net::Packets::SyncItem& packet)
+{
+    outln("Client is creating/updating a dropped item as id {}", packet.id());
+
+    if (packet.dropped_item().item().id() == Terraria::Item::Id::None && packet.id() < 400)
+    {
+        // The client wants us to get rid of this item.
+        m_dropped_items.remove(packet.id());
+        m_dropped_item_owner_transfer_timers.remove(packet.id());
+
+        for (auto& kv : m_clients)
+        {
+            // TODO: Check if this is okay when removing items? I think so.
+            kv.value->send(packet);
+        }
+    }
+    else
+    {
+        i16 the_item_id;
+
+        if (packet.id() == 400)
+        {
+            // This is a new item, we have to assign it an ID.
+            Optional<i16> next_item_id;
+            for (auto i = 0; i < 400; i++)
+            {
+                if (!m_dropped_items.contains(i))
+                {
+                    next_item_id = i;
+                    break;
+                }
+            }
+
+            if (!next_item_id.has_value())
+            {
+                // We have run out of available dropped item IDs.
+                VERIFY_NOT_REACHED();
+            }
+
+            the_item_id = next_item_id.release_value();
+        }
+        else
+        {
+            the_item_id = packet.id();
+        }
+
+        outln("The real id is {}", the_item_id);
+
+        packet.dropped_item().owner() = who.id();
+        m_dropped_items.set(the_item_id, packet.dropped_item());
+        packet.set_id(the_item_id);
+
+        for (auto& kv : m_clients)
+        {
+            kv.value->send(packet);
+        }
+
+        auto transfer_owner_timer = Core::Timer::create_single_shot(1.666 * 1000, [this, the_item_id]()
+        {
+            auto item = m_dropped_items.get(the_item_id);
+            VERIFY(item.has_value());
+            VERIFY(item->owner().has_value());
+
+            Terraria::Net::Packets::SyncItemOwner sync_item_owner;
+            sync_item_owner.set_player_id(*item->owner());
+            sync_item_owner.set_item_id(the_item_id);
+            // FIXME: this shouldn't broadcast?
+            for (auto& kv : m_clients)
+            {
+                kv.value->send(sync_item_owner);
+            }
+
+            m_dropped_item_owner_transfer_timers.remove(the_item_id);
+        });
+        transfer_owner_timer->start();
+
+        m_dropped_item_owner_transfer_timers.set(the_item_id, move(transfer_owner_timer));
+    }
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)
