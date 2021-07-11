@@ -1,0 +1,13 @@
+{
+  "fields":
+  [
+    {
+      "name": "item_id",
+      "type": "i16"
+    },
+    {
+      "name": "player_id",
+      "type": "u8"
+    }
+  ]
+}
