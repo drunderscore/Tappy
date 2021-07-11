@@ -13,6 +13,7 @@
 #include <LibTerraria/Character.h>
 #include <LibTerraria/PlayerDeathReason.h>
 #include <LibTerraria/TileModification.h>
+#include <LibTerraria/DroppedItem.h>
 
 typedef struct lua_State lua_State;
 
@@ -52,5 +53,9 @@ public:
     static void tile_modification(lua_State*, const Terraria::TileModification&);
 
     static Terraria::TileModification tile_modification(lua_State*, int index);
+
+    static void dropped_item(lua_State*, const Terraria::DroppedItem&);
+
+    static Terraria::DroppedItem dropped_item(lua_State*, int index);
 };
 }

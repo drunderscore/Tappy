@@ -117,6 +117,12 @@ public:
     HashMap<i16, Terraria::Projectile>& projectiles()
     { return m_projectiles; }
 
+    const HashMap<i16, Terraria::DroppedItem>& dropped_items() const
+    { return m_dropped_items; }
+
+    HashMap<i16, Terraria::DroppedItem>& dropped_items()
+    { return m_dropped_items; }
+
     const Terraria::TileMap& tile_map() const
     { return *m_world->tile_map(); }
 

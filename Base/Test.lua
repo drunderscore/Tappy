@@ -38,6 +38,16 @@ Commands.register("echo", function(client, arg1, arg2)
     client:sendMessage(format("arg1 is '{}', arg2 is '{}'", arg1, arg2))
 end)
 
+Commands.register("give", function(client, id)
+    local itemId = Game.addDroppedItem({
+        position = client:player():position(),
+        velocity = {x = 0, y = 0},
+        item = {id = id, stack = 1},
+        owner = client:id()
+    })
+    client:sendMessage(format("Given {} as dropped item id {}", id, itemId))
+end, {"number"})
+
 Hooks.add("chat", function(event)
     if string.find(event.message, "/tp") == 1 and false then
         event.canceled = true

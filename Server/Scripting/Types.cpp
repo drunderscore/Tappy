@@ -734,4 +734,71 @@ Terraria::TileModification Types::tile_modification(lua_State* state, int index)
 
     return modification;
 }
+
+void Types::dropped_item(lua_State* state, const Terraria::DroppedItem& value)
+{
+    lua_createtable(state, 5, 0);
+
+    lua_pushstring(state, "item");
+    item(state, value.item());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "position");
+    point(state, value.position());
+    lua_settable(state, -3);
+
+    lua_pushstring(state, "velocity");
+    point(state, value.velocity());
+    lua_settable(state, -3);
+
+    if (value.owner().has_value())
+    {
+        lua_pushstring(state, "owner");
+        lua_pushinteger(state, *value.owner());
+        lua_settable(state, -3);
+    }
+
+    lua_pushstring(state, "hasPickupDelay");
+    lua_pushboolean(state, value.has_pickup_delay());
+    lua_settable(state, -3);
+}
+
+Terraria::DroppedItem Types::dropped_item(lua_State* state, int index)
+{
+    luaL_checktype(state, index, LUA_TTABLE);
+
+    Terraria::DroppedItem dropped_item;
+
+    lua_pushstring(state, "item");
+    lua_gettable(state, index);
+    dropped_item.item() = item(state, lua_gettop(state));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "position");
+    lua_gettable(state, index);
+    dropped_item.position() = point(state, lua_gettop(state));
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "velocity");
+    lua_gettable(state, index);
+    dropped_item.velocity() = point(state, lua_gettop(state));
+    lua_pop(state, 1);
+
+    LUA_NUMBER value;
+    int has_value;
+
+    lua_pushstring(state, "owner");
+    lua_gettable(state, index);
+    value = lua_tonumberx(state, -1, &has_value);
+    if (has_value)
+        dropped_item.owner() = value;
+    lua_pop(state, 1);
+
+    lua_pushstring(state, "hasPickupDelay");
+    lua_gettable(state, index);
+    dropped_item.set_has_pickup_delay(lua_toboolean(state, -1));
+    lua_pop(state, 1);
+
+    return dropped_item;
+}
 }

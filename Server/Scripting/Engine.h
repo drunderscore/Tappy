@@ -97,6 +97,8 @@ private:
 
     DEFINE_LUA_METHOD(game_projectile_exists);
 
+    DEFINE_LUA_METHOD(game_add_dropped_item);
+
     // Client
     DEFINE_LUA_METHOD(client_id);
 

@@ -16,6 +16,7 @@
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
 #include <Server/Scripting/Format.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 
 #define LOAD_TEST_SCRIPT 1
 
@@ -41,6 +42,7 @@ Engine::Engine(Server& server) :
         {"clients",          game_clients_thunk},
         {"addProjectile",    game_add_projectile_thunk},
         {"projectileExists", game_projectile_exists_thunk},
+        {"addDroppedItem",   game_add_dropped_item_thunk},
         {}
     };
 
@@ -420,6 +422,35 @@ int Engine::game_add_projectile()
 int Engine::game_projectile_exists()
 {
     lua_pushboolean(m_state, m_server.projectiles().contains(luaL_checkinteger(m_state, 1)));
+    return 1;
+}
+
+int Engine::game_add_dropped_item()
+{
+    auto item = Types::dropped_item(m_state, 1);
+    auto item_id = m_server.next_available_dropped_item_id();
+
+    m_server.dropped_items().set(item_id, item);
+
+    Terraria::Net::Packets::SyncItem sync_item;
+    sync_item.set_id(item_id);
+    sync_item.dropped_item() = item;
+
+    for (auto& kv : m_server.clients())
+        kv->send(sync_item);
+
+    if(item.owner().has_value())
+    {
+        Terraria::Net::Packets::SyncItemOwner sync_item_owner;
+        sync_item_owner.set_player_id(*item.owner());
+        sync_item_owner.set_item_id(item_id);
+
+        for (auto& kv : m_server.clients())
+            kv->send(sync_item_owner);
+    }
+
+    lua_pushinteger(m_state, item_id);
+
     return 1;
 }
 
