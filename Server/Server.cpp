@@ -14,6 +14,9 @@
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <Server/Scripting/Engine.h>
 #include <LibTerraria/Net/Packets/WorldData.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
+
+constexpr i16 s_max_dropped_items = 400;
 
 Server::Server(RefPtr<Terraria::World> world)
         : m_server(Core::TCPServer::construct()),
@@ -388,6 +391,84 @@ void Server::client_did_sync_talk_npc(Badge<Client>, Client& who, const Terraria
 void Server::client_did_sync_player_team(Badge<Client>, Client& who, const Terraria::Net::Packets::PlayerTeam& packet)
 {
     m_engine->client_did_sync_player_team({}, who, packet);
+}
+
+WeakPtr<Client> Server::find_owner_for_item(const Terraria::DroppedItem& item, Optional<u8> ignore_id)
+{
+    WeakPtr<Client> closest;
+    float last_distance;
+
+    for (auto& kv : m_clients)
+    {
+        if (ignore_id.has_value() && kv.key == *ignore_id)
+            continue;
+
+        auto distance = kv.value->player().position().distance_between(item.position());
+
+        if (!closest || distance < last_distance)
+        {
+            closest = kv.value->make_weak_ptr();
+            last_distance = distance;
+        }
+    }
+
+    return closest;
+}
+
+void Server::client_did_sync_item(Badge<Client>, Client& who, Terraria::Net::Packets::SyncItem& packet)
+{
+    i16 actual_item_id;
+    if (packet.id() == 400)
+    {
+        actual_item_id = next_available_dropped_item_id();
+        packet.set_id(actual_item_id);
+    }
+    else
+    {
+        actual_item_id = packet.id();
+        if (packet.dropped_item().item().id() == Terraria::Item::Id::None)
+        {
+            // We should remove this item.
+            m_dropped_items.remove(actual_item_id);
+
+            for (auto& kv : m_clients)
+                kv.value->send(packet);
+
+            return;
+        }
+    }
+
+    auto owner_now = find_owner_for_item(packet.dropped_item(), who.id());
+    if (owner_now)
+        packet.dropped_item().owner() = owner_now->id();
+
+    m_dropped_items.set(actual_item_id, packet.dropped_item());
+
+    for (auto& kv : m_clients)
+        kv.value->send(packet);
+
+    if (owner_now)
+    {
+        Terraria::Net::Packets::SyncItemOwner sync_item_owner;
+        sync_item_owner.set_player_id(owner_now->id());
+        sync_item_owner.set_item_id(actual_item_id);
+
+        for (auto& kv : m_clients)
+            kv.value->send(sync_item_owner);
+    }
+}
+
+i16 Server::next_available_dropped_item_id() const
+{
+    for (i16 i = 0; i < s_max_dropped_items; i++)
+    {
+        if (!m_dropped_items.contains(i))
+            return i;
+    }
+
+    // FIXME: Maybe should return Optional<i16>
+    // We have run out of available item IDs.
+    VERIFY_NOT_REACHED();
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

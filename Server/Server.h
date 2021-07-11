@@ -32,9 +32,11 @@
 #include <LibTerraria/Net/Packets/AddPlayerBuff.h>
 #include <LibTerraria/Net/Packets/SyncTalkNPC.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
+#include <LibTerraria/Net/Packets/SyncItem.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
+#include <LibTerraria/DroppedItem.h>
 
 namespace Scripting
 {
@@ -103,6 +105,8 @@ public:
 
     void client_did_sync_player_team(Badge<Client>, Client&, const Terraria::Net::Packets::PlayerTeam&);
 
+    void client_did_sync_item(Badge<Client>, Client&, Terraria::Net::Packets::SyncItem&);
+
     Vector<WeakPtr<Client>> clients() const;
 
     const WeakPtr<Client> client(u8 id) const;
@@ -122,11 +126,16 @@ public:
     const RefPtr<Terraria::World> world() const
     { return m_world; }
 
+    i16 next_available_dropped_item_id() const;
+
+    WeakPtr<Client> find_owner_for_item(const Terraria::DroppedItem&, Optional<u8> ignore_id);
+
 private:
     OwnPtr<Scripting::Engine> m_engine;
     NonnullRefPtr<Core::TCPServer> m_server;
     HashMap<u8, NonnullOwnPtr<Client>> m_clients;
     Core::EventLoop m_event_loop;
     HashMap<i16, Terraria::Projectile> m_projectiles;
+    HashMap<i16, Terraria::DroppedItem> m_dropped_items;
     RefPtr<Terraria::World> m_world;
 };

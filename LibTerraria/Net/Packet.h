@@ -35,6 +35,7 @@ public:
         ModifyTile = 17,
         SyncTileRect = 20,
         SyncItem = 21,
+        SyncItemOwner = 22,
         SyncNPC = 23,
         SyncProjectile = 27,
         DamageNPC = 28,

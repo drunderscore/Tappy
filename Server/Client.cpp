@@ -350,6 +350,15 @@ void Client::on_ready_to_read()
         auto player_team = Terraria::Net::Packets::PlayerTeam::from_bytes(packet_bytes_stream);
         m_server.client_did_sync_player_team({}, *this, *player_team);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::SyncItem)
+    {
+        auto sync_item = Terraria::Net::Packets::SyncItem::from_bytes(packet_bytes_stream);
+        m_server.client_did_sync_item({}, *this, *sync_item);
+    }
+    else if (packet_id == Terraria::Net::Packet::Id::SyncItemOwner)
+    {
+        // TODO: Implement this!
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

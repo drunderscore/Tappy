@@ -27,7 +27,7 @@ Optional<SyncItem> SyncItem::from_bytes(InputStream& stream)
     packet.dropped_item().item().set_prefix(static_cast<Terraria::Item::Prefix>(temporary_8));
 
     stream >> temporary_8;
-    packet.dropped_item().set_has_pickup_delay(!static_cast<bool>(temporary_8));
+    packet.dropped_item().set_has_pickup_delay(temporary_8 == 0);
 
     stream >> temporary_16;
     packet.dropped_item().item().set_id(static_cast<Terraria::Item::Id>(temporary_16));
