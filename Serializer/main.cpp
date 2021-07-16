@@ -12,6 +12,8 @@
 #include <AK/LexicalPath.h>
 
 void stringify(const String& name, const StringView& lines);
+void generate_item_models(const JsonArray& items);
+void generate_tile_models(const JsonArray& items);
 
 void get_array_info(const String& name, StringView& type, StringView& length)
 {
@@ -67,6 +69,30 @@ int main(int argc, char** argv)
     if (action == "stringify")
     {
         stringify(name, content);
+    }
+    else if(action == "item_model")
+    {
+        auto json = JsonValue::from_string(content);
+        if (!json.has_value() || !json->is_array())
+        {
+            warnln("Invalid JSON format.");
+            return 3;
+        }
+
+        auto json_array = json->as_array();
+        generate_item_models(json_array);
+    }
+    else if(action == "tile_model")
+    {
+        auto json = JsonValue::from_string(content);
+        if (!json.has_value() || !json->is_array())
+        {
+            warnln("Invalid JSON format.");
+            return 3;
+        }
+
+        auto json_array = json->as_array();
+        generate_tile_models(json_array);
     }
     else if (action == "packet_definition")
     {

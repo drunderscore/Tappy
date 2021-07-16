@@ -1,9 +1,30 @@
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/Modules)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Models)
 
 function(compile_packet_definition source output)
     add_custom_command(
             OUTPUT ${output}
             COMMAND Serializer/Serializer -a packet_definition ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/${output}
+            VERBATIM
+            DEPENDS Serializer
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+endfunction()
+
+function(compile_item_model source output)
+    add_custom_command(
+            OUTPUT Models/${output}
+            COMMAND Serializer/Serializer -a item_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
+            VERBATIM
+            DEPENDS Serializer
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+endfunction()
+
+function(compile_tile_model source output)
+    add_custom_command(
+            OUTPUT Models/${output}
+            COMMAND Serializer/Serializer -a tile_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
             VERBATIM
             DEPENDS Serializer
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -22,7 +43,12 @@ foreach(file ${packet_definitions})
     compile_packet_definition(Modules/${file_name}.json Modules/${file_name}.h)
 endforeach()
 
+compile_item_model(items.json Items.cpp)
+compile_tile_model(tiles.json Tiles.cpp)
+
 add_library(Terraria
+        ${CMAKE_CURRENT_BINARY_DIR}/Models/Items.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Models/Tiles.cpp
         Item.cpp
         Color.cpp
         Net/Packet.cpp
