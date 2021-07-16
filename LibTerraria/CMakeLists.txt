@@ -93,6 +93,7 @@ add_library(Terraria
         PlayerHP.h
         Net/Packets/SyncItem.cpp
         Net/Packets/SyncInventorySlot.cpp
+        SyncItemOwner.h
         PlayerMana.h
         Modules/Text.h
         PlayerActive.h
