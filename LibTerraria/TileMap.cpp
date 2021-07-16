@@ -5,6 +5,7 @@
  */
 
 #include <LibTerraria/TileMap.h>
+#include <LibTerraria/Model.h>
 
 // FIXME: Do what Serenity does with their debug macros
 #define SLOPE_DEBUG 0
@@ -46,6 +47,13 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
                 // section, so it fixes the torch placement... still not correct on our side though!
                 tile.block()->frame_x() = 0;
                 tile.block()->frame_y() = Tile::frame_y_for_style(style);
+            }
+            else if(Terraria::s_tiles[(int)block_id].frame_important)
+            {
+                // This tile is frame important, and the flags may tell us what the frame x or frame y should be
+                // But we don't handle those cases yet, so just zero them.
+                tile.block()->frame_x() = 0;
+                tile.block()->frame_y() = 0;
             }
             break;
         }
