@@ -7,7 +7,7 @@ function(compile_packet_definition source output)
             COMMAND Serializer/Serializer -a packet_definition ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Net/Packets/${output}
             VERBATIM
             DEPENDS Serializer
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     )
 endfunction()
 
@@ -17,7 +17,7 @@ function(compile_item_model source output)
             COMMAND Serializer/Serializer -a item_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
             VERBATIM
             DEPENDS Serializer
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     )
 endfunction()
 
@@ -27,7 +27,7 @@ function(compile_tile_model source output)
             COMMAND Serializer/Serializer -a tile_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
             VERBATIM
             DEPENDS Serializer
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     )
 endfunction()
 
@@ -103,8 +103,8 @@ add_library(Terraria
         )
 
 target_include_directories(Terraria SYSTEM PRIVATE
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_BINARY_DIR}
+        ${PROJECT_SOURCE_DIR}
+        ${PROJECT_BINARY_DIR}
         )
 
 target_lagom(Terraria)
