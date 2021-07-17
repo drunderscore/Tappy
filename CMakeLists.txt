@@ -12,16 +12,6 @@ function(target_lagom target)
     target_link_libraries(${target} PRIVATE Lagom)
 endfunction()
 
-function(stringify_file variable_name input output)
-    add_custom_command(
-            OUTPUT ${output}
-            COMMAND Serializer/Serializer -a stringify -n ${variable_name} ${CMAKE_CURRENT_SOURCE_DIR}/${input} > ${CMAKE_CURRENT_BINARY_DIR}/${output}
-            VERBATIM
-            DEPENDS Serializer
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    )
-endfunction()
-
 set(BUILD_LAGOM ON)
 include_directories(BEFORE SYSTEM ${CMAKE_BINARY_DIR}/serenity/Meta/Lagom/)
 add_subdirectory(serenity/Meta/Lagom)
