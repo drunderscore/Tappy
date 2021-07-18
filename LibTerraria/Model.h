@@ -24,6 +24,8 @@ struct Tile
 {
     StringView internal_name;
     bool frame_important{};
+    bool solid{};
+    bool solid_top{};
 };
 }
 
