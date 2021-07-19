@@ -13,6 +13,9 @@ static constexpr u8 wall_bit = 0b0000'0100;
 static constexpr u8 color_bit = 0b0000'1000;
 static constexpr u8 extended_block_id_bit = 0b0010'0000;
 
+static constexpr u8 red_wire_bit = 0b0000'0010;
+static constexpr u8 blue_wire_bit = 0b0000'0100;
+static constexpr u8 green_wire_bit = 0b0000'1000;
 static constexpr u8 wall_color_bit = 0b0001'0000;
 static constexpr u8 liquid_bits = 0b0001'1000;
 static constexpr u8 liquid_shift = 3;
@@ -20,8 +23,10 @@ static constexpr u8 liquid_shift = 3;
 static constexpr u8 rle_bits = 0b1100'0000;
 static constexpr u8 rle_shift = 6;
 
+static constexpr u8 m_actuator_bit = 0b0000'0010;
+static constexpr u8 m_actuated_bit = 0b0000'0100;
+static constexpr u8 yellow_wire_bit = 0b0010'0000;
 static constexpr u8 extended_wall_id_bit = 0b0100'0000;
-
 
 template<typename T, size_t size>
 InputStream& operator>>(InputStream& stream, Array<T, size>& array)
@@ -336,6 +341,24 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
                     tile.wall_id() = static_cast<Tile::WallId>(*lower_wall_id);
                 }
             }
+
+            if ((header2 & red_wire_bit) == red_wire_bit)
+                tile.set_red_wire(true);
+
+            if ((header2 & blue_wire_bit) == blue_wire_bit)
+                tile.set_blue_wire(true);
+
+            if ((header2 & green_wire_bit) == green_wire_bit)
+                tile.set_green_wire(true);
+
+            if ((header3 & yellow_wire_bit) == yellow_wire_bit)
+                tile.set_yellow_wire(true);
+
+            if ((header3 & m_actuator_bit) == m_actuator_bit)
+                tile.set_has_actuator(true);
+
+            if ((header3 & m_actuated_bit) == m_actuated_bit)
+                tile.set_is_actuated(true);
 
             u8 rle_type = (header1 & rle_bits) >> rle_shift;
             if (rle_type == 1)
