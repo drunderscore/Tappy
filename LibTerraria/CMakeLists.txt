@@ -100,6 +100,7 @@ add_library(Terraria
         PlayerDead.h
         World.cpp
         FileMetadata.cpp
+        Tile.cpp
         )
 
 target_include_directories(Terraria SYSTEM PRIVATE

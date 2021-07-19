@@ -14,6 +14,11 @@ namespace Terraria
 class [[gnu::packed]] Tile
 {
 public:
+    struct PackedFrames
+    {
+        i16 x{};
+        i16 y{};
+    };
     enum class WallId : u16
     {
         // TODO: Wall IDs
@@ -677,6 +682,16 @@ public:
         void set_shape(u8 value)
         { m_shape = value; }
 
+        /* ALWAYS_INLINE */ static Optional<PackedFrames> frame_for_block(const Tile& the_tile,
+                                                                          const Tile& top,
+                                                                          const Tile& bottom,
+                                                                          const Tile& left,
+                                                                          const Tile& right,
+                                                                          const Tile& bottom_left,
+                                                                          const Tile& bottom_right,
+                                                                          const Tile& top_left,
+                                                                          const Tile& top_right);
+
     private:
         Id m_id;
         Optional<i16> m_frame_x;
@@ -779,6 +794,8 @@ public:
 
     void set_liquid_amount(u8 value)
     { m_liquid_amount = value; }
+
+    /* ALWAYS_INLINE */ static PackedFrames frames_for_wire(bool top, bool bottom, bool left, bool right);
 
     static constexpr i16 frame_x_for_style(i16 style)
     {

@@ -56,10 +56,11 @@ void generate_tile_models(const JsonArray& items)
     items.for_each([&](auto& value)
     {
         auto& value_obj = value.as_object();
-        out("{{\"{}\", {}, {}, {}", value_obj.get("internalName").as_string(),
+        out("{{\"{}\", {}, {}, {}, {}", value_obj.get("internalName").as_string(),
             value_obj.get("frameImportant").to_bool(),
             value_obj.get("tileSolid").to_bool(),
-            value_obj.get("tileSolidTop").to_bool());
+            value_obj.get("tileSolidTop").to_bool(),
+            value_obj.get("stone").to_bool());
 
         if(count < items.size() - 1)
             outln("}},");

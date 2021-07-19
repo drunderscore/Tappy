@@ -26,6 +26,9 @@ struct Tile
     bool frame_important{};
     bool solid{};
     bool solid_top{};
+    // This is stone-like, all these are framed the same way.
+    // Stone doesn't actually set this, but it should be treated the same way.
+    bool stone{};
 };
 }
 
