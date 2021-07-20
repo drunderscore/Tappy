@@ -74,3 +74,31 @@ void generate_tile_models(const JsonArray& items)
 
     outln("}}");
 }
+
+void generate_wall_models(const JsonArray& items)
+{
+    outln("#include <LibTerraria/Model.h>");
+    outln("namespace Terraria");
+    outln("{{");
+    outln("Terraria::Model::Wall s_walls[] = {{");
+
+    int count = 0;
+
+    // @formatter:off
+    items.for_each([&](auto& value)
+    {
+        auto& value_obj = value.as_object();
+        out("{{\"{}\"", value_obj.get("internalName").as_string());
+
+        if(count < items.size() - 1)
+            outln("}},");
+        else
+            outln("}}");
+        count++;
+    });
+    // @formatter:on
+
+    outln("}};");
+
+    outln("}}");
+}

@@ -31,6 +31,16 @@ function(compile_tile_model source output)
     )
 endfunction()
 
+function(compile_wall_model source output)
+    add_custom_command(
+            OUTPUT Models/${output}
+            COMMAND Serializer/Serializer -a wall_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
+            VERBATIM
+            DEPENDS Serializer
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    )
+endfunction()
+
 file(GLOB packet_definitions ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/*.json)
 foreach(file ${packet_definitions})
     get_filename_component(file_name ${file} NAME_WE)
@@ -45,10 +55,12 @@ endforeach()
 
 compile_item_model(items.json Items.cpp)
 compile_tile_model(tiles.json Tiles.cpp)
+compile_wall_model(walls.json Walls.cpp)
 
 add_library(Terraria
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Items.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Tiles.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Models/Walls.cpp
         Item.cpp
         Color.cpp
         Net/Packet.cpp

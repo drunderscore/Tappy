@@ -30,8 +30,15 @@ struct Tile
     // Stone doesn't actually set this, but it should be treated the same way.
     bool stone{};
 };
+
+
+struct Wall
+{
+    StringView internal_name;
+};
 }
 
 extern Terraria::Model::Item s_items[];
 extern Terraria::Model::Tile s_tiles[];
+extern Terraria::Model::Wall s_walls[];
 }

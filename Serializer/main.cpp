@@ -12,8 +12,12 @@
 #include <AK/LexicalPath.h>
 
 void stringify(const String& name, const StringView& lines);
+
 void generate_item_models(const JsonArray& items);
+
 void generate_tile_models(const JsonArray& items);
+
+void generate_wall_models(const JsonArray& items);
 
 void get_array_info(const String& name, StringView& type, StringView& length)
 {
@@ -70,7 +74,7 @@ int main(int argc, char** argv)
     {
         stringify(name, content);
     }
-    else if(action == "item_model")
+    else if (action == "item_model")
     {
         auto json = JsonValue::from_string(content);
         if (!json.has_value() || !json->is_array())
@@ -82,7 +86,7 @@ int main(int argc, char** argv)
         auto json_array = json->as_array();
         generate_item_models(json_array);
     }
-    else if(action == "tile_model")
+    else if (action == "tile_model")
     {
         auto json = JsonValue::from_string(content);
         if (!json.has_value() || !json->is_array())
@@ -93,6 +97,18 @@ int main(int argc, char** argv)
 
         auto json_array = json->as_array();
         generate_tile_models(json_array);
+    }
+    else if (action == "wall_model")
+    {
+        auto json = JsonValue::from_string(content);
+        if (!json.has_value() || !json->is_array())
+        {
+            warnln("Invalid JSON format.");
+            return 3;
+        }
+
+        auto json_array = json->as_array();
+        generate_wall_models(json_array);
     }
     else if (action == "packet_definition")
     {
@@ -115,17 +131,17 @@ int main(int argc, char** argv)
         Vector<Field> fields;
 
         json_fields.as_array().for_each([&](auto& value)
-        {
-            if (!value.is_object())
-                return;
+                                        {
+                                            if (!value.is_object())
+                                                return;
 
-            auto name = value.as_object().get("name").as_string();
-            auto type = value.as_object().get("type").as_string();
-            auto when_obj = value.as_object().get("when");
-            Optional<String> when = when_obj.type() == AK::JsonValue::Type::String ?
-                    when_obj.as_string() : Optional<String>{};
-            fields.append(Field(move(name), move(type), move(when)));
-        });
+                                            auto name = value.as_object().get("name").as_string();
+                                            auto type = value.as_object().get("type").as_string();
+                                            auto when_obj = value.as_object().get("when");
+                                            Optional<String> when = when_obj.type() == AK::JsonValue::Type::String ?
+                                                                    when_obj.as_string() : Optional<String>{};
+                                            fields.append(Field(move(name), move(type), move(when)));
+                                        });
 
         AK::LexicalPath lexical_path(input_file_path);
         Optional<String> module;
