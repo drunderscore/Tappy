@@ -682,15 +682,8 @@ public:
         void set_shape(u8 value)
         { m_shape = value; }
 
-        /* ALWAYS_INLINE */ static Optional<PackedFrames> frame_for_block(const Tile& the_tile,
-                                                                          const Tile& top,
-                                                                          const Tile& bottom,
-                                                                          const Tile& left,
-                                                                          const Tile& right,
-                                                                          const Tile& bottom_left,
-                                                                          const Tile& bottom_right,
-                                                                          const Tile& top_left,
-                                                                          const Tile& top_right);
+        /* ALWAYS_INLINE */ static Optional<PackedFrames>
+        frame_for_block(const Tile& the_tile, const Tile& top, const Tile& bottom, const Tile& left, const Tile& right);
 
     private:
         Id m_id;
