@@ -384,6 +384,50 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
         }
     }
 
+    // TODO: some other stuff like pointer validation? idk
+
+    u16 total_chests;
+    stream >> total_chests;
+    u16 items_slots_in_chests;
+    stream >> items_slots_in_chests;
+
+    outln("{} total chests all with {} slots", total_chests, items_slots_in_chests);
+
+    for (auto i = 0; i < total_chests; i++)
+    {
+        Chest chest;
+        stream >> temporary_32;
+        chest.position().set_x(temporary_32);
+
+        stream >> temporary_32;
+        chest.position().set_y(temporary_32);
+
+        String name;
+        Net::Types::read_string(stream, name);
+        chest.set_name(move(name));
+
+        for (auto j = 0; j < items_slots_in_chests; j++)
+        {
+            stream >> temporary_16;
+            if (temporary_16 == 0)
+                continue;
+
+            Item item;
+            item.set_stack(temporary_16);
+
+            int item_id;
+            stream >> item_id;
+            item.set_id(static_cast<Item::Id>(item_id));
+
+            stream >> temporary_8;
+            item.set_prefix(static_cast<Item::Prefix>(temporary_8));
+
+            chest.contents().set(j, move(item));
+        }
+
+        world->m_chests.set(i, move(chest));
+    }
+
     return {world};
 }
 }

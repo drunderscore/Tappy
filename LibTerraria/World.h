@@ -15,6 +15,7 @@
 #include <LibTerraria/GameMode.h>
 #include <LibTerraria/Point.h>
 #include <LibTerraria/TileMap.h>
+#include <LibTerraria/Chest.h>
 #include <AK/RefCounted.h>
 #include <AK/HashMap.h>
 
@@ -35,6 +36,12 @@ public:
 
     RefPtr<TileMap> tile_map()
     { return m_tile_map; }
+
+    const HashMap<u16, Chest>& chests() const
+    { return m_chests; }
+
+    HashMap<u16, Chest>& chests()
+    { return m_chests; }
 
 public:
     World() = default;
@@ -177,6 +184,8 @@ public:
     bool m_bought_bunny{};
     bool m_downed_empress_of_light{};
     bool m_downed_queen_slime{};
+
+    HashMap<u16, Chest> m_chests;
 
     RefPtr<MemoryTileMap> m_tile_map;
 };
