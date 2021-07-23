@@ -391,8 +391,6 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
     u16 items_slots_in_chests;
     stream >> items_slots_in_chests;
 
-    outln("{} total chests all with {} slots", total_chests, items_slots_in_chests);
-
     for (auto i = 0; i < total_chests; i++)
     {
         Chest chest;
