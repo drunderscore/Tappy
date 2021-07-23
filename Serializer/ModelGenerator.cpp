@@ -40,6 +40,8 @@ void generate_item_models(const JsonArray& items)
 
     outln("}};");
 
+    outln("const int s_total_items = {};", items.size());
+
     outln("}}");
 }
 
@@ -72,6 +74,8 @@ void generate_tile_models(const JsonArray& items)
 
     outln("}};");
 
+    outln("const int s_total_tiles = {};", items.size());
+
     outln("}}");
 }
 
@@ -99,6 +103,8 @@ void generate_wall_models(const JsonArray& items)
     // @formatter:on
 
     outln("}};");
+
+    outln("const int s_total_walls = {};", items.size());
 
     outln("}}");
 }
