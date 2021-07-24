@@ -108,3 +108,33 @@ void generate_wall_models(const JsonArray& items)
 
     outln("}}");
 }
+
+void generate_prefix_models(const JsonArray& items)
+{
+    outln("#include <LibTerraria/Model.h>");
+    outln("namespace Terraria");
+    outln("{{");
+    outln("Terraria::Model::Prefix s_prefixes[] = {{");
+
+    int count = 0;
+
+    // @formatter:off
+    items.for_each([&](auto& value)
+    {
+        auto& value_obj = value.as_object();
+        out("{{\"{}\", \"{}\"", value_obj.get("englishName").as_string(), value_obj.get("internalName").as_string());
+
+        if(count < items.size() - 1)
+            outln("}},");
+        else
+            outln("}}");
+        count++;
+    });
+    // @formatter:on
+
+    outln("}};");
+
+    outln("const int s_total_prefixes = {};", items.size());
+
+    outln("}}");
+}

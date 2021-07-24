@@ -19,6 +19,8 @@ void generate_tile_models(const JsonArray& items);
 
 void generate_wall_models(const JsonArray& items);
 
+void generate_prefix_models(const JsonArray& items);
+
 void get_array_info(const String& name, StringView& type, StringView& length)
 {
     GenericLexer lexer(name);
@@ -109,6 +111,18 @@ int main(int argc, char** argv)
 
         auto json_array = json->as_array();
         generate_wall_models(json_array);
+    }
+    else if (action == "prefix_model")
+    {
+        auto json = JsonValue::from_string(content);
+        if (!json.has_value() || !json->is_array())
+        {
+            warnln("Invalid JSON format.");
+            return 3;
+        }
+
+        auto json_array = json->as_array();
+        generate_prefix_models(json_array);
     }
     else if (action == "packet_definition")
     {

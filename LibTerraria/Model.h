@@ -36,13 +36,21 @@ struct Wall
 {
     StringView internal_name;
 };
+
+struct Prefix
+{
+    StringView english_name;
+    StringView internal_name;
+};
 }
 
 extern Terraria::Model::Item s_items[];
 extern Terraria::Model::Tile s_tiles[];
 extern Terraria::Model::Wall s_walls[];
+extern Terraria::Model::Prefix s_prefixes[];
 
 extern const int s_total_items;
 extern const int s_total_tiles;
 extern const int s_total_walls;
+extern const int s_total_prefixes;
 }
