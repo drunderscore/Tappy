@@ -14,6 +14,8 @@ namespace Terraria
 class [[gnu::packed]] Tile
 {
 public:
+    Tile() = default;
+
     struct PackedFrames
     {
         i16 x{};
@@ -658,6 +660,9 @@ public:
         explicit Block(Id id) : m_id(id)
         {}
 
+        Block(Id id, i16 frame_x, i16 frame_y) : m_id(id), m_frame_x(frame_x), m_frame_y(frame_y)
+        {}
+
         Id id() const
         { return m_id; }
 
@@ -691,6 +696,9 @@ public:
         Optional<i16> m_frame_y;
         u8 m_shape{};
     };
+
+    Tile(Block block) : m_block(move(block))
+    {}
 
     const Optional<Block>& block() const
     { return m_block; }
