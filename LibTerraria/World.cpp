@@ -426,6 +426,24 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
         world->m_chests.set(i, move(chest));
     }
 
+    u16 total_signs;
+    stream >> total_signs;
+
+    for (auto i = 0; i < total_signs; i++)
+    {
+        Sign sign;
+        String text;
+        Net::Types::read_string(stream, text);
+        sign.set_text(move(text));
+
+        stream >> temporary_32;
+        sign.position().set_x(temporary_32);
+        stream >> temporary_32;
+        sign.position().set_y(temporary_32);
+
+        world->m_signs.set(i, move(sign));
+    }
+
     return {world};
 }
 }
