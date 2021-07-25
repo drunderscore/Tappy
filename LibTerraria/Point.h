@@ -77,6 +77,6 @@ struct AK::Formatter<Terraria::Point<T>> : AK::Formatter<String>
 {
     void format(FormatBuilder& builder, Terraria::Point<T> value)
     {
-        builder.builder().appendff("({}, {})", value.x, value.y);
+        builder.builder().appendff("({}, {})", value.x(), value.y());
     }
 };
