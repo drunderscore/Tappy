@@ -265,7 +265,7 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
     {
         for (u16 y = 0; y < world->m_max_tiles_y; y++)
         {
-            Tile& tile = world->m_tile_map->at(x, y);
+            auto& tile = world->m_tile_map->at(x, y);
 
             if (rle > 0)
             {
@@ -371,17 +371,12 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
             {
                 stream >> temporary_8;
                 rle = temporary_8;
-                // FIXME: Do we have to do this?
-                // In my eyes, if we do:
-                // tile_to_rle = &tile;
-                // Then we are taking the pointer of the variable (temporary) of the reference, yeah?
-                // Or are we taking the pointer OF the reference?
-                tile_to_rle = &world->m_tile_map->tiles().data()[world->m_tile_map->index_for_position({x, y})];
+                tile_to_rle = &tile;
             }
             else if (rle_type == 2)
             {
                 stream >> rle;
-                tile_to_rle = &world->m_tile_map->tiles().data()[world->m_tile_map->index_for_position({x, y})];
+                tile_to_rle = &tile;
             }
             else if (rle != 0)
             {
