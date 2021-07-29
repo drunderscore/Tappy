@@ -312,6 +312,12 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
                 }
             }
 
+            if ((header3 & color_bit) == color_bit)
+            {
+                // TODO: Do something with this block color
+                stream >> temporary_8;
+            }
+
             if ((header1 & wall_bit) == wall_bit)
             {
                 stream >> lower_wall_id;
