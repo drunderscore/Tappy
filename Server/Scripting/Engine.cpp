@@ -17,8 +17,8 @@
 #include <Server/Scripting/Lua.h>
 #include <Server/Scripting/Format.h>
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
-
-#define LOAD_TEST_SCRIPT 1
+#include <LibCore/DirIterator.h>
+#include <AK/LexicalPath.h>
 
 namespace Scripting
 {
@@ -138,14 +138,38 @@ Engine::Engine(Server& server) :
 
     m_base_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
 
-    if constexpr (LOAD_TEST_SCRIPT)
+    constexpr StringView plugins_directory = "plugins";
+
+    if (Core::File::exists(plugins_directory) && Core::File::is_directory(plugins_directory))
     {
-        errored = luaL_dofile(m_state, "Base/Test.lua");
-        if (errored)
+        auto plugins_dir_iterator = Core::DirIterator(plugins_directory, Core::DirIterator::SkipDots);
+
+        while (plugins_dir_iterator.has_next())
         {
-            warnln("Engine failed test script: {}", lua_tostring(m_state, -1));
-            VERIFY_NOT_REACHED();
+            auto entry = plugins_dir_iterator.next_full_path();
+            if (!Core::File::is_directory(entry))
+                continue;
+
+            auto entry_path = LexicalPath(entry);
+            auto plugin_main_path = entry_path.append("main.lua");
+            if (Core::File::exists(plugin_main_path.string()))
+            {
+                errored = luaL_dofile(m_state, plugin_main_path.string().characters());
+                if (errored)
+                {
+                    warnln("\u001b[31mFailed to load plugin from path {}\u001b[0m", plugin_main_path);
+                    warnln("\u001b[31m{}\u001b[0m", lua_tostring(m_state, -1));
+                }
+                else
+                {
+                    outln("\u001b[36mLoaded plugin {}\u001b[0m", plugin_main_path);
+                }
+            }
         }
+    }
+    else
+    {
+        warnln("No plugins directory found, not loading any plugins.");
     }
 }
 
