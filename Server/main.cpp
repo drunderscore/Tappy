@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     if (!args_parser.parse(argc, argv))
         return 1;
 
-    auto file_or_error = Core::File::open(world_path, Core::IODevice::OpenMode::ReadOnly);
+    auto file_or_error = Core::File::open(world_path, Core::OpenMode::ReadOnly);
 
     if (file_or_error.is_error())
     {

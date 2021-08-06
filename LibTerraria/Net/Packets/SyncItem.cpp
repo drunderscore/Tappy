@@ -40,8 +40,7 @@ Optional<SyncItem> SyncItem::from_bytes(InputStream& stream)
 ByteBuffer SyncItem::to_bytes() const
 {
     static constexpr auto packet_id = Terraria::Net::Packet::Id::SyncItem;
-    auto buffer = ByteBuffer::create_uninitialized(256);
-    OutputMemoryStream stream(buffer);
+    DuplexMemoryStream stream;
     stream << packet_id;
 
     stream << m_id;
@@ -52,8 +51,6 @@ ByteBuffer SyncItem::to_bytes() const
     stream << static_cast<u8>(!m_dropped_item.has_pickup_delay());
     stream << m_dropped_item.item().id();
 
-    buffer.trim(stream.size());
-
-    return buffer;
+    return stream.copy_into_contiguous_buffer();
 }
 }

@@ -39,7 +39,7 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
         {
             auto block_id = static_cast<Terraria::Tile::Block::Id>(modification.flags_1);
             auto style = modification.flags_2;
-            tile.block() = block_id;
+            tile.block() = Tile::Block(block_id);
             if (block_id == Tile::Block::Id::Torches)
             {
                 // FIXME: This depends on how the torch is placed! (background/floor, right/left block side, unlit)
@@ -48,7 +48,7 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
                 tile.block()->frame_x() = 0;
                 tile.block()->frame_y() = Tile::frame_y_for_style(style);
             }
-            else if(Terraria::s_tiles[(int)block_id].frame_important)
+            else if (Terraria::s_tiles[(int) block_id].frame_important)
             {
                 // This tile is frame important, and the flags may tell us what the frame x or frame y should be
                 // But we don't handle those cases yet, so just zero them.

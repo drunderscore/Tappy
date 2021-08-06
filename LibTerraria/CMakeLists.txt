@@ -134,3 +134,4 @@ target_include_directories(Terraria SYSTEM PRIVATE
         )
 
 target_lagom(Terraria)
+target_link_libraries(Terraria PRIVATE LagomCompress)

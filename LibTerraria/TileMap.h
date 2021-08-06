@@ -11,6 +11,7 @@
 #include <LibTerraria/Tile.h>
 #include <LibTerraria/Point.h>
 #include <LibTerraria/TileModification.h>
+#include <AK/RefCounted.h>
 
 namespace Terraria
 {

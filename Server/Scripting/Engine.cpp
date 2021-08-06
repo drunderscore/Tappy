@@ -439,7 +439,7 @@ int Engine::game_add_dropped_item()
     for (auto& kv : m_server.clients())
         kv->send(sync_item);
 
-    if(item.owner().has_value())
+    if (item.owner().has_value())
     {
         Terraria::Net::Packets::SyncItemOwner sync_item_owner;
         sync_item_owner.set_player_id(*item.owner());

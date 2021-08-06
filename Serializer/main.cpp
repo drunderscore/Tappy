@@ -64,7 +64,7 @@ int main(int argc, char** argv)
         return 1;
 
     auto file = Core::File::construct(input_file_path);
-    if (!file->open(Core::IODevice::OpenMode::ReadOnly))
+    if (!file->open(Core::OpenMode::ReadOnly))
     {
         warnln("Failed to open file.");
         return 2;
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
         if (module_obj.type() == AK::JsonValue::Type::String)
             module = module_obj.as_string();
 
-        auto& class_name = module.has_value() ? *module : lexical_path.title();
+        auto class_name = module.has_value() ? *module : lexical_path.title().to_string();
 
         outln("#pragma once");
         outln();

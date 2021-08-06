@@ -294,12 +294,12 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
                 if ((header1 & extended_block_id_bit))
                 {
                     stream >> temporary_16;
-                    tile.block() = static_cast<Tile::Block::Id>(temporary_16);
+                    tile.block() = Tile::Block(static_cast<Tile::Block::Id>(temporary_16));
                 }
                 else
                 {
                     stream >> temporary_8;
-                    tile.block() = static_cast<Tile::Block::Id>(temporary_8);
+                    tile.block() = Tile::Block(static_cast<Tile::Block::Id>(temporary_8));
                 }
 
                 if (importance[static_cast<i16>(tile.block()->id())])
