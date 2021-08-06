@@ -12,17 +12,6 @@
 local Hooks = {}
 
 local hookMap = {}
-hookMap["chat"] = {}
-hookMap["syncProjectile"] = {}
-hookMap["connectRequest"] = {}
-hookMap["togglePvp"] = {}
-hookMap["playerHurt"] = {}
-hookMap["playerDeath"] = {}
-hookMap["damageNpc"] = {}
-hookMap["playerSpawn"] = {}
-hookMap["modifyTile"] = {}
-hookMap["disconnect"] = {}
-hookMap["changeTeam"] = {}
 
 function Hooks.add(name, func)
     if type(name) ~= "string" then
@@ -59,6 +48,10 @@ function Hooks.remove(name, func)
 end
 
 function Hooks.publish(name, ...)
+    if hookMap[name] == nil then
+        hookMap[name] = {}
+        return
+    end
     local canceled = false
     for k, f in pairs(hookMap[name]) do
         if f(...) then
