@@ -69,7 +69,7 @@ compile_tile_model(tiles.json Tiles.cpp)
 compile_wall_model(walls.json Walls.cpp)
 compile_prefix_model(prefixes.json Prefixes.cpp)
 
-add_library(Terraria
+add_library(Terraria SHARED
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Items.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Tiles.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Walls.cpp
