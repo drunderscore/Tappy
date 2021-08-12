@@ -8,7 +8,7 @@ No binaries exist yet. You must build it yourself.
 
 ## Building
 You need `cmake`, and `ninja`. This project also depends
-on _"Lagom"_ from SerenityOS.
+on _"Lagom"_ from SerenityOS, and Lua 5.3.
 
 ```bash
 mkdir Build
