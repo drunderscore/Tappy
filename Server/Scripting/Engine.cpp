@@ -19,6 +19,7 @@
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
 #include <LibCore/DirIterator.h>
 #include <AK/LexicalPath.h>
+#include <AK/JsonObject.h>
 
 namespace Scripting
 {
@@ -49,6 +50,13 @@ Engine::Engine(Server& server) :
     static const struct luaL_Reg timer_lib[] =
     {
         {"create", timer_create_thunk},
+        {}
+    };
+
+    static const struct luaL_Reg json_lib[] =
+    {
+        {"serialize", json_serialize_thunk},
+        {"deserialize", json_deserialize_thunk},
         {}
     };
 
@@ -125,6 +133,9 @@ Engine::Engine(Server& server) :
 
     luaL_newlib(m_state, timer_lib);
     lua_setglobal(m_state, "Timer");
+
+    luaL_newlib(m_state, json_lib);
+    lua_setglobal(m_state, "JSON");
 
     lua_pushcfunction(m_state, format_thunk);
     lua_setglobal(m_state, "format");
@@ -382,6 +393,102 @@ int Engine::timer_create()
     m_timers.append(timer);
 
     return 0;
+}
+
+JsonObject Engine::serialize_object_to_json(int index)
+{
+    JsonObject constructed_json_object;
+
+    // TODO: What if we have a table with only numeric keys and wish to serialize it as a JSON array?
+    lua_pushnil(m_state);
+    while (lua_next(m_state, index) != 0)
+    {
+        // @formatter:off
+        VERIFY(lua_type(m_state, -2) == LUA_TSTRING);
+        // @formatter:on
+        auto key = lua_tostring(m_state, -2);
+        switch (lua_type(m_state, -1))
+        {
+            case LUA_TSTRING:
+                constructed_json_object.set(key, lua_tostring(m_state, -1));
+                break;
+            case LUA_TNUMBER:
+                // TODO: Also handle LUA_TINTEGER type (which doesn't exist?)
+                constructed_json_object.set(key, lua_tonumber(m_state, -1));
+                break;
+            case LUA_TTABLE:
+                constructed_json_object.set(key, serialize_object_to_json(lua_gettop(m_state)));
+                break;
+            default:
+                // FIXME: This should probably just luaL_error
+                VERIFY_NOT_REACHED();
+        }
+
+        lua_pop(m_state, 1);
+    }
+
+    return constructed_json_object;
+}
+
+void Engine::deserialize_object_to_lua_object(const JsonObject& object)
+{
+    lua_createtable(m_state, 0, object.size());
+
+    // @formatter:off
+    object.for_each_member([&](auto& key, auto& value)
+    {
+        if (value.is_string())
+        {
+            lua_pushstring(m_state, key.characters());
+            lua_pushstring(m_state, value.as_string().characters());
+            lua_settable(m_state, -3);
+        }
+        else if (value.is_number())
+        {
+            lua_pushstring(m_state, key.characters());
+            lua_pushnumber(m_state, value.template to_number<LUA_NUMBER>());
+            lua_settable(m_state, -3);
+        }
+        else if (value.is_object())
+        {
+            lua_pushstring(m_state, key.characters());
+            deserialize_object_to_lua_object(value.as_object());
+            lua_settable(m_state, -3);
+        }
+        else
+        {
+            // FIXME: This should probably not be fatal
+            VERIFY_NOT_REACHED();
+        }
+    });
+    // @formatter:on
+}
+
+int Engine::json_serialize()
+{
+    luaL_checktype(m_state, 1, LUA_TTABLE);
+
+    auto constructed_json_object = serialize_object_to_json(1);
+
+    lua_pushstring(m_state, constructed_json_object.to_string().characters());
+
+    return 1;
+}
+
+int Engine::json_deserialize()
+{
+    auto json_string = luaL_checkstring(m_state, 1);
+
+    auto maybe_json = JsonValue::from_string(json_string);
+    if (!maybe_json.has_value() || !maybe_json->is_object())
+    {
+        luaL_error(m_state, "the supplied JSON was invalid");
+        return 0;
+    }
+
+    deserialize_object_to_lua_object(maybe_json.value().as_object());
+
+    return 1;
 }
 
 int Engine::game_client()

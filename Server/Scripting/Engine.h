@@ -81,9 +81,18 @@ private:
 
     ALWAYS_INLINE void push_base_table() const;
 
+    JsonObject serialize_object_to_json(int index);
+
+    void deserialize_object_to_lua_object(const JsonObject&);
+
     DEFINE_LUA_METHOD(at_panic);
 
     DEFINE_LUA_METHOD(format);
+
+    // Json
+    DEFINE_LUA_METHOD(json_serialize);
+
+    DEFINE_LUA_METHOD(json_deserialize);
 
     // Timer
     DEFINE_LUA_METHOD(timer_create);
