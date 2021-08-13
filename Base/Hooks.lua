@@ -52,14 +52,9 @@ function Hooks.publish(name, ...)
         hookMap[name] = {}
         return
     end
-    local canceled = false
     for k, f in pairs(hookMap[name]) do
-        if f(...) then
-            canceled = true
-        end
+        f(...)
     end
-
-    return canceled
 end
 
 return Hooks
