@@ -49,7 +49,9 @@ Engine::Engine(Server& server) :
 
     static const struct luaL_Reg timer_lib[] =
     {
-        {"create", timer_create_thunk},
+        {"create",  timer_create_thunk},
+        {"destroy", timer_destroy_thunk},
+        {"invoke",  timer_invoke_thunk},
         {}
     };
 
@@ -102,6 +104,7 @@ Engine::Engine(Server& server) :
         {"owner",   inventory_owner_thunk},
         {}
     };
+
     // @formatter:on
 
     luaL_newmetatable(m_state, "Server::Client");
@@ -126,6 +129,14 @@ Engine::Engine(Server& server) :
     lua_settable(m_state, -3);
 
     luaL_setfuncs(m_state, inventory_lib, 0);
+    lua_pop(m_state, 1);
+
+    luaL_newmetatable(m_state, "Engine::Timer");
+    lua_pushstring(m_state, "__index");
+    lua_pushvalue(m_state, -2);
+    lua_settable(m_state, -3);
+
+    luaL_setfuncs(m_state, timer_lib, 0);
     lua_pop(m_state, 1);
 
     luaL_newlib(m_state, game_lib);
@@ -356,6 +367,15 @@ void* Engine::inventory_userdata(u8 id) const
     return inventory_ud;
 }
 
+void* Engine::timer_userdata(i32 id) const
+{
+    auto* inventory_ud = lua_newuserdata(m_state, sizeof(id));
+    memcpy(inventory_ud, &id, sizeof(id));
+    luaL_getmetatable(m_state, "Engine::Timer");
+    lua_setmetatable(m_state, -2);
+    return inventory_ud;
+}
+
 void Engine::push_base_table() const
 {
     lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_base_ref);
@@ -363,34 +383,65 @@ void Engine::push_base_table() const
 
 int Engine::timer_create()
 {
+    bool found_available_id = false;
+    i32 timer_id = 0;
+
+    for (auto i = 0; i < NumericLimits<i32>::max(); i++)
+    {
+        if (!m_timers.contains(i))
+        {
+            timer_id = i;
+            found_available_id = true;
+            break;
+        }
+    }
+
+    // @formatter:off
+   VERIFY(found_available_id);
+   // @formatter:on
+
+    // Push first function argument to the top of the stack as required by luaL_ref
+    lua_pushvalue(m_state, 1);
     auto function_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
-    auto timer = Core::Timer::construct(luaL_checkinteger(m_state, 1), nullptr, nullptr);
-    timer->on_timeout = [timer, this, function_ref]()
+    auto timer = Core::Timer::construct(luaL_checkinteger(m_state, 2), nullptr, nullptr);
+
+    timer->on_timeout = [this, timer_id, function_ref]()
     {
         lua_rawgeti(m_state, LUA_REGISTRYINDEX, function_ref);
         lua_call(m_state, 0, 1);
         if (lua_toboolean(m_state, -1))
         {
             luaL_unref(m_state, LUA_REGISTRYINDEX, function_ref);
-            auto index = m_timers.find_first_index(timer);
 
-            // If this timer is still ticking, but not in our timers, we've got problems.
+            auto timer = m_timers.get(timer_id);
             // @formatter:off
-            VERIFY(index.has_value());
+            VERIFY(timer.has_value());
             // @formatter:on
 
-            // FIXME: This is the dumbest fucking thing on planet earth
-            // What person writing C++ specification EVER thought using this oblique and arbitrary
-            // keyword 'mutable' was a good idea to ever do???
-            // If you've been const incorrect for 20+ years, now is not a good time to start.
-            // Because now you're inconsistent with what is expected from everything else.
-            // Fucking idiots.
-            m_timers.at(*index)->stop();
-            m_timers.remove(*index);
+            timer.value()->stop();
+            m_timers.remove(timer_id);
         }
     };
 
-    m_timers.append(timer);
+    m_timers.set(timer_id, timer);
+
+    timer_userdata(timer_id);
+
+    return 1;
+}
+
+int Engine::timer_destroy()
+{
+    auto timer_id = *reinterpret_cast<i32*>(luaL_checkudata(m_state, 1, "Engine::Timer"));
+    lua_pushboolean(m_state, m_timers.remove(timer_id));
+
+    return 1;
+}
+
+int Engine::timer_invoke()
+{
+    auto timer = *m_timers.get(*reinterpret_cast<i32*>(luaL_checkudata(m_state, 1, "Engine::Timer")));
+    timer->on_timeout();
 
     return 0;
 }

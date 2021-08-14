@@ -70,7 +70,7 @@ private:
     static HashMap<lua_State*, Engine*> s_engines;
     lua_State* m_state;
     Server& m_server;
-    Vector<NonnullRefPtr<Core::Timer>> m_timers;
+    HashMap<i32, NonnullRefPtr<Core::Timer>> m_timers;
     int m_base_ref{};
 
     void* client_userdata(u8 id) const;
@@ -78,6 +78,8 @@ private:
     void* player_userdata(u8 id) const;
 
     void* inventory_userdata(u8 id) const;
+
+    void* timer_userdata(i32 id) const;
 
     ALWAYS_INLINE void push_base_table() const;
 
@@ -96,6 +98,10 @@ private:
 
     // Timer
     DEFINE_LUA_METHOD(timer_create);
+
+    DEFINE_LUA_METHOD(timer_destroy);
+
+    DEFINE_LUA_METHOD(timer_invoke);
 
     // Game
     DEFINE_LUA_METHOD(game_client);
