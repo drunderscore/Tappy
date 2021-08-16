@@ -16,7 +16,6 @@
 #include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
 #include <Server/Scripting/Format.h>
-#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 #include <LibCore/DirIterator.h>
 #include <AK/LexicalPath.h>
 #include <AK/JsonObject.h>
@@ -43,7 +42,10 @@ Engine::Engine(Server& server) :
         {"clients",          game_clients_thunk},
         {"addProjectile",    game_add_projectile_thunk},
         {"projectileExists", game_projectile_exists_thunk},
-        {"addDroppedItem",   game_add_dropped_item_thunk},
+        {"addDroppedItem",  game_add_dropped_item_thunk},
+        {"removeDroppedItem", game_remove_dropped_item_thunk},
+        {"setItemOwner",    game_set_item_owner_thunk},
+        {"nextAvailableDroppedItemId", game_next_available_dropped_item_id_thunk},
         {}
     };
 
@@ -340,6 +342,27 @@ void Engine::client_did_sync_player_team(Badge<Server>, Client& who, const Terra
     lua_call(m_state, 2, 0);
 }
 
+void Engine::client_did_sync_item(Badge<Server>, Client& who, const Terraria::Net::Packets::SyncItem& packet)
+{
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientSyncItem");
+    client_userdata(who.id());
+    Types::dropped_item(m_state, packet.dropped_item());
+    lua_pushboolean(m_state, packet.has_pickup_delay());
+    lua_pushinteger(m_state, packet.id());
+    lua_call(m_state, 4, 0);
+}
+
+void Engine::client_did_sync_item_owner(Badge<Server>, Client& who, const Terraria::Net::Packets::SyncItemOwner& packet)
+{
+    UsingBaseTable base(*this);
+    lua_getfield(m_state, -1, "onClientSyncItemOwner");
+    client_userdata(who.id());
+    lua_pushinteger(m_state, packet.item_id());
+    lua_pushinteger(m_state, packet.player_id());
+    lua_call(m_state, 3, 0);
+}
+
 void* Engine::client_userdata(u8 id) const
 {
     auto* client_ud = lua_newuserdata(m_state, sizeof(id));
@@ -610,28 +633,46 @@ int Engine::game_projectile_exists()
 int Engine::game_add_dropped_item()
 {
     auto item = Types::dropped_item(m_state, 1);
-    auto item_id = m_server.next_available_dropped_item_id();
+    auto id = luaL_checkinteger(m_state, 2);
 
-    m_server.dropped_items().set(item_id, item);
+    m_server.sync_dropped_item(id, item);
 
-    Terraria::Net::Packets::SyncItem sync_item;
-    sync_item.set_id(item_id);
-    sync_item.dropped_item() = item;
+    lua_pushinteger(m_state, id);
 
-    for (auto& kv : m_server.clients())
-        kv->send(sync_item);
+    return 1;
+}
 
-    if (item.owner().has_value())
-    {
-        Terraria::Net::Packets::SyncItemOwner sync_item_owner;
-        sync_item_owner.set_player_id(*item.owner());
-        sync_item_owner.set_item_id(item_id);
+int Engine::game_remove_dropped_item()
+{
+    auto id = luaL_checkinteger(m_state, 1);
+    m_server.remove_dropped_item(id);
 
-        for (auto& kv : m_server.clients())
-            kv->send(sync_item_owner);
-    }
+    return 0;
+}
 
-    lua_pushinteger(m_state, item_id);
+int Engine::game_set_item_owner()
+{
+    auto id = luaL_checkinteger(m_state, 1);
+    auto owner = luaL_checkinteger(m_state, 2);
+
+    auto item = *m_server.dropped_items().get(id);
+    item.owner() = owner;
+
+    Terraria::Net::Packets::SyncItemOwner sync_item_owner;
+    sync_item_owner.set_item_id(id);
+    sync_item_owner.set_player_id(owner);
+
+    for (auto& client : m_server.clients())
+        client->send(sync_item_owner);
+
+    m_server.dropped_items().set(id, move(item));
+
+    return 0;
+}
+
+int Engine::game_next_available_dropped_item_id()
+{
+    lua_pushinteger(m_state, m_server.next_available_dropped_item_id());
 
     return 1;
 }

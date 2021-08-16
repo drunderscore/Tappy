@@ -33,6 +33,7 @@
 #include <LibTerraria/Net/Packets/SyncTalkNPC.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
 #include <LibTerraria/Net/Packets/SyncItem.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
@@ -107,6 +108,8 @@ public:
 
     void client_did_sync_item(Badge<Client>, Client&, Terraria::Net::Packets::SyncItem&);
 
+    void client_did_sync_item_owner(Badge<Client>, Client&, Terraria::Net::Packets::SyncItemOwner&);
+
     Vector<WeakPtr<Client>> clients() const;
 
     const WeakPtr<Client> client(u8 id) const;
@@ -133,6 +136,10 @@ public:
     { return m_world; }
 
     i16 next_available_dropped_item_id() const;
+
+    i16 sync_dropped_item(i16 id, const Terraria::DroppedItem);
+
+    void remove_dropped_item(i16 id);
 
     WeakPtr<Client> find_owner_for_item(const Terraria::DroppedItem&, Optional<u8> ignore_id);
 

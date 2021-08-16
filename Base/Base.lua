@@ -15,8 +15,12 @@ package.path = package.path .. ";Base/?.lua"
 
 local Escapes = require("ANSIEscapes")
 local Hooks = require("Hooks")
+local ID = require("ID")
 
 local Base = {}
+-- FIXME: If a plugin wants to remove an item that has a pickup timer, bad things will happen.
+-- Expose a helper for this?
+local droppedItemPickupTimers = {}
 
 function Base.onClientChat(client, message)
     local event = {}
@@ -166,6 +170,61 @@ function Base.onClientSyncPlayerTeam(client, team)
     Hooks.publish("changeTeam", event)
 
     client:player():setTeam(event.team, event.syncToSender)
+end
+
+function Base.onClientSyncItem(client, item, hasPickupDelay, id)
+    if id ~= 400 and item.item.id == ID.Item.None then
+        local event = {}
+        event.client = client
+        event.item = item
+        Hooks.publish("removeItem", event)
+        Game.removeDroppedItem(id)
+        if droppedItemPickupTimers[id] ~= nil then
+            droppedItemPickupTimers[id]:destroy()
+            droppedItemPickupTimers[id] = nil
+        end
+    else
+        local event = {}
+        event.canceled = false
+        event.client = client
+        event.item = item
+        -- The client only tells us if an item has pickup delay. If it does, they mean this constant value.
+        event.pickupDelay = hasPickupDelay and math.floor((100 / 60) * 1000) or 0
+        if id ~= 400 then
+            event.id = id
+        end
+
+        Hooks.publish("syncItem", event)
+        if event.canceled then
+            return
+        end
+
+        local properId = id == 400 and Game.nextAvailableDroppedItemId() or id
+        Game.addDroppedItem(item, properId)
+
+        -- Only do this to new items
+        if id == 400 then
+            if event.pickupDelay == 0 then
+                -- FIXME: make an item object
+                Game.setItemOwner(properId, item.owner or client:id())
+            else
+                droppedItemPickupTimers[id] = Timer.create(function()
+                    Game.setItemOwner(properId, item.owner or client:id())
+                    droppedItemPickupTimers[id] = nil
+                    return true
+                end, event.pickupDelay)
+            end
+        end
+    end
+end
+
+function Base.onClientSyncItemOwner(client, id, owner)
+    local event = {}
+    event.client = client
+    event.id = id
+    event.owner = owner
+
+    Hooks.publish("syncItemOwner", event)
 end
 
 return Base

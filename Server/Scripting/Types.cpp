@@ -757,10 +757,6 @@ void Types::dropped_item(lua_State* state, const Terraria::DroppedItem& value)
         lua_pushinteger(state, *value.owner());
         lua_settable(state, -3);
     }
-
-    lua_pushstring(state, "hasPickupDelay");
-    lua_pushboolean(state, value.has_pickup_delay());
-    lua_settable(state, -3);
 }
 
 Terraria::DroppedItem Types::dropped_item(lua_State* state, int index)
@@ -792,11 +788,6 @@ Terraria::DroppedItem Types::dropped_item(lua_State* state, int index)
     value = lua_tonumberx(state, -1, &has_value);
     if (has_value)
         dropped_item.owner() = value;
-    lua_pop(state, 1);
-
-    lua_pushstring(state, "hasPickupDelay");
-    lua_gettable(state, index);
-    dropped_item.set_has_pickup_delay(lua_toboolean(state, -1));
     lua_pop(state, 1);
 
     return dropped_item;

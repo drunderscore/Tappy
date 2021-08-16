@@ -27,7 +27,7 @@ Optional<SyncItem> SyncItem::from_bytes(InputStream& stream)
     packet.dropped_item().item().set_prefix(static_cast<Terraria::Item::Prefix>(temporary_8));
 
     stream >> temporary_8;
-    packet.dropped_item().set_has_pickup_delay(temporary_8 == 0);
+    packet.set_has_pickup_delay(temporary_8 == 0);
 
     stream >> temporary_16;
     packet.dropped_item().item().set_id(static_cast<Terraria::Item::Id>(temporary_16));
@@ -48,7 +48,7 @@ ByteBuffer SyncItem::to_bytes() const
     stream << m_dropped_item.velocity();
     stream << m_dropped_item.item().stack();
     stream << m_dropped_item.item().prefix();
-    stream << static_cast<u8>(!m_dropped_item.has_pickup_delay());
+    stream << static_cast<u8>(!m_has_pickup_delay);
     stream << m_dropped_item.item().id();
 
     return stream.copy_into_contiguous_buffer();

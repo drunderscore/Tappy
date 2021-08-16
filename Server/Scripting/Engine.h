@@ -21,6 +21,8 @@
 #include <LibTerraria/Net/Packets/SpawnPlayer.h>
 #include <LibTerraria/Net/Packets/ModifyTile.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
+#include <LibTerraria/Net/Packets/SyncItem.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 #include <LibCore/Timer.h>
 
 typedef struct lua_State lua_State;
@@ -65,6 +67,10 @@ public:
     void client_did_disconnect(Badge<Server>, Client&, Client::DisconnectReason);
 
     void client_did_sync_player_team(Badge<Server>, Client&, const Terraria::Net::Packets::PlayerTeam&);
+
+    void client_did_sync_item(Badge<Server>, Client&, const Terraria::Net::Packets::SyncItem&);
+
+    void client_did_sync_item_owner(Badge<Server>, Client&, const Terraria::Net::Packets::SyncItemOwner&);
 
 private:
     static HashMap<lua_State*, Engine*> s_engines;
@@ -113,6 +119,12 @@ private:
     DEFINE_LUA_METHOD(game_projectile_exists);
 
     DEFINE_LUA_METHOD(game_add_dropped_item);
+
+    DEFINE_LUA_METHOD(game_remove_dropped_item);
+
+    DEFINE_LUA_METHOD(game_set_item_owner);
+
+    DEFINE_LUA_METHOD(game_next_available_dropped_item_id);
 
     // Client
     DEFINE_LUA_METHOD(client_id);

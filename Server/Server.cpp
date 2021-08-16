@@ -441,45 +441,27 @@ WeakPtr<Client> Server::find_owner_for_item(const Terraria::DroppedItem& item, O
 
 void Server::client_did_sync_item(Badge<Client>, Client& who, Terraria::Net::Packets::SyncItem& packet)
 {
-    i16 actual_item_id;
-    if (packet.id() == 400)
-    {
-        actual_item_id = next_available_dropped_item_id();
-        packet.set_id(actual_item_id);
-    }
-    else
-    {
-        actual_item_id = packet.id();
-        if (packet.dropped_item().item().id() == Terraria::Item::Id::None)
-        {
-            // We should remove this item.
-            m_dropped_items.remove(actual_item_id);
+    m_engine->client_did_sync_item({}, who, packet);
+}
 
-            for (auto& kv : m_clients)
-                kv.value->send(packet);
+void Server::client_did_sync_item_owner(Badge<Client>, Client& who, Terraria::Net::Packets::SyncItemOwner& packet)
+{
+    auto item = m_dropped_items.get(packet.item_id());
+    if (!item.has_value())
+        return;
 
-            return;
-        }
-    }
+    // You must be the current owner to modify the owner (or there be no existing owner)
+    if (item->owner().has_value() && item->owner() != who.id())
+        return;
 
-    auto owner_now = find_owner_for_item(packet.dropped_item(), who.id());
-    if (owner_now)
-        packet.dropped_item().owner() = owner_now->id();
+    item->owner() = packet.player_id();
 
-    m_dropped_items.set(actual_item_id, packet.dropped_item());
+    m_dropped_items.set(packet.item_id(), item.release_value());
 
     for (auto& kv : m_clients)
         kv.value->send(packet);
 
-    if (owner_now)
-    {
-        Terraria::Net::Packets::SyncItemOwner sync_item_owner;
-        sync_item_owner.set_player_id(owner_now->id());
-        sync_item_owner.set_item_id(actual_item_id);
-
-        for (auto& kv : m_clients)
-            kv.value->send(sync_item_owner);
-    }
+    m_engine->client_did_sync_item_owner({}, who, packet);
 }
 
 i16 Server::next_available_dropped_item_id() const
@@ -493,6 +475,32 @@ i16 Server::next_available_dropped_item_id() const
     // FIXME: Maybe should return Optional<i16>
     // We have run out of available item IDs.
     VERIFY_NOT_REACHED();
+}
+
+i16 Server::sync_dropped_item(i16 id, const Terraria::DroppedItem item)
+{
+    Terraria::Net::Packets::SyncItem sync_item;
+    sync_item.set_id(id);
+    sync_item.dropped_item() = item;
+
+    for (auto& kv : m_clients)
+        kv.value->send(sync_item);
+
+    m_dropped_items.set(id, move(item));
+
+    return id;
+}
+
+void Server::remove_dropped_item(i16 id)
+{
+    m_dropped_items.remove(id);
+
+    Terraria::Net::Packets::SyncItem sync_item;
+    sync_item.set_id(id);
+    sync_item.dropped_item().item().set_id(Terraria::Item::Id::None);
+
+    for (auto& kv : m_clients)
+        kv.value->send(sync_item);
 }
 
 bool Server::listen(AK::IPv4Address addr, u16 port)

@@ -26,6 +26,12 @@ public:
 
     ByteBuffer to_bytes() const override;
 
+    bool has_pickup_delay() const
+    { return m_has_pickup_delay; }
+
+    void set_has_pickup_delay(bool value)
+    { m_has_pickup_delay = value; }
+
     const DroppedItem& dropped_item() const
     { return m_dropped_item; }
 
@@ -40,6 +46,7 @@ public:
 
 private:
     i16 m_id{};
+    bool m_has_pickup_delay{};
     DroppedItem m_dropped_item;
 };
 }

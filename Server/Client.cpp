@@ -357,7 +357,8 @@ void Client::on_ready_to_read()
     }
     else if (packet_id == Terraria::Net::Packet::Id::SyncItemOwner)
     {
-        // TODO: Implement this!
+        auto sync_item_owner = Terraria::Net::Packets::SyncItemOwner::from_bytes(packet_bytes_stream);
+        m_server.client_did_sync_item_owner({}, *this, *sync_item_owner);
     }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
