@@ -633,11 +633,14 @@ int Engine::game_projectile_exists()
 int Engine::game_add_dropped_item()
 {
     auto item = Types::dropped_item(m_state, 1);
-    auto id = luaL_checkinteger(m_state, 2);
+    auto maybe_id = luaL_optinteger(m_state, 2, -1);
 
-    m_server.sync_dropped_item(id, item);
+    if (maybe_id == -1)
+        maybe_id = m_server.next_available_dropped_item_id();
 
-    lua_pushinteger(m_state, id);
+    m_server.sync_dropped_item(maybe_id, item);
+
+    lua_pushinteger(m_state, maybe_id);
 
     return 1;
 }

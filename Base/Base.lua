@@ -200,20 +200,18 @@ function Base.onClientSyncItem(client, item, hasPickupDelay, id)
         end
 
         local properId = id == 400 and Game.nextAvailableDroppedItemId() or id
+        if event.pickupDelay == 0 then
+            item.owner = client:id()
+        end
         Game.addDroppedItem(item, properId)
 
         -- Only do this to new items
-        if id == 400 then
-            if event.pickupDelay == 0 then
-                -- FIXME: make an item object
+        if event.pickupDelay > 0 then
+            droppedItemPickupTimers[properId] = Timer.create(function()
                 Game.setItemOwner(properId, item.owner or client:id())
-            else
-                droppedItemPickupTimers[id] = Timer.create(function()
-                    Game.setItemOwner(properId, item.owner or client:id())
-                    droppedItemPickupTimers[id] = nil
-                    return true
-                end, event.pickupDelay)
-            end
+                droppedItemPickupTimers[properId] = nil
+                return true
+            end, event.pickupDelay)
         end
     end
 end

@@ -486,6 +486,15 @@ i16 Server::sync_dropped_item(i16 id, const Terraria::DroppedItem item)
     for (auto& kv : m_clients)
         kv.value->send(sync_item);
 
+    if (item.owner().has_value() && !m_dropped_items.contains(id))
+    {
+        Terraria::Net::Packets::SyncItemOwner sync_item_owner;
+        sync_item_owner.set_item_id(id);
+        sync_item_owner.set_player_id(*item.owner());
+        for (auto& kv : m_clients)
+            kv.value->send(sync_item_owner);
+    }
+
     m_dropped_items.set(id, move(item));
 
     return id;
