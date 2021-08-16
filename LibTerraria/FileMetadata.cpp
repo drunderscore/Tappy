@@ -28,10 +28,12 @@ InputStream& operator>>(InputStream& stream, Terraria::FileMetadata& value)
         return stream;
     }
 
-    value.set_type(static_cast<Terraria::FileMetadata::FileType>(temporary_64 >> 56));\
+    value.set_type(static_cast<Terraria::FileMetadata::FileType>(temporary_64 >> 56));
     u32 temporary_32;
     stream >> temporary_32;
     value.set_revision(temporary_32);
     stream >> temporary_64;
     value.set_flags(temporary_64);
+
+    return stream;
 }
