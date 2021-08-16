@@ -150,6 +150,29 @@ function Base.onModifyTile(client, modification)
         if event.syncToSender then
             client:syncTileRect(modification.x, modification.y, 3, 3)
         end
+
+        local tileDropEvent = {}
+        tileDropEvent.client = client
+        tileDropEvent.modification = modification
+
+        if modification.action == 6 or modification.action == 11 or modification.action == 13 or modification.action == 17 then
+            tileDropEvent.drops = {{id = ID.Item.Wire, stack = 1}}
+        elseif modification.action == 9 then
+            tileDropEvent.drops = {{id = ID.Item.Actuator, stack = 1}}
+        else
+            tileDropEvent.drops = {}
+        end
+
+        Hooks.publish("tileDrop", tileDropEvent)
+
+        for _, item in pairs(tileDropEvent.drops) do
+            Game.addDroppedItem({
+                item = item,
+                position = {x = modification.x * 16, y = modification.y * 16},
+                velocity = {x = 0, y = 0},
+                owner = event.client:id()
+            })
+        end
     end
 end
 
