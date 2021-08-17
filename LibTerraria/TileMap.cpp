@@ -58,8 +58,12 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
             break;
         }
         case 2:
-            tile.wall_id() = {};
+        {
+            auto success = !modification.flags_1;
+            if (success)
+                tile.wall_id() = {};
             break;
+        }
         case 3:
         case 22:
             tile.wall_id() = static_cast<Terraria::Tile::WallId>(modification.flags_1);
