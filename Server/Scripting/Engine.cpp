@@ -175,7 +175,7 @@ Engine::Engine(Server& server) :
                 continue;
 
             auto entry_path = LexicalPath(entry);
-            auto plugin_main_path = entry_path.append("main.lua");
+            auto plugin_main_path = entry_path.append("init.lua");
             if (Core::File::exists(plugin_main_path.string()))
             {
                 errored = luaL_dofile(m_state, plugin_main_path.string().characters());
