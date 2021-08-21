@@ -83,8 +83,6 @@ private:
 
     void* player_userdata(u8 id) const;
 
-    void* inventory_userdata(u8 id) const;
-
     void* timer_userdata(i32 id) const;
 
     ALWAYS_INLINE void push_base_table() const;
@@ -168,8 +166,6 @@ private:
 
     DEFINE_LUA_METHOD(player_position);
 
-    DEFINE_LUA_METHOD(player_inventory);
-
     DEFINE_LUA_METHOD(player_teleport);
 
     DEFINE_LUA_METHOD(player_set_team);
@@ -178,12 +174,9 @@ private:
 
     DEFINE_LUA_METHOD(player_set_mana);
 
-    // Inventory
-    DEFINE_LUA_METHOD(inventory_owner);
+    DEFINE_LUA_METHOD(player_set_item_in_slot);
 
-    DEFINE_LUA_METHOD(inventory_set_item);
-
-    DEFINE_LUA_METHOD(inventory_item);
+    DEFINE_LUA_METHOD(player_item_in_slot);
 
     class UsingBaseTable
     {

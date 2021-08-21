@@ -89,21 +89,14 @@ Engine::Engine(Server& server) :
         {"setPvp",          player_set_pvp_thunk},
         {"buffs",           player_buffs_thunk},
         {"position",        player_position_thunk},
-        {"inventory",       player_inventory_thunk},
         {"character",       player_character_thunk},
         {"updateCharacter", player_update_character_thunk},
         {"teleport",        player_teleport_thunk},
         {"setTeam",         player_set_team_thunk},
         {"setHealth",       player_set_health_thunk},
         {"setMana",         player_set_mana_thunk},
-        {}
-    };
-
-    static const struct luaL_Reg inventory_lib[] =
-    {
-        {"item",    inventory_item_thunk},
-        {"setItem", inventory_set_item_thunk},
-        {"owner",   inventory_owner_thunk},
+        {"setItemInSlot",   player_set_item_in_slot_thunk},
+        {"itemInSlot",      player_item_in_slot_thunk},
         {}
     };
 
@@ -123,14 +116,6 @@ Engine::Engine(Server& server) :
     lua_settable(m_state, -3);
 
     luaL_setfuncs(m_state, player_lib, 0);
-    lua_pop(m_state, 1);
-
-    luaL_newmetatable(m_state, "Terraria::PlayerInventory");
-    lua_pushstring(m_state, "__index");
-    lua_pushvalue(m_state, -2);
-    lua_settable(m_state, -3);
-
-    luaL_setfuncs(m_state, inventory_lib, 0);
     lua_pop(m_state, 1);
 
     luaL_newmetatable(m_state, "Engine::Timer");
@@ -379,15 +364,6 @@ void* Engine::player_userdata(u8 id) const
     luaL_getmetatable(m_state, "Terraria::Player");
     lua_setmetatable(m_state, -2);
     return player_ud;
-}
-
-void* Engine::inventory_userdata(u8 id) const
-{
-    auto* inventory_ud = lua_newuserdata(m_state, sizeof(id));
-    memcpy(inventory_ud, &id, sizeof(id));
-    luaL_getmetatable(m_state, "Terraria::PlayerInventory");
-    lua_setmetatable(m_state, -2);
-    return inventory_ud;
 }
 
 void* Engine::timer_userdata(i32 id) const
@@ -954,12 +930,6 @@ int Engine::player_position()
     return 1;
 }
 
-int Engine::player_inventory()
-{
-    inventory_userdata(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
-    return 1;
-}
-
 int Engine::player_teleport()
 {
     auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
@@ -1075,23 +1045,22 @@ int Engine::player_set_mana()
     return 0;
 }
 
-int Engine::inventory_owner()
+int Engine::player_item_in_slot()
 {
-    lua_pushinteger(m_state, *reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::PlayerInventory")));
-    return 1;
-}
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
+    auto slot = static_cast<Terraria::PlayerInventory::Slot>(luaL_checkinteger(m_state, 2));
 
-int Engine::inventory_item()
-{
-    // FIXME: Should there be a difference between the client/PlayerInventory being invalid and there being no item?
-    // FIXME: This Slot ID needs some validation.
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::PlayerInventory")));
-    auto slot = luaL_checkinteger(m_state, 2);
+    if (slot < Terraria::PlayerInventory::Slot::Hotbar0 || slot >= Terraria::PlayerInventory::Slot::_Count)
+    {
+        luaL_error(m_state, "invalid slot");
+        return 0;
+    }
+
     if (!client)
         lua_pushnil(m_state);
     else
     {
-        auto item = client->player().inventory().get(static_cast<Terraria::PlayerInventory::Slot>(slot));
+        auto item = client->player().inventory().get(slot);
         if (item.has_value())
             Types::item(m_state, *item);
         else
@@ -1101,18 +1070,21 @@ int Engine::inventory_item()
     return 1;
 }
 
-int Engine::inventory_set_item()
+int Engine::player_set_item_in_slot()
 {
-    // FIXME: This Slot ID needs some validation.
-    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::PlayerInventory")));
+    auto client = m_server.client(*reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Terraria::Player")));
     if (!client)
         return 0;
 
     auto slot = static_cast<Terraria::PlayerInventory::Slot>(luaL_checkinteger(m_state, 2));
+    if (slot < Terraria::PlayerInventory::Slot::Hotbar0 || slot >= Terraria::PlayerInventory::Slot::_Count)
+    {
+        luaL_error(m_state, "invalid slot");
+        return 0;
+    }
+
     Optional<Terraria::Item> item;
-    if (lua_gettop(m_state) < 3 || lua_isnil(m_state, 3))
-        item = Terraria::Item(Terraria::Item::Id::None);
-    else
+    if (lua_gettop(m_state) >= 3 && !lua_isnil(m_state, 3))
         item = Types::item(m_state, 3);
 
     client->player().inventory().set_item(slot, item);
@@ -1120,7 +1092,10 @@ int Engine::inventory_set_item()
     Terraria::Net::Packets::SyncInventorySlot inv_slot;
     inv_slot.set_player_id(client->id());
     inv_slot.set_slot(slot);
-    inv_slot.item() = *item;
+    if (item.has_value())
+        inv_slot.item() = *item;
+    else
+        inv_slot.item() = Terraria::Item(Terraria::Item::Id::None);
 
     for (auto& c : m_server.clients())
         c->send(inv_slot);
