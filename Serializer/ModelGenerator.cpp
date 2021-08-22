@@ -121,9 +121,15 @@ void generate_prefix_models(const JsonArray& items)
     // @formatter:off
     items.for_each([&](auto& value)
     {
-        auto& value_obj = value.as_object();
-        out("{{\"{}\", \"{}\"", value_obj.get("englishName").as_string(), value_obj.get("internalName").as_string());
-
+        if(value.is_null())
+        {
+            out("{{");
+        }
+        else
+        {
+            auto& value_obj = value.as_object();
+            out("{{\"{}\", \"{}\"", value_obj.get("englishName").as_string(), value_obj.get("internalName").as_string());
+        }
         if(count < items.size() - 1)
             outln("}},");
         else
