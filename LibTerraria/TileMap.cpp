@@ -113,4 +113,58 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
             dbgln("We are not handling tile modification action {}!", modification.action);
     }
 }
+
+void TileMap::place_object(const TilePoint& position,
+                           const Model::TileObject& object,
+                           i16 style,
+                           u8 alternate,
+                           i8 random,
+                           bool direction)
+{
+    auto root = position - object.origin;
+    auto real_style = style * object.style_multiplier;
+    // FIXME: This below
+    real_style += object.style;
+    if (random > 0)
+        real_style += random;
+
+    auto real_style_other = 0;
+    if (object.style_wrap_limit > 0)
+    {
+        real_style_other = real_style / object.style_wrap_limit * object.style_line_skip;
+        real_style %= object.style_wrap_limit;
+    }
+
+    i16 initial_frame_x;
+    i16 initial_frame_y;
+
+    if (object.style_horizontal)
+    {
+        initial_frame_x = object.coordinate_full_width * real_style;
+        initial_frame_y = object.coordinate_full_height * real_style_other;
+    }
+    else
+    {
+        initial_frame_x = object.coordinate_full_width * real_style_other;
+        initial_frame_y = object.coordinate_full_height * real_style;
+    }
+
+    // TODO: Kill tiles in the way, anchors, correct sloped tiles
+    //       Some tiles may have custom placement hooks that are used. We will have to replicate those as well.
+
+    for (auto x = 0; x < object.width; x++)
+    {
+        auto frame_x = initial_frame_x + x * (object.coordinate_width + object.coordinate_padding);
+        auto frame_y = initial_frame_y;
+        for (auto y = 0; y < object.height; y++)
+        {
+            // TODO: Break tiles as necessary
+            auto& tile = at(root.x() + x, root.y() + y) = Tile(Tile::Block(static_cast<Tile::Block::Id>(object.type)));
+            tile.block()->frame_x() = frame_x;
+            tile.block()->frame_y() = frame_y;
+
+            frame_y += object.coordinate_heights[y] + object.coordinate_padding;
+        }
+    }
+}
 }

@@ -1,0 +1,29 @@
+{
+  "fields": [
+    {
+      "name": "position",
+      "type": "Terraria::TilePoint"
+    },
+    {
+      "name": "type",
+      "type": "i16"
+    },
+    {
+      "name": "style",
+      "type": "i16"
+    },
+    {
+      "name": "alternate",
+      "type": "u8"
+    },
+    {
+      "name": "random",
+      "type": "i8"
+    },
+    {
+      "name": "direction",
+      "type": "u8"
+    }
+  ]
+}
+

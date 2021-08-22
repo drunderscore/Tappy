@@ -34,6 +34,7 @@
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
 #include <LibTerraria/Net/Packets/SyncItem.h>
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
+#include <LibTerraria/Net/Packets/PlaceObject.h>
 #include <LibTerraria/TileMap.h>
 #include <LibTerraria/Projectile.h>
 #include <LibTerraria/World.h>
@@ -109,6 +110,8 @@ public:
     void client_did_sync_item(Badge<Client>, Client&, Terraria::Net::Packets::SyncItem&);
 
     void client_did_sync_item_owner(Badge<Client>, Client&, Terraria::Net::Packets::SyncItemOwner&);
+
+    void client_did_place_object(Badge<Client>, Client&, Terraria::Net::Packets::PlaceObject&);
 
     Vector<WeakPtr<Client>> clients() const;
 

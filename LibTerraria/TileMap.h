@@ -11,6 +11,7 @@
 #include <LibTerraria/Tile.h>
 #include <LibTerraria/Point.h>
 #include <LibTerraria/TileModification.h>
+#include <LibTerraria/Model.h>
 #include <AK/RefCounted.h>
 
 namespace Terraria
@@ -41,6 +42,13 @@ public:
     virtual Span<Tile> tiles() = 0;
 
     virtual void process_tile_modification(const Terraria::TileModification&);
+
+    virtual void place_object(const Terraria::TilePoint& position,
+                              const Terraria::Model::TileObject&,
+                              i16 style,
+                              u8 alternate,
+                              i8 random,
+                              bool direction);
 
     ALWAYS_INLINE constexpr size_t index_for_position(const TilePoint& point) const
     {

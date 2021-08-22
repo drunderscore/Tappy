@@ -51,6 +51,7 @@ public:
         TeleportEntity = 65,
         ClientUUID = 68,
         ReleaseNPC = 71,
+        PlaceObject = 79,
         NetModules = 82,
         PlayerHurt = 117,
         PlayerDeath = 118,

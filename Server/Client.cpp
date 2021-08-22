@@ -360,6 +360,11 @@ void Client::on_ready_to_read()
         auto sync_item_owner = Terraria::Net::Packets::SyncItemOwner::from_bytes(packet_bytes_stream);
         m_server.client_did_sync_item_owner({}, *this, *sync_item_owner);
     }
+    else if (packet_id == Terraria::Net::Packet::Id::PlaceObject)
+    {
+        auto place_object = Terraria::Net::Packets::PlaceObject::from_bytes(packet_bytes_stream);
+        m_server.client_did_place_object({}, *this, *place_object);
+    }
     else if (packet_id == Terraria::Net::Packet::Id::ClientSyncedInventory)
     {
         // This packet has no data, and is completely useless.

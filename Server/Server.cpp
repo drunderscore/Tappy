@@ -15,6 +15,7 @@
 #include <Server/Scripting/Engine.h>
 #include <LibTerraria/Net/Packets/WorldData.h>
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
+#include <LibTerraria/Model.h>
 
 constexpr i16 s_max_dropped_items = 400;
 
@@ -462,6 +463,18 @@ void Server::client_did_sync_item_owner(Badge<Client>, Client& who, Terraria::Ne
         kv.value->send(packet);
 
     m_engine->client_did_sync_item_owner({}, who, packet);
+}
+
+void Server::client_did_place_object(Badge<Client>, Client& who, Terraria::Net::Packets::PlaceObject& packet)
+{
+    auto& object = Terraria::s_tile_objects[packet.type()];
+    tile_map().place_object(packet.position(), object, packet.style(), packet.alternate(), packet.random(),
+                            packet.direction());
+    for (auto& kv : m_clients)
+    {
+        if (kv.key != who.id())
+            kv.value->send(packet);
+    }
 }
 
 i16 Server::next_available_dropped_item_id() const

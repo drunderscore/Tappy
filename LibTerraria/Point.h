@@ -40,6 +40,11 @@ public:
         return abs(sqrt(other.m_x - m_x) + sqrt(other.m_y - m_y));
     }
 
+    friend Point<T> operator-(const Point<T>& lhs, const Point<T>& rhs)
+    {
+        return {lhs.m_x - rhs.m_x, lhs.m_y - rhs.m_y};
+    }
+
 private:
     T m_x{};
     T m_y{};

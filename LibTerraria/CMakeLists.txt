@@ -52,6 +52,16 @@ function(compile_prefix_model source output)
     )
 endfunction()
 
+function(compile_tile_object_model source output)
+    add_custom_command(
+            OUTPUT Models/${output}
+            COMMAND Serializer/Serializer -a tile_object_model ${CMAKE_CURRENT_SOURCE_DIR}/Models/${source} > ${CMAKE_CURRENT_BINARY_DIR}/Models/${output}
+            VERBATIM
+            DEPENDS Serializer
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    )
+endfunction()
+
 file(GLOB packet_definitions ${CMAKE_CURRENT_SOURCE_DIR}/Net/Packets/*.json)
 foreach(file ${packet_definitions})
     get_filename_component(file_name ${file} NAME_WE)
@@ -68,12 +78,14 @@ compile_item_model(items.json Items.cpp)
 compile_tile_model(tiles.json Tiles.cpp)
 compile_wall_model(walls.json Walls.cpp)
 compile_prefix_model(prefixes.json Prefixes.cpp)
+compile_tile_object_model(tileObjects.json TileObjects.cpp)
 
 add_library(Terraria SHARED
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Items.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Tiles.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Walls.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/Models/Prefixes.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/Models/TileObjects.cpp
         Item.cpp
         Color.cpp
         Net/Packet.cpp
@@ -86,6 +98,7 @@ add_library(Terraria SHARED
         TogglePvp.h
         ReleaseNPC.h
         KillProjectile.h
+        PlaceObject.h
         Net/Packets/SyncPlayer.cpp
         TileFrameSection.h
         ConnectFinished.h
