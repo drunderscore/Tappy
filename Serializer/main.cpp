@@ -6,10 +6,10 @@
 
 #include <AK/Format.h>
 #include <AK/JsonObject.h>
+#include <AK/LexicalPath.h>
+#include <AK/String.h>
 #include <LibCore/ArgsParser.h>
 #include <LibCore/File.h>
-#include <AK/String.h>
-#include <AK/LexicalPath.h>
 
 void stringify(const String& name, const StringView& lines);
 
@@ -35,16 +35,14 @@ class Field
 {
 public:
     Field(String name, String type, Optional<String> when) : m_name(move(name)), m_type(move(type)), m_when(move(when))
-    {}
+    {
+    }
 
-    const String& name() const
-    { return m_name; }
+    const String& name() const { return m_name; }
 
-    const String& type() const
-    { return m_type; }
+    const String& type() const { return m_type; }
 
-    const Optional<String>& when() const
-    { return m_when; }
+    const Optional<String>& when() const { return m_when; }
 
 private:
     String m_name;
@@ -158,18 +156,17 @@ int main(int argc, char** argv)
 
         Vector<Field> fields;
 
-        json_fields.as_array().for_each([&](auto& value)
-                                        {
-                                            if (!value.is_object())
-                                                return;
+        json_fields.as_array().for_each([&](auto& value) {
+            if (!value.is_object())
+                return;
 
-                                            auto name = value.as_object().get("name").as_string();
-                                            auto type = value.as_object().get("type").as_string();
-                                            auto when_obj = value.as_object().get("when");
-                                            Optional<String> when = when_obj.type() == AK::JsonValue::Type::String ?
-                                                                    when_obj.as_string() : Optional<String>{};
-                                            fields.append(Field(move(name), move(type), move(when)));
-                                        });
+            auto name = value.as_object().get("name").as_string();
+            auto type = value.as_object().get("type").as_string();
+            auto when_obj = value.as_object().get("when");
+            Optional<String> when =
+                when_obj.type() == AK::JsonValue::Type::String ? when_obj.as_string() : Optional<String>{};
+            fields.append(Field(move(name), move(type), move(when)));
+        });
 
         AK::LexicalPath lexical_path(input_file_path);
         Optional<String> module;
