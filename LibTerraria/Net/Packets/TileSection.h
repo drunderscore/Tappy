@@ -8,13 +8,13 @@
 
 #include <AK/ByteBuffer.h>
 #include <AK/Optional.h>
-#include <AK/String.h>
+#include <AK/Random.h>
 #include <AK/Stream.h>
-#include <LibTerraria/Net/Types.h>
+#include <AK/String.h>
 #include <LibTerraria/Net/Packet.h>
+#include <LibTerraria/Net/Types.h>
 #include <LibTerraria/Tile.h>
 #include <LibTerraria/TileMap.h>
-#include <AK/Random.h>
 
 namespace Terraria::Net::Packets
 {
@@ -23,15 +23,9 @@ class TileSection : public Terraria::Net::Packet
 public:
     TileSection(const TileMap& tile_map, i32 starting_x, i32 starting_y, u16 width, u16 height);
 
-    const char* packet_name() const override
-    {
-        return "TileSection";
-    }
+    const char* packet_name() const override { return "TileSection"; }
 
-    static Optional<TileSection> from_bytes(InputStream& stream)
-    {
-        VERIFY_NOT_REACHED();
-    }
+    static Optional<TileSection> from_bytes(InputStream& stream) { VERIFY_NOT_REACHED(); }
 
     ByteBuffer to_bytes() const override;
 

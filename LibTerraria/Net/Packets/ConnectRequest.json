@@ -1,9 +1,8 @@
 {
-    "fields":
-    [
-        {
-            "name": "version",
-            "type": "String"
-        }
-    ]
+  "fields": [
+    {
+      "name": "version",
+      "type": "String"
+    }
+  ]
 }

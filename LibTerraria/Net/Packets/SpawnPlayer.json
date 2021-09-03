@@ -1,26 +1,25 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "spawn_x",
-            "type": "u16"
-        },
-        {
-            "name": "spawn_y",
-            "type": "u16"
-        },
-        {
-            "name": "remaining_respawn_time",
-            "type": "i32"
-        },
-        {
-            "name": "context",
-            "type": "u8"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "spawn_x",
+      "type": "u16"
+    },
+    {
+      "name": "spawn_y",
+      "type": "u16"
+    },
+    {
+      "name": "remaining_respawn_time",
+      "type": "i32"
+    },
+    {
+      "name": "context",
+      "type": "u8"
+    }
+  ]
 }
 

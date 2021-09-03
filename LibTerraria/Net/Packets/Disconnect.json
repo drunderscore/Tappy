@@ -1,9 +1,8 @@
 {
-    "fields":
-    [
-        {
-            "name": "reason",
-            "type": "NetworkText"
-        }
-    ]
+  "fields": [
+    {
+      "name": "reason",
+      "type": "NetworkText"
+    }
+  ]
 }

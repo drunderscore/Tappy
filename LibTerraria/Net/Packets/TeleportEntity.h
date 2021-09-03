@@ -25,50 +25,35 @@ public:
 
     TeleportEntity() = default;
 
-    const char* packet_name() const override
-    {
-        return "TeleportEntity";
-    }
+    const char* packet_name() const override { return "TeleportEntity"; }
 
     static Optional<TeleportEntity> from_bytes(InputStream& stream);
 
     ByteBuffer to_bytes() const override;
 
-    i16 target() const
-    { return m_target; }
+    i16 target() const { return m_target; }
 
-    bool get_position_from_target() const
-    { m_get_position_from_target; }
+    bool get_position_from_target() const { m_get_position_from_target; }
 
-    TeleportType type() const
-    { return m_type; }
+    TeleportType type() const { return m_type; }
 
-    const EntityPoint& position() const
-    { return m_position; }
+    const EntityPoint& position() const { return m_position; }
 
-    u8 style() const
-    { return m_style; }
+    u8 style() const { return m_style; }
 
-    const Optional<i32>& extra_info() const
-    { return m_extra_info; }
+    const Optional<i32>& extra_info() const { return m_extra_info; }
 
-    void set_target(i16 value)
-    { m_target = value; }
+    void set_target(i16 value) { m_target = value; }
 
-    void set_get_position_from_target(bool value)
-    { m_get_position_from_target = value; }
+    void set_get_position_from_target(bool value) { m_get_position_from_target = value; }
 
-    void set_type(TeleportType value)
-    { m_type = value; }
+    void set_type(TeleportType value) { m_type = value; }
 
-    void set_style(u8 value)
-    { m_style = value; }
+    void set_style(u8 value) { m_style = value; }
 
-    EntityPoint& position()
-    { return m_position; }
+    EntityPoint& position() { return m_position; }
 
-    Optional<i32>& extra_info()
-    { return m_extra_info; }
+    Optional<i32>& extra_info() { return m_extra_info; }
 
 private:
     i16 m_target{};

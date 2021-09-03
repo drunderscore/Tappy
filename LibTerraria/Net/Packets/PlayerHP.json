@@ -1,17 +1,16 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "hp",
-            "type": "i16"
-        },
-        {
-            "name": "max_hp",
-            "type": "i16"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "hp",
+      "type": "i16"
+    },
+    {
+      "name": "max_hp",
+      "type": "i16"
+    }
+  ]
 }

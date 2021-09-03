@@ -1,6 +1,5 @@
 {
-  "fields":
-  [
+  "fields": [
     {
       "name": "item_id",
       "type": "i16"

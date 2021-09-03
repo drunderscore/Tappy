@@ -16,32 +16,23 @@ namespace Terraria::Net::Packets
 class SyncInventorySlot : public Terraria::Net::Packet
 {
 public:
-    const char* packet_name() const override
-    {
-        return "SyncInventorySlot";
-    }
+    const char* packet_name() const override { return "SyncInventorySlot"; }
 
     static Optional<SyncInventorySlot> from_bytes(InputStream& stream);
 
     ByteBuffer to_bytes() const override;
 
-    const Item& item() const
-    { return m_item; }
+    const Item& item() const { return m_item; }
 
-    Item& item()
-    { return m_item; }
+    Item& item() { return m_item; }
 
-    Terraria::PlayerInventory::Slot slot() const
-    { return m_slot; }
+    Terraria::PlayerInventory::Slot slot() const { return m_slot; }
 
-    void set_slot(Terraria::PlayerInventory::Slot value)
-    { m_slot = value; }
+    void set_slot(Terraria::PlayerInventory::Slot value) { m_slot = value; }
 
-    u8 player_id() const
-    { return m_player_id; }
+    u8 player_id() const { return m_player_id; }
 
-    void set_player_id(u8 value)
-    { m_player_id = value; }
+    void set_player_id(u8 value) { m_player_id = value; }
 
 private:
     Item m_item;

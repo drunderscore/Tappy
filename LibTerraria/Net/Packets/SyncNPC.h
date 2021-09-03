@@ -19,20 +19,15 @@ public:
 
     SyncNPC() = default;
 
-    const char* packet_name() const override
-    {
-        return "SyncNPC";
-    }
+    const char* packet_name() const override { return "SyncNPC"; }
 
     static Optional<SyncNPC> from_bytes(InputStream& stream);
 
     ByteBuffer to_bytes() const override;
 
-    const NPC& npc() const
-    { return m_npc; }
+    const NPC& npc() const { return m_npc; }
 
-    NPC& npc()
-    { return m_npc; }
+    NPC& npc() { return m_npc; }
 
 private:
     NPC m_npc;

@@ -1,10 +1,9 @@
 {
-    "fields":
-    [
-        {
-            "name": "modification",
-            "type": "Terraria::TileModification"
-        }
-    ]
+  "fields": [
+    {
+      "name": "modification",
+      "type": "Terraria::TileModification"
+    }
+  ]
 }
 

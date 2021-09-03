@@ -1,13 +1,12 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "buffs",
-            "type": "Array<u16, 22>"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "buffs",
+      "type": "Array<u16, 22>"
+    }
+  ]
 }

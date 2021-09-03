@@ -18,26 +18,21 @@ class SyncTileRect : public Terraria::Net::Packet
 {
 public:
     SyncTileRect(const TileMap& tile_map, TilePoint pos, u8 width, u8 height)
-            : m_tile_map(tile_map), m_position(move(pos)), m_width(width), m_height(height)
-    {}
-
-    const char* packet_name() const override
+        : m_tile_map(tile_map), m_position(move(pos)), m_width(width), m_height(height)
     {
-        return "SyncTileRect";
     }
+
+    const char* packet_name() const override { return "SyncTileRect"; }
 
     // FIXME: Unlike TileSection, I believe the client does actually send this one...
     // So eventually we will need to handle it.
-    static Optional<SyncTileRect> from_bytes(InputStream& stream)
-    { VERIFY_NOT_REACHED(); }
+    static Optional<SyncTileRect> from_bytes(InputStream& stream) { VERIFY_NOT_REACHED(); }
 
     ByteBuffer to_bytes() const override;
 
-    const TilePoint& position() const
-    { return m_position; }
+    const TilePoint& position() const { return m_position; }
 
-    TilePoint& position()
-    { return m_position; }
+    TilePoint& position() { return m_position; }
 
 private:
     const TileMap& m_tile_map;

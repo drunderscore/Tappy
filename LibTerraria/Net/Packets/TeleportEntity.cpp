@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/Net/Packets/TeleportEntity.h>
 #include <AK/MemoryStream.h>
+#include <LibTerraria/Net/Packets/TeleportEntity.h>
 
 namespace Terraria::Net::Packets
 {

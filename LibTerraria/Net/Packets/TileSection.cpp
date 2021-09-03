@@ -4,19 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/Net/Packets/TileSection.h>
-#include <LibCompress/Deflate.h>
 #include <AK/MemoryStream.h>
+#include <LibCompress/Deflate.h>
+#include <LibTerraria/Net/Packets/TileSection.h>
 
 namespace Terraria::Net::Packets
 {
-TileSection::TileSection(const TileMap& tile_map, i32 starting_x, i32 starting_y, u16 width, u16 height) :
-        m_tile_map(tile_map),
-        m_starting_x(starting_x),
-        m_starting_y(starting_y),
-        m_width(width),
-        m_height(height)
-{}
+TileSection::TileSection(const TileMap& tile_map, i32 starting_x, i32 starting_y, u16 width, u16 height)
+    : m_tile_map(tile_map), m_starting_x(starting_x), m_starting_y(starting_y), m_width(width), m_height(height)
+{
+}
 
 ByteBuffer TileSection::to_bytes() const
 {
@@ -132,9 +129,9 @@ ByteBuffer TileSection::to_bytes() const
     }
 
     // TODO: Support chests, signs, and tile entities
-    stream_deflated << static_cast<u16>(0);  // Chest Count
-    stream_deflated << static_cast<u16>(0);  // Sign Count
-    stream_deflated << static_cast<u16>(0);  // Tile Entity Count
+    stream_deflated << static_cast<u16>(0); // Chest Count
+    stream_deflated << static_cast<u16>(0); // Sign Count
+    stream_deflated << static_cast<u16>(0); // Tile Entity Count
 
     auto buffer_inflate = Compress::DeflateCompressor::compress_all(stream_deflated.copy_into_contiguous_buffer());
 

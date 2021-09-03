@@ -1,6 +1,5 @@
 {
-  "fields":
-  [
+  "fields": [
     {
       "name": "player_id",
       "type": "u8"

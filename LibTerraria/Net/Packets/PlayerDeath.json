@@ -1,25 +1,24 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "reason",
-            "type": "PlayerDeathReason"
-        },
-        {
-            "name": "damage",
-            "type": "i16"
-        },
-        {
-            "name": "direction",
-            "type": "u8"
-        },
-        {
-            "name": "flags",
-            "type": "u8"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "reason",
+      "type": "PlayerDeathReason"
+    },
+    {
+      "name": "damage",
+      "type": "i16"
+    },
+    {
+      "name": "direction",
+      "type": "u8"
+    },
+    {
+      "name": "flags",
+      "type": "u8"
+    }
+  ]
 }

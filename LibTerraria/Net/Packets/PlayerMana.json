@@ -1,17 +1,16 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "mana",
-            "type": "i16"
-        },
-        {
-            "name": "max_mana",
-            "type": "i16"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "mana",
+      "type": "i16"
+    },
+    {
+      "name": "max_mana",
+      "type": "i16"
+    }
+  ]
 }

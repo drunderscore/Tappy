@@ -1,17 +1,16 @@
 {
-    "fields":
-    [
-        {
-            "name": "player_id",
-            "type": "u8"
-        },
-        {
-            "name": "rotation",
-            "type": "float"
-        },
-        {
-            "name": "animation",
-            "type": "i16"
-        }
-    ]
+  "fields": [
+    {
+      "name": "player_id",
+      "type": "u8"
+    },
+    {
+      "name": "rotation",
+      "type": "float"
+    },
+    {
+      "name": "animation",
+      "type": "i16"
+    }
+  ]
 }

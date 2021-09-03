@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include <AK/Array.h>
 #include <AK/ByteBuffer.h>
 #include <AK/Optional.h>
-#include <AK/Array.h>
-#include <AK/String.h>
 #include <AK/Random.h>
+#include <AK/String.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Point.h>
 #include <LibTerraria/Projectile.h>
@@ -22,20 +22,15 @@ class SyncProjectile : public Terraria::Net::Packet
 public:
     SyncProjectile() = default;
 
-    const char* packet_name() const override
-    {
-        return "SyncProjectile";
-    }
+    const char* packet_name() const override { return "SyncProjectile"; }
 
     static Optional<SyncProjectile> from_bytes(InputStream& stream);
 
     ByteBuffer to_bytes() const override;
 
-    const Projectile& projectile() const
-    { return m_projectile; }
+    const Projectile& projectile() const { return m_projectile; }
 
-    Projectile& projectile()
-    { return m_projectile; }
+    Projectile& projectile() { return m_projectile; }
 
 private:
     Projectile m_projectile;

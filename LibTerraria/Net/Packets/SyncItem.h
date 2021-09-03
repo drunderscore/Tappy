@@ -17,32 +17,23 @@ namespace Terraria::Net::Packets
 class SyncItem : public Terraria::Net::Packet
 {
 public:
-    const char* packet_name() const override
-    {
-        return "SyncItem";
-    }
+    const char* packet_name() const override { return "SyncItem"; }
 
     static Optional<SyncItem> from_bytes(InputStream& stream);
 
     ByteBuffer to_bytes() const override;
 
-    bool has_pickup_delay() const
-    { return m_has_pickup_delay; }
+    bool has_pickup_delay() const { return m_has_pickup_delay; }
 
-    void set_has_pickup_delay(bool value)
-    { m_has_pickup_delay = value; }
+    void set_has_pickup_delay(bool value) { m_has_pickup_delay = value; }
 
-    const DroppedItem& dropped_item() const
-    { return m_dropped_item; }
+    const DroppedItem& dropped_item() const { return m_dropped_item; }
 
-    DroppedItem& dropped_item()
-    { return m_dropped_item; }
+    DroppedItem& dropped_item() { return m_dropped_item; }
 
-    i16 id() const
-    { return m_id; }
+    i16 id() const { return m_id; }
 
-    void set_id(i16 value)
-    { m_id = value; }
+    void set_id(i16 value) { m_id = value; }
 
 private:
     i16 m_id{};

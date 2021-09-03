@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
+#include <AK/MemoryStream.h>
 #include <LibTerraria/Net/Packets/SyncPlayer.h>
 #include <LibTerraria/Net/Types.h>
-#include <AK/MemoryStream.h>
 
 namespace Terraria::Net::Packets
 {
@@ -31,7 +31,6 @@ Optional<SyncPlayer> SyncPlayer::from_bytes(InputStream& stream)
 
     return packet;
 }
-
 
 ByteBuffer SyncPlayer::to_bytes() const
 {

@@ -1,21 +1,20 @@
 {
-    "fields":
-    [
-        {
-            "name": "start_x",
-            "type": "i16"
-        },
-        {
-            "name": "start_y",
-            "type": "i16"
-        },
-        {
-            "name": "end_x",
-            "type": "i16"
-        },
-        {
-            "name": "end_y",
-            "type": "i16"
-        }
-    ]
+  "fields": [
+    {
+      "name": "start_x",
+      "type": "i16"
+    },
+    {
+      "name": "start_y",
+      "type": "i16"
+    },
+    {
+      "name": "end_x",
+      "type": "i16"
+    },
+    {
+      "name": "end_y",
+      "type": "i16"
+    }
+  ]
 }
