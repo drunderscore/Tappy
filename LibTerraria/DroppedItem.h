@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <LibTerraria/Item.h>
 #include <AK/Types.h>
+#include <LibTerraria/Item.h>
 #include <LibTerraria/Point.h>
 
 namespace Terraria
@@ -15,29 +15,21 @@ namespace Terraria
 class DroppedItem
 {
 public:
-    const Item& item() const
-    { return m_item; }
+    const Item& item() const { return m_item; }
 
-    const EntityPoint& position() const
-    { return m_position; }
+    const EntityPoint& position() const { return m_position; }
 
-    const EntityPoint& velocity() const
-    { return m_velocity; }
+    const EntityPoint& velocity() const { return m_velocity; }
 
-    Item& item()
-    { return m_item; }
+    Item& item() { return m_item; }
 
-    EntityPoint& position()
-    { return m_position; }
+    EntityPoint& position() { return m_position; }
 
-    EntityPoint& velocity()
-    { return m_velocity; }
+    EntityPoint& velocity() { return m_velocity; }
 
-    const Optional<u8>& owner() const
-    { return m_owner; }
+    const Optional<u8>& owner() const { return m_owner; }
 
-    Optional<u8>& owner()
-    { return m_owner; }
+    Optional<u8>& owner() { return m_owner; }
 
 private:
     Item m_item;

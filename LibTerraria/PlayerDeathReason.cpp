@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/PlayerDeathReason.h>
-#include <LibTerraria/Net/Types.h>
 #include <AK/MemoryStream.h>
+#include <LibTerraria/Net/Types.h>
+#include <LibTerraria/PlayerDeathReason.h>
 
 static constexpr u8 m_player_bit = 0b0000'0001;
 static constexpr u8 m_npc_bit = 0b0000'0010;

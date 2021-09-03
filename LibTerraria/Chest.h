@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <AK/Types.h>
-#include <AK/String.h>
 #include <AK/HashMap.h>
-#include <LibTerraria/Point.h>
+#include <AK/String.h>
+#include <AK/Types.h>
 #include <LibTerraria/Item.h>
+#include <LibTerraria/Point.h>
 
 namespace Terraria
 {
@@ -20,23 +20,17 @@ public:
     // FIXME: What does our name start out as? empty? "Chest"? is it localized?
     Chest() = default;
 
-    const TilePoint& position() const
-    { return m_position; }
+    const TilePoint& position() const { return m_position; }
 
-    TilePoint& position()
-    { return m_position; }
+    TilePoint& position() { return m_position; }
 
-    const HashMap<u16, Item>& contents() const
-    { return m_contents; }
+    const HashMap<u16, Item>& contents() const { return m_contents; }
 
-    HashMap<u16, Item>& contents()
-    { return m_contents; }
+    HashMap<u16, Item>& contents() { return m_contents; }
 
-    const String& name() const
-    { return m_name; }
+    const String& name() const { return m_name; }
 
-    void set_name(String value)
-    { m_name = move(value); }
+    void set_name(String value) { m_name = move(value); }
 
 private:
     HashMap<u16, Item> m_contents;

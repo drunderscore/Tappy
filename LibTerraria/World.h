@@ -6,19 +6,19 @@
 
 #pragma once
 
-#include <LibTerraria/FileMetadata.h>
+#include <AK/HashMap.h>
+#include <AK/RefCounted.h>
 #include <AK/Result.h>
-#include <AK/String.h>
 #include <AK/Stream.h>
-#include <AK/Vector.h>
+#include <AK/String.h>
 #include <AK/UUID.h>
+#include <AK/Vector.h>
+#include <LibTerraria/Chest.h>
+#include <LibTerraria/FileMetadata.h>
 #include <LibTerraria/GameMode.h>
 #include <LibTerraria/Point.h>
-#include <LibTerraria/TileMap.h>
-#include <LibTerraria/Chest.h>
 #include <LibTerraria/Sign.h>
-#include <AK/RefCounted.h>
-#include <AK/HashMap.h>
+#include <LibTerraria/TileMap.h>
 
 namespace Terraria
 {
@@ -29,26 +29,19 @@ public:
 
     static Result<RefPtr<World>, Error> try_load_world(InputStream& stream);
 
-    const String& name() const
-    { return m_name; }
+    const String& name() const { return m_name; }
 
-    const RefPtr<TileMap> tile_map() const
-    { return m_tile_map; }
+    const RefPtr<TileMap> tile_map() const { return m_tile_map; }
 
-    RefPtr<TileMap> tile_map()
-    { return m_tile_map; }
+    RefPtr<TileMap> tile_map() { return m_tile_map; }
 
-    const HashMap<u16, Chest>& chests() const
-    { return m_chests; }
+    const HashMap<u16, Chest>& chests() const { return m_chests; }
 
-    HashMap<u16, Chest>& chests()
-    { return m_chests; }
+    HashMap<u16, Chest>& chests() { return m_chests; }
 
-    const HashMap<u16, Sign>& signs() const
-    { return m_signs; }
+    const HashMap<u16, Sign>& signs() const { return m_signs; }
 
-    HashMap<u16, Sign>& signs()
-    { return m_signs; }
+    HashMap<u16, Sign>& signs() { return m_signs; }
 
 public:
     World() = default;

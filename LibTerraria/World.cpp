@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/World.h>
+#include <LibTerraria/Generator/Settings.h>
 #include <LibTerraria/Net/Types.h>
+#include <LibTerraria/World.h>
 
 static constexpr u8 additional_header_bit = 0b0000'0001;
 static constexpr u8 block_bit = 0b0000'0010;

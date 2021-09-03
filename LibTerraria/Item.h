@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <AK/Types.h>
 #include <AK/Format.h>
+#include <AK/Types.h>
 
 namespace Terraria
 {
@@ -5243,31 +5243,21 @@ public:
         Legendary2 = 84
     };
 
-    explicit Item(Id id, Prefix prefix = Prefix::None, i16 stack = 1) :
-            m_id(id),
-            m_prefix(prefix),
-            m_stack(stack)
-    {}
+    explicit Item(Id id, Prefix prefix = Prefix::None, i16 stack = 1) : m_id(id), m_prefix(prefix), m_stack(stack) {}
 
     Item() = default;
 
-    void set_id(Id id)
-    { m_id = id; }
+    void set_id(Id id) { m_id = id; }
 
-    void set_prefix(Prefix prefix)
-    { m_prefix = prefix; }
+    void set_prefix(Prefix prefix) { m_prefix = prefix; }
 
-    void set_stack(i16 stack)
-    { m_stack = stack; }
+    void set_stack(i16 stack) { m_stack = stack; }
 
-    Id id() const
-    { return m_id; }
+    Id id() const { return m_id; }
 
-    Prefix prefix() const
-    { return m_prefix; }
+    Prefix prefix() const { return m_prefix; }
 
-    i16 stack() const
-    { return m_stack; }
+    i16 stack() const { return m_stack; }
 
 private:
     Id m_id{};
@@ -5279,19 +5269,13 @@ private:
 template<>
 struct AK::Formatter<Terraria::Item::Id> : AK::Formatter<String>
 {
-    void format(FormatBuilder& builder, Terraria::Item::Id id)
-    {
-        builder.put_i64(static_cast<i16>(id));
-    }
+    void format(FormatBuilder& builder, Terraria::Item::Id id) { builder.put_i64(static_cast<i16>(id)); }
 };
 
 template<>
 struct AK::Formatter<Terraria::Item::Prefix> : AK::Formatter<String>
 {
-    void format(FormatBuilder& builder, Terraria::Item::Prefix prefix)
-    {
-        builder.put_i64(static_cast<i16>(prefix));
-    }
+    void format(FormatBuilder& builder, Terraria::Item::Prefix prefix) { builder.put_i64(static_cast<i16>(prefix)); }
 };
 
 InputStream& operator>>(InputStream& stream, Terraria::Item::Id& value);

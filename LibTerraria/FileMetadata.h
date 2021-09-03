@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <AK/Types.h>
 #include <AK/Stream.h>
+#include <AK/Types.h>
 
 namespace Terraria
 {
@@ -22,23 +22,17 @@ public:
         Player
     };
 
-    FileType type() const
-    { return m_type; }
+    FileType type() const { return m_type; }
 
-    u32 revision() const
-    { return m_revision; }
+    u32 revision() const { return m_revision; }
 
-    u64 flags() const
-    { return m_flags; }
+    u64 flags() const { return m_flags; }
 
-    void set_type(FileType value)
-    { m_type = value; }
+    void set_type(FileType value) { m_type = value; }
 
-    void set_revision(u32 value)
-    { m_revision = value; }
+    void set_revision(u32 value) { m_revision = value; }
 
-    void set_flags(u64 value)
-    { m_flags = value; }
+    void set_flags(u64 value) { m_flags = value; }
 
 private:
     u32 m_revision{};

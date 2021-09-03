@@ -32,7 +32,6 @@ struct Tile
     bool stone{};
 };
 
-
 struct Wall
 {
     StringView internal_name;

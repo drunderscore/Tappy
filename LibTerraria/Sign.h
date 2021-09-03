@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <AK/Types.h>
-#include <AK/String.h>
 #include <AK/HashMap.h>
+#include <AK/String.h>
+#include <AK/Types.h>
 #include <LibTerraria/Point.h>
 
 namespace Terraria
@@ -18,17 +18,13 @@ class Sign
 public:
     Sign() = default;
 
-    const TilePoint& position() const
-    { return m_position; }
+    const TilePoint& position() const { return m_position; }
 
-    TilePoint& position()
-    { return m_position; }
+    TilePoint& position() { return m_position; }
 
-    const String& text() const
-    { return m_text; }
+    const String& text() const { return m_text; }
 
-    void set_text(String value)
-    { m_text = move(value); }
+    void set_text(String value) { m_text = move(value); }
 
 private:
     TilePoint m_position{};

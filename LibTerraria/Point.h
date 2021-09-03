@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <AK/Types.h>
-#include <AK/Stream.h>
 #include <AK/Format.h>
+#include <AK/Stream.h>
 #include <AK/StringBuilder.h>
+#include <AK/Types.h>
 #include <math.h>
 
 namespace Terraria
@@ -20,20 +20,15 @@ class [[gnu::packed]] Point
 public:
     constexpr Point() = default;
 
-    constexpr Point(T x, T y) : m_x(x), m_y(y)
-    {}
+    constexpr Point(T x, T y) : m_x(x), m_y(y) {}
 
-    constexpr const T x() const
-    { return m_x; }
+    constexpr const T x() const { return m_x; }
 
-    constexpr const T y() const
-    { return m_y; }
+    constexpr const T y() const { return m_y; }
 
-    constexpr void set_x(T value)
-    { m_x = value; }
+    constexpr void set_x(T value) { m_x = value; }
 
-    constexpr void set_y(T value)
-    { m_y = value; }
+    constexpr void set_y(T value) { m_y = value; }
 
     constexpr T distance_between(const Point<T>& other) const
     {

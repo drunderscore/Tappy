@@ -7,8 +7,8 @@
 #pragma once
 
 #include <AK/Weakable.h>
-#include <LibTerraria/PlayerInventory.h>
 #include <LibTerraria/Character.h>
+#include <LibTerraria/PlayerInventory.h>
 #include <LibTerraria/Point.h>
 
 namespace Terraria
@@ -29,101 +29,69 @@ public:
         __Count
     };
 
-    const Character& character() const
-    { return m_character; }
+    const Character& character() const { return m_character; }
 
-    Character& character()
-    { return m_character; }
+    Character& character() { return m_character; }
 
-    const PlayerInventory& inventory() const
-    { return m_inventory; }
+    const PlayerInventory& inventory() const { return m_inventory; }
 
-    PlayerInventory& inventory()
-    { return m_inventory; }
+    PlayerInventory& inventory() { return m_inventory; }
 
-    const BuffsArray& buffs() const
-    { return m_buffs; }
+    const BuffsArray& buffs() const { return m_buffs; }
 
-    BuffsArray& buffs()
-    { return m_buffs; }
+    BuffsArray& buffs() { return m_buffs; }
 
-    i16 hp() const
-    { return m_hp; }
+    i16 hp() const { return m_hp; }
 
-    i16 max_hp() const
-    { return m_max_hp; }
+    i16 max_hp() const { return m_max_hp; }
 
-    i16 mana() const
-    { return m_mana; }
+    i16 mana() const { return m_mana; }
 
-    i16 max_mana() const
-    { return m_max_mana; }
+    i16 max_mana() const { return m_max_mana; }
 
-    void set_hp(i16 value)
-    { m_hp = value; }
+    void set_hp(i16 value) { m_hp = value; }
 
-    void set_max_hp(i16 value)
-    { m_max_hp = value; }
+    void set_max_hp(i16 value) { m_max_hp = value; }
 
-    void set_mana(i16 value)
-    { m_mana = value; }
+    void set_mana(i16 value) { m_mana = value; }
 
-    void set_max_mana(i16 value)
-    { m_max_mana = value; }
+    void set_max_mana(i16 value) { m_max_mana = value; }
 
-    const EntityPoint& position() const
-    { return m_position; }
+    const EntityPoint& position() const { return m_position; }
 
-    const EntityPoint& velocity() const
-    { return m_velocity; }
+    const EntityPoint& velocity() const { return m_velocity; }
 
-    EntityPoint& position()
-    { return m_position; }
+    EntityPoint& position() { return m_position; }
 
-    EntityPoint& velocity()
-    { return m_velocity; }
+    EntityPoint& velocity() { return m_velocity; }
 
-    u8 control_bits() const
-    { return m_control_bits; }
+    u8 control_bits() const { return m_control_bits; }
 
-    u8 bits_2() const
-    { return m_bits_2; }
+    u8 bits_2() const { return m_bits_2; }
 
-    u8 bits_3() const
-    { return m_bits_3; }
+    u8 bits_3() const { return m_bits_3; }
 
-    u8 bits_4() const
-    { return m_bits_4; }
+    u8 bits_4() const { return m_bits_4; }
 
-    void set_control_bits(u8 value)
-    { m_control_bits = value; }
+    void set_control_bits(u8 value) { m_control_bits = value; }
 
-    void set_bits_2(u8 value)
-    { m_bits_2 = value; }
+    void set_bits_2(u8 value) { m_bits_2 = value; }
 
-    void set_bits_3(u8 value)
-    { m_bits_3 = value; }
+    void set_bits_3(u8 value) { m_bits_3 = value; }
 
-    void set_bits_4(u8 value)
-    { m_bits_4 = value; }
+    void set_bits_4(u8 value) { m_bits_4 = value; }
 
-    bool pvp() const
-    { return m_pvp; }
+    bool pvp() const { return m_pvp; }
 
-    void set_pvp(bool value)
-    { m_pvp = value; }
+    void set_pvp(bool value) { m_pvp = value; }
 
-    const Optional<i16>& talk_npc() const
-    { return m_talk_npc; }
+    const Optional<i16>& talk_npc() const { return m_talk_npc; }
 
-    Optional<i16>& talk_npc()
-    { return m_talk_npc; }
+    Optional<i16>& talk_npc() { return m_talk_npc; }
 
-    Team team() const
-    { return m_team; }
+    Team team() const { return m_team; }
 
-    void set_team(Team value)
-    { m_team = value; }
+    void set_team(Team value) { m_team = value; }
 
 private:
     i16 m_hp{};
@@ -147,7 +115,6 @@ private:
     bool m_pvp{};
 };
 }
-
 
 InputStream& operator>>(InputStream& stream, Terraria::Player::Team& value);
 

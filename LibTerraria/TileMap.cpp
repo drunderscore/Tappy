@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/TileMap.h>
 #include <LibTerraria/Model.h>
+#include <LibTerraria/TileMap.h>
 
 // FIXME: Do what Serenity does with their debug macros
 #define SLOPE_DEBUG 0
@@ -48,7 +48,7 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
                 tile.block()->frame_x() = 0;
                 tile.block()->frame_y() = Tile::frame_y_for_style(style);
             }
-            else if (Terraria::s_tiles[(int) block_id].frame_important)
+            else if (Terraria::s_tiles[(int)block_id].frame_important)
             {
                 // This tile is frame important, and the flags may tell us what the frame x or frame y should be
                 // But we don't handle those cases yet, so just zero them.
@@ -99,10 +99,9 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
         {
             auto shape = modification.flags_1 == 0 ? 0 : modification.flags_1 + 1;
             tile.block()->set_shape(shape);
-            dbgln_if(SLOPE_DEBUG, "Tile modify 14 with {}, we set the shape to {}",
-                     modification.flags_1, shape);
+            dbgln_if(SLOPE_DEBUG, "Tile modify 14 with {}, we set the shape to {}", modification.flags_1, shape);
         }
-            break;
+        break;
         case 16:
             tile.set_yellow_wire(true);
             break;
@@ -114,12 +113,8 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
     }
 }
 
-void TileMap::place_object(const TilePoint& position,
-                           const Model::TileObject& object,
-                           i16 style,
-                           u8 alternate,
-                           i8 random,
-                           bool direction)
+void TileMap::place_object(const TilePoint& position, const Model::TileObject& object, i16 style, u8 alternate,
+                           i8 random, bool direction)
 {
     auto root = position - object.origin;
     auto real_style = style * object.style_multiplier;

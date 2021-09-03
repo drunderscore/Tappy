@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <AK/Types.h>
 #include <AK/Stream.h>
+#include <AK/Types.h>
 
 namespace Terraria
 {

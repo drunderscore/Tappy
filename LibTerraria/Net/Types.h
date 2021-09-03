@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <AK/Vector.h>
-#include <AK/String.h>
-#include <AK/Types.h>
 #include <AK/Optional.h>
 #include <AK/Stream.h>
+#include <AK/String.h>
+#include <AK/Types.h>
+#include <AK/Vector.h>
 
 namespace Terraria::Net
 {

@@ -657,38 +657,29 @@ public:
             PottedCrystalPlants = 623,
         };
 
-        explicit Block(Id id) : m_id(id)
-        {}
+        explicit Block(Id id) : m_id(id) {}
 
-        Block(Id id, i16 frame_x, i16 frame_y) : m_id(id), m_frame_x(frame_x), m_frame_y(frame_y)
-        {}
+        Block(Id id, i16 frame_x, i16 frame_y) : m_id(id), m_frame_x(frame_x), m_frame_y(frame_y) {}
 
-        Id id() const
-        { return m_id; }
+        Id id() const { return m_id; }
 
-        void set_id(Id value)
-        { m_id = value; }
+        void set_id(Id value) { m_id = value; }
 
-        const Optional<i16>& frame_x() const
-        { return m_frame_x; }
+        const Optional<i16>& frame_x() const { return m_frame_x; }
 
-        const Optional<i16>& frame_y() const
-        { return m_frame_y; }
+        const Optional<i16>& frame_y() const { return m_frame_y; }
 
-        Optional<i16>& frame_x()
-        { return m_frame_x; }
+        Optional<i16>& frame_x() { return m_frame_x; }
 
-        Optional<i16>& frame_y()
-        { return m_frame_y; }
+        Optional<i16>& frame_y() { return m_frame_y; }
 
-        u8 shape() const
-        { return m_shape; }
+        u8 shape() const { return m_shape; }
 
-        void set_shape(u8 value)
-        { m_shape = value; }
+        void set_shape(u8 value) { m_shape = value; }
 
-        /* ALWAYS_INLINE */ static Optional<PackedFrames>
-        frame_for_block(const Tile& the_tile, const Tile& top, const Tile& bottom, const Tile& left, const Tile& right);
+        /* ALWAYS_INLINE */ static Optional<PackedFrames> frame_for_block(const Tile& the_tile, const Tile& top,
+                                                                          const Tile& bottom, const Tile& left,
+                                                                          const Tile& right);
 
     private:
         Id m_id;
@@ -697,38 +688,27 @@ public:
         u8 m_shape{};
     };
 
-    Tile(Block block) : m_block(move(block))
-    {}
+    Tile(Block block) : m_block(move(block)) {}
 
-    const Optional<Block>& block() const
-    { return m_block; }
+    const Optional<Block>& block() const { return m_block; }
 
-    Optional<Block>& block()
-    { return m_block; }
+    Optional<Block>& block() { return m_block; }
 
-    const Optional<WallId>& wall_id() const
-    { return m_wall_id; }
+    const Optional<WallId>& wall_id() const { return m_wall_id; }
 
-    Optional<WallId>& wall_id()
-    { return m_wall_id; }
+    Optional<WallId>& wall_id() { return m_wall_id; }
 
-    bool has_red_wire() const
-    { return (m_flags & m_red_wire_bit) == m_red_wire_bit; }
+    bool has_red_wire() const { return (m_flags & m_red_wire_bit) == m_red_wire_bit; }
 
-    bool has_blue_wire() const
-    { return (m_flags & m_blue_wire_bit) == m_blue_wire_bit; }
+    bool has_blue_wire() const { return (m_flags & m_blue_wire_bit) == m_blue_wire_bit; }
 
-    bool has_green_wire() const
-    { return (m_flags & m_green_wire_bit) == m_green_wire_bit; }
+    bool has_green_wire() const { return (m_flags & m_green_wire_bit) == m_green_wire_bit; }
 
-    bool has_yellow_wire() const
-    { return (m_flags & m_yellow_wire_bit) == m_yellow_wire_bit; }
+    bool has_yellow_wire() const { return (m_flags & m_yellow_wire_bit) == m_yellow_wire_bit; }
 
-    bool has_actuator() const
-    { return (m_flags & m_actuator_bit) == m_actuator_bit; }
+    bool has_actuator() const { return (m_flags & m_actuator_bit) == m_actuator_bit; }
 
-    bool is_actuated() const
-    { return (m_flags & m_actuated_bit) == m_actuated_bit; }
+    bool is_actuated() const { return (m_flags & m_actuated_bit) == m_actuated_bit; }
 
     void set_red_wire(bool value)
     {
@@ -780,8 +760,7 @@ public:
 
     // FIXME: Magic value
     // _technically_ don't need the mask as it's at the end and all the other bytes fall off after shifting...
-    u8 liquid() const
-    { return (m_flags & m_liquid_bits) >> m_liquid_shift; }
+    u8 liquid() const { return (m_flags & m_liquid_bits) >> m_liquid_shift; }
 
     void set_liquid(u8 value)
     {
@@ -790,23 +769,15 @@ public:
         m_flags |= ((value << m_liquid_shift) & m_liquid_bits);
     }
 
-    u8 liquid_amount() const
-    { return m_liquid_amount; }
+    u8 liquid_amount() const { return m_liquid_amount; }
 
-    void set_liquid_amount(u8 value)
-    { m_liquid_amount = value; }
+    void set_liquid_amount(u8 value) { m_liquid_amount = value; }
 
     /* ALWAYS_INLINE */ static PackedFrames frames_for_wire(bool top, bool bottom, bool left, bool right);
 
-    static constexpr i16 frame_x_for_style(i16 style)
-    {
-        return style * 18;
-    }
+    static constexpr i16 frame_x_for_style(i16 style) { return style * 18; }
 
-    static constexpr i16 frame_y_for_style(i16 style)
-    {
-        return style * 22;
-    }
+    static constexpr i16 frame_y_for_style(i16 style) { return style * 22; }
 
 private:
     u8 m_flags{};

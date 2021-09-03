@@ -6,10 +6,10 @@
 
 #pragma once
 
+#include <AK/MemoryStream.h>
 #include <AK/Optional.h>
 #include <AK/Stream.h>
 #include <LibTerraria/Net/Types.h>
-#include <AK/MemoryStream.h>
 
 namespace Terraria::Net
 {
@@ -25,23 +25,17 @@ public:
 
     NetworkText() = default;
 
-    NetworkText(String text) : m_text(move(text))
-    {}
+    NetworkText(String text) : m_text(move(text)) {}
 
-    NetworkText(const char* text) : NetworkText(String(text))
-    {}
+    NetworkText(const char* text) : NetworkText(String(text)) {}
 
-    Mode mode() const
-    { return m_mode; }
+    Mode mode() const { return m_mode; }
 
-    void set_mode(Mode value)
-    { m_mode = value; }
+    void set_mode(Mode value) { m_mode = value; }
 
-    const String& text() const
-    { return m_text; }
+    const String& text() const { return m_text; }
 
-    void set_text(String value)
-    { m_text = move(value); }
+    void set_text(String value) { m_text = move(value); }
 
 private:
     String m_text;

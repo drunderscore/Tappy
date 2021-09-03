@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <AK/Types.h>
-#include <AK/Stream.h>
-#include <AK/HashMap.h>
-#include <LibTerraria/Item.h>
 #include <AK/Function.h>
+#include <AK/HashMap.h>
+#include <AK/Stream.h>
+#include <AK/Types.h>
+#include <LibTerraria/Item.h>
 
 namespace Terraria
 {
@@ -19,7 +19,7 @@ class PlayerInventory
 public:
     PlayerInventory() = default;
 
-    enum class [[maybe_unused]] Slot : i16
+    enum class Slot : i16
     {
         Hotbar0,
         Hotbar1,
@@ -292,10 +292,7 @@ public:
             m_items.set(slot, *item);
     }
 
-    Optional<Item> get(Slot slot) const
-    {
-        return m_items.get(slot);
-    }
+    Optional<Item> get(Slot slot) const { return m_items.get(slot); }
 
     template<typename Callback>
     void for_each(Callback cb)
@@ -316,11 +313,9 @@ public:
         m_selected_slot = value;
     }
 
-    Slot selected_slot() const
-    { return m_selected_slot; }
+    Slot selected_slot() const { return m_selected_slot; }
 
-    Optional<Item> selected_item() const
-    { return get(m_selected_slot); }
+    Optional<Item> selected_item() const { return get(m_selected_slot); }
 
     // (slot_from, slot_to)
     Function<void(Slot&, Slot&)> on_selected_slot_change;
@@ -344,8 +339,7 @@ struct AK::Formatter<Terraria::PlayerInventory::Slot> : AK::Formatter<String>
 template<>
 struct AK::Traits<Terraria::PlayerInventory::Slot> : public GenericTraits<Terraria::PlayerInventory::Slot>
 {
-    static constexpr unsigned hash(Terraria::PlayerInventory::Slot slot)
-    { return int_hash(static_cast<i16>(slot)); }
+    static constexpr unsigned hash(Terraria::PlayerInventory::Slot slot) { return int_hash(static_cast<i16>(slot)); }
 };
 
 InputStream& operator>>(InputStream& stream, Terraria::PlayerInventory::Slot& value);
