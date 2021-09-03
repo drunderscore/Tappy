@@ -335,7 +335,6 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
     auto addr = who.address();
     m_engine->client_did_disconnect({}, who, reason);
 
-    // @formatter:off
     deferred_invoke([this, id, addr](auto&) {
         outln("Client {}/{} disconnected.", id, addr);
         m_clients.remove(id);
@@ -360,7 +359,6 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
             }
         }
     });
-    // @formatter:on
 }
 
 void Server::client_did_add_player_buff(Badge<Client>, Client& who, const Terraria::Net::Packets::AddPlayerBuff& packet)

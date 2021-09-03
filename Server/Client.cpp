@@ -131,13 +131,11 @@ void Client::full_sync(Client& to)
 
     Terraria::Net::Packets::SyncInventorySlot sync_inventory_slot;
     sync_inventory_slot.set_player_id(m_id);
-    // @formatter:off
     m_player.inventory().for_each([&](auto slot, auto item) {
         sync_inventory_slot.set_slot(slot);
         sync_inventory_slot.item() = item;
         to.send(sync_inventory_slot);
     });
-    // @formatter:on
 }
 
 void Client::on_ready_to_read()

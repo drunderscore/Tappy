@@ -16,7 +16,6 @@ void generate_item_models(const JsonArray& items)
 
     int count = 0;
 
-    // @formatter:off
     items.for_each([&](auto& value) {
         auto& value_obj = value.as_object();
         out("{{\"{}\", {}, ", value_obj.get("englishName").as_string(), value_obj.get("maxStackSize").to_i32());
@@ -33,7 +32,6 @@ void generate_item_models(const JsonArray& items)
             outln("}}");
         count++;
     });
-    // @formatter:on
 
     outln("}};");
 
@@ -51,7 +49,6 @@ void generate_tile_models(const JsonArray& items)
 
     int count = 0;
 
-    // @formatter:off
     items.for_each([&](auto& value) {
         auto& value_obj = value.as_object();
         out("{{\"{}\", {}, {}, {}, {}", value_obj.get("internalName").as_string(),
@@ -64,7 +61,6 @@ void generate_tile_models(const JsonArray& items)
             outln("}}");
         count++;
     });
-    // @formatter:on
 
     outln("}};");
 
@@ -82,7 +78,6 @@ void generate_wall_models(const JsonArray& items)
 
     int count = 0;
 
-    // @formatter:off
     items.for_each([&](auto& value) {
         auto& value_obj = value.as_object();
         out("{{\"{}\"", value_obj.get("internalName").as_string());
@@ -93,7 +88,6 @@ void generate_wall_models(const JsonArray& items)
             outln("}}");
         count++;
     });
-    // @formatter:on
 
     outln("}};");
 
@@ -111,7 +105,6 @@ void generate_prefix_models(const JsonArray& items)
 
     int count = 0;
 
-    // @formatter:off
     items.for_each([&](auto& value) {
         if (value.is_null())
         {
@@ -129,7 +122,6 @@ void generate_prefix_models(const JsonArray& items)
             outln("}}");
         count++;
     });
-    // @formatter:on
 
     outln("}};");
 
@@ -147,7 +139,6 @@ void generate_tile_object_models(const JsonArray& items)
 
     int count = 0;
 
-    // @formatter:off
     items.for_each([&](auto& value) {
         if (value.is_null())
         {
@@ -184,7 +175,6 @@ void generate_tile_object_models(const JsonArray& items)
             outln("}}");
         count++;
     });
-    // @formatter:on
 
     outln("}};");
 

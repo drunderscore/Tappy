@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/FileMetadata.h>
 #include <AK/Format.h>
+#include <LibTerraria/FileMetadata.h>
 
 static constexpr u64 magic = 27981915666277746;
 

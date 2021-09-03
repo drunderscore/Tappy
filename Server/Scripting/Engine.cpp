@@ -27,14 +27,11 @@ HashMap<lua_State*, Engine*> Engine::s_engines;
 Engine::Engine(Server& server) : m_server(server)
 {
     m_state = luaL_newstate();
-    // @formatter:off
     VERIFY(m_state);
-    // @formatter:on
     s_engines.set(m_state, this);
     lua_atpanic(m_state, at_panic_thunk);
     luaL_openlibs(m_state);
 
-    // @formatter:off
     static const struct luaL_Reg game_lib[] = {
         {"client", game_client_thunk},
         {"clients", game_clients_thunk},
@@ -81,8 +78,6 @@ Engine::Engine(Server& server) : m_server(server)
                                                  {"setItemInSlot", player_set_item_in_slot_thunk},
                                                  {"itemInSlot", player_item_in_slot_thunk},
                                                  {}};
-
-    // @formatter:on
 
     luaL_newmetatable(m_state, "Server::Client");
     lua_pushstring(m_state, "__index");
@@ -374,9 +369,7 @@ int Engine::timer_create()
         }
     }
 
-    // @formatter:off
     VERIFY(found_available_id);
-    // @formatter:on
 
     // Push first function argument to the top of the stack as required by luaL_ref
     lua_pushvalue(m_state, 1);
@@ -391,9 +384,7 @@ int Engine::timer_create()
             luaL_unref(m_state, LUA_REGISTRYINDEX, function_ref);
 
             auto timer = m_timers.get(timer_id);
-            // @formatter:off
             VERIFY(timer.has_value());
-            // @formatter:on
 
             timer.value()->stop();
             m_timers.remove(timer_id);
@@ -431,9 +422,7 @@ JsonObject Engine::serialize_object_to_json(int index)
     lua_pushnil(m_state);
     while (lua_next(m_state, index) != 0)
     {
-        // @formatter:off
         VERIFY(lua_type(m_state, -2) == LUA_TSTRING);
-        // @formatter:on
         auto key = lua_tostring(m_state, -2);
         switch (lua_type(m_state, -1))
         {
@@ -462,7 +451,6 @@ void Engine::deserialize_object_to_lua_object(const JsonObject& object)
 {
     lua_createtable(m_state, 0, object.size());
 
-    // @formatter:off
     object.for_each_member([&](auto& key, auto& value) {
         if (value.is_string())
         {
@@ -488,7 +476,6 @@ void Engine::deserialize_object_to_lua_object(const JsonObject& object)
             VERIFY_NOT_REACHED();
         }
     });
-    // @formatter:on
 }
 
 int Engine::json_serialize()
@@ -820,10 +807,8 @@ int Engine::client_sync_tile_rect()
     u16 x = luaL_checkinteger(m_state, 2);
     u16 y = luaL_checkinteger(m_state, 3);
 
-    // @formatter:off
     Terraria::Net::Packets::SyncTileRect sync_tile_rect(m_server.tile_map(), {x, y}, luaL_checkinteger(m_state, 4),
                                                         luaL_checkinteger(m_state, 5));
-    // @formatter:onn
 
     client->send(sync_tile_rect);
 

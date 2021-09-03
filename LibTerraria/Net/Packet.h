@@ -75,7 +75,7 @@ public:
 template<>
 struct AK::Formatter<Terraria::Net::Packet::Id> : AK::Formatter<String>
 {
-void format(FormatBuilder& builder, Terraria::Net::Packet::Id id) { builder.put_i64(static_cast<u8>(id)); }
+    void format(FormatBuilder& builder, Terraria::Net::Packet::Id id) { builder.put_i64(static_cast<u8>(id)); }
 };
 
 template<>

@@ -46,9 +46,8 @@ class Engine;
 
 class Server : public Core::Object
 {
-    // @formatter:off
     C_OBJECT(Server);
-    // @formatter:on
+
 public:
     Server(RefPtr<Terraria::World>);
 
