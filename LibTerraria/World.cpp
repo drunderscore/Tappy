@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <LibTerraria/Generator/Settings.h>
 #include <LibTerraria/Net/Types.h>
 #include <LibTerraria/World.h>
 
