@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
+#include <AK/Format.h>
 #include <Server/Scripting/Format.h>
 #include <Server/Scripting/Lua.h>
-#include <AK/Format.h>
 #include <math.h>
 
 static String nil_string = "nil";
@@ -28,8 +28,7 @@ String format(lua_State* state, int index)
         auto type = lua_type(state, i);
         AK::TypeErasedParameter param;
 
-        auto append_string = [&values, &param](const char* value)
-        {
+        auto append_string = [&values, &param](const char* value) {
             auto value_index = values.size();
             values.append(reinterpret_cast<u64>(value));
 

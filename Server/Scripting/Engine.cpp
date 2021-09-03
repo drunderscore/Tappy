@@ -5,27 +5,26 @@
  */
 
 #include <AK/Assertions.h>
-#include <Server/Scripting/Engine.h>
-#include <Server/Server.h>
-#include <LibTerraria/Net/Packets/Modules/Text.h>
-#include <LibTerraria/Net/Packets/SyncProjectile.h>
-#include <LibTerraria/Net/Packets/KillProjectile.h>
-#include <LibTerraria/Net/Packets/TeleportEntity.h>
-#include <LibTerraria/Net/Packets/SyncTileRect.h>
-#include <LibTerraria/Net/Packets/SyncNPC.h>
-#include <Server/Scripting/Types.h>
-#include <Server/Scripting/Lua.h>
-#include <Server/Scripting/Format.h>
-#include <LibCore/DirIterator.h>
-#include <AK/LexicalPath.h>
 #include <AK/JsonObject.h>
+#include <AK/LexicalPath.h>
+#include <LibCore/DirIterator.h>
+#include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Net/Packets/Modules/Text.h>
+#include <LibTerraria/Net/Packets/SyncNPC.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/SyncTileRect.h>
+#include <LibTerraria/Net/Packets/TeleportEntity.h>
+#include <Server/Scripting/Engine.h>
+#include <Server/Scripting/Format.h>
+#include <Server/Scripting/Lua.h>
+#include <Server/Scripting/Types.h>
+#include <Server/Server.h>
 
 namespace Scripting
 {
 HashMap<lua_State*, Engine*> Engine::s_engines;
 
-Engine::Engine(Server& server) :
-        m_server(server)
+Engine::Engine(Server& server) : m_server(server)
 {
     m_state = luaL_newstate();
     // @formatter:off
@@ -36,69 +35,52 @@ Engine::Engine(Server& server) :
     luaL_openlibs(m_state);
 
     // @formatter:off
-    static const struct luaL_Reg game_lib[] =
-    {
-        {"client",           game_client_thunk},
-        {"clients",          game_clients_thunk},
-        {"addProjectile",    game_add_projectile_thunk},
+    static const struct luaL_Reg game_lib[] = {
+        {"client", game_client_thunk},
+        {"clients", game_clients_thunk},
+        {"addProjectile", game_add_projectile_thunk},
         {"projectileExists", game_projectile_exists_thunk},
-        {"addDroppedItem",  game_add_dropped_item_thunk},
+        {"addDroppedItem", game_add_dropped_item_thunk},
         {"removeDroppedItem", game_remove_dropped_item_thunk},
-        {"setItemOwner",    game_set_item_owner_thunk},
+        {"setItemOwner", game_set_item_owner_thunk},
         {"nextAvailableDroppedItemId", game_next_available_dropped_item_id_thunk},
-        {}
-    };
+        {}};
 
-    static const struct luaL_Reg timer_lib[] =
-    {
-        {"create",  timer_create_thunk},
-        {"destroy", timer_destroy_thunk},
-        {"invoke",  timer_invoke_thunk},
-        {}
-    };
+    static const struct luaL_Reg timer_lib[] = {
+        {"create", timer_create_thunk}, {"destroy", timer_destroy_thunk}, {"invoke", timer_invoke_thunk}, {}};
 
-    static const struct luaL_Reg json_lib[] =
-    {
-        {"serialize", json_serialize_thunk},
-        {"deserialize", json_deserialize_thunk},
-        {}
-    };
+    static const struct luaL_Reg json_lib[] = {
+        {"serialize", json_serialize_thunk}, {"deserialize", json_deserialize_thunk}, {}};
 
-    static const struct luaL_Reg client_lib[] =
-    {
-        {"id",             client_id_thunk},
-        {"isConnected",    client_is_connected_thunk},
-        {"sendMessage",    client_send_message_thunk},
-        {"disconnect",     client_disconnect_thunk},
-        {"player",         client_player_thunk},
-        {"address",        client_address_thunk},
-        {"syncProjectile", client_sync_projectile_thunk},
-        {"killProjectile", client_kill_projectile_thunk},
-        {"__eq",           client_equals_thunk},
-        {"syncNpc",        client_sync_npc_thunk},
-        {"syncTileRect",   client_sync_tile_rect_thunk},
-        {"modifyTile",     client_modify_tile_thunk},
-        {"uuid",           client_uuid_thunk},
-        {}
-    };
+    static const struct luaL_Reg client_lib[] = {{"id", client_id_thunk},
+                                                 {"isConnected", client_is_connected_thunk},
+                                                 {"sendMessage", client_send_message_thunk},
+                                                 {"disconnect", client_disconnect_thunk},
+                                                 {"player", client_player_thunk},
+                                                 {"address", client_address_thunk},
+                                                 {"syncProjectile", client_sync_projectile_thunk},
+                                                 {"killProjectile", client_kill_projectile_thunk},
+                                                 {"__eq", client_equals_thunk},
+                                                 {"syncNpc", client_sync_npc_thunk},
+                                                 {"syncTileRect", client_sync_tile_rect_thunk},
+                                                 {"modifyTile", client_modify_tile_thunk},
+                                                 {"uuid", client_uuid_thunk},
+                                                 {}};
 
-    static const struct luaL_Reg player_lib[] =
-    {
-        {"character",       player_character_thunk},
-        {"buffs",           player_buffs_thunk},
-        {"setPvp",          player_set_pvp_thunk},
-        {"buffs",           player_buffs_thunk},
-        {"position",        player_position_thunk},
-        {"character",       player_character_thunk},
-        {"updateCharacter", player_update_character_thunk},
-        {"teleport",        player_teleport_thunk},
-        {"setTeam",         player_set_team_thunk},
-        {"setHealth",       player_set_health_thunk},
-        {"setMana",         player_set_mana_thunk},
-        {"setItemInSlot",   player_set_item_in_slot_thunk},
-        {"itemInSlot",      player_item_in_slot_thunk},
-        {}
-    };
+    static const struct luaL_Reg player_lib[] = {{"character", player_character_thunk},
+                                                 {"buffs", player_buffs_thunk},
+                                                 {"setPvp", player_set_pvp_thunk},
+                                                 {"buffs", player_buffs_thunk},
+                                                 {"position", player_position_thunk},
+                                                 {"character", player_character_thunk},
+                                                 {"updateCharacter", player_update_character_thunk},
+                                                 {"teleport", player_teleport_thunk},
+                                                 {"setTeam", player_set_team_thunk},
+                                                 {"setHealth", player_set_health_thunk},
+                                                 {"setMana", player_set_mana_thunk},
+                                                 {"setItemInSlot", player_set_item_in_slot_thunk},
+                                                 {"itemInSlot", player_item_in_slot_thunk},
+                                                 {}};
 
     // @formatter:on
 
@@ -375,10 +357,7 @@ void* Engine::timer_userdata(i32 id) const
     return inventory_ud;
 }
 
-void Engine::push_base_table() const
-{
-    lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_base_ref);
-}
+void Engine::push_base_table() const { lua_rawgeti(m_state, LUA_REGISTRYINDEX, m_base_ref); }
 
 int Engine::timer_create()
 {
@@ -396,16 +375,15 @@ int Engine::timer_create()
     }
 
     // @formatter:off
-   VERIFY(found_available_id);
-   // @formatter:on
+    VERIFY(found_available_id);
+    // @formatter:on
 
     // Push first function argument to the top of the stack as required by luaL_ref
     lua_pushvalue(m_state, 1);
     auto function_ref = luaL_ref(m_state, LUA_REGISTRYINDEX);
     auto timer = Core::Timer::construct(luaL_checkinteger(m_state, 2), nullptr, nullptr);
 
-    timer->on_timeout = [this, timer_id, function_ref]()
-    {
+    timer->on_timeout = [this, timer_id, function_ref]() {
         lua_rawgeti(m_state, LUA_REGISTRYINDEX, function_ref);
         lua_call(m_state, 0, 1);
         if (lua_toboolean(m_state, -1))
@@ -485,8 +463,7 @@ void Engine::deserialize_object_to_lua_object(const JsonObject& object)
     lua_createtable(m_state, 0, object.size());
 
     // @formatter:off
-    object.for_each_member([&](auto& key, auto& value)
-    {
+    object.for_each_member([&](auto& key, auto& value) {
         if (value.is_string())
         {
             lua_pushstring(m_state, key.characters());
@@ -813,7 +790,7 @@ int Engine::player_buffs()
 int Engine::client_equals()
 {
     lua_pushboolean(m_state, *reinterpret_cast<u8*>(luaL_checkudata(m_state, 1, "Server::Client")) ==
-                             *reinterpret_cast<u8*>(luaL_checkudata(m_state, 2, "Server::Client")));
+                                 *reinterpret_cast<u8*>(luaL_checkudata(m_state, 2, "Server::Client")));
 
     return 1;
 }
@@ -844,13 +821,8 @@ int Engine::client_sync_tile_rect()
     u16 y = luaL_checkinteger(m_state, 3);
 
     // @formatter:off
-    Terraria::Net::Packets::SyncTileRect sync_tile_rect
-    (
-        m_server.tile_map(),
-        {x, y},
-        luaL_checkinteger(m_state, 4),
-        luaL_checkinteger(m_state, 5)
-    );
+    Terraria::Net::Packets::SyncTileRect sync_tile_rect(m_server.tile_map(), {x, y}, luaL_checkinteger(m_state, 4),
+                                                        luaL_checkinteger(m_state, 5));
     // @formatter:onn
 
     client->send(sync_tile_rect);
@@ -1103,9 +1075,6 @@ int Engine::player_set_item_in_slot()
     return 0;
 }
 
-Engine::UsingBaseTable::~UsingBaseTable()
-{
-    lua_pop(m_engine.m_state, 1);
-}
+Engine::UsingBaseTable::~UsingBaseTable() { lua_pop(m_engine.m_state, 1); }
 
 }

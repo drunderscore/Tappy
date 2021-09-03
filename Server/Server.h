@@ -6,39 +6,38 @@
 
 #pragma once
 
-#include <LibCore/EventLoop.h>
-#include <AK/HashMap.h>
-#include <Server/Client.h>
-#include <LibCore/TCPServer.h>
 #include <AK/Badge.h>
-#include <LibTerraria/Net/Packets/SyncPlayer.h>
-#include <LibTerraria/Net/Packets/SpawnPlayer.h>
-#include <LibTerraria/Net/Packets/PlayerInfo.h>
-#include <LibTerraria/Net/Packets/SyncInventorySlot.h>
-#include <LibTerraria/Net/Packets/PlayerBuffs.h>
-#include <LibTerraria/Net/Packets/PlayerMana.h>
-#include <LibTerraria/Net/Packets/PlayerHP.h>
-#include <LibTerraria/Net/Packets/PlayerMana.h>
-#include <LibTerraria/Net/Packets/SyncProjectile.h>
-#include <LibTerraria/Net/Packets/KillProjectile.h>
-#include <LibTerraria/Net/Packets/TogglePvp.h>
-#include <LibTerraria/Net/Packets/PlayerHurt.h>
-#include <LibTerraria/Net/Packets/PlayerDeath.h>
-#include <LibTerraria/Net/Packets/DamageNPC.h>
-#include <LibTerraria/Net/Packets/PlayerItemAnimation.h>
-#include <LibTerraria/Net/Packets/SpawnData.h>
-#include <LibTerraria/Net/Packets/ModifyTile.h>
-#include <LibTerraria/Net/Packets/SyncTilePicking.h>
+#include <AK/HashMap.h>
+#include <LibCore/EventLoop.h>
+#include <LibCore/TCPServer.h>
+#include <LibTerraria/DroppedItem.h>
 #include <LibTerraria/Net/Packets/AddPlayerBuff.h>
-#include <LibTerraria/Net/Packets/SyncTalkNPC.h>
+#include <LibTerraria/Net/Packets/DamageNPC.h>
+#include <LibTerraria/Net/Packets/KillProjectile.h>
+#include <LibTerraria/Net/Packets/ModifyTile.h>
+#include <LibTerraria/Net/Packets/PlaceObject.h>
+#include <LibTerraria/Net/Packets/PlayerBuffs.h>
+#include <LibTerraria/Net/Packets/PlayerDeath.h>
+#include <LibTerraria/Net/Packets/PlayerHP.h>
+#include <LibTerraria/Net/Packets/PlayerHurt.h>
+#include <LibTerraria/Net/Packets/PlayerInfo.h>
+#include <LibTerraria/Net/Packets/PlayerItemAnimation.h>
+#include <LibTerraria/Net/Packets/PlayerMana.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
+#include <LibTerraria/Net/Packets/SpawnData.h>
+#include <LibTerraria/Net/Packets/SpawnPlayer.h>
+#include <LibTerraria/Net/Packets/SyncInventorySlot.h>
 #include <LibTerraria/Net/Packets/SyncItem.h>
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
-#include <LibTerraria/Net/Packets/PlaceObject.h>
-#include <LibTerraria/TileMap.h>
+#include <LibTerraria/Net/Packets/SyncPlayer.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/SyncTalkNPC.h>
+#include <LibTerraria/Net/Packets/SyncTilePicking.h>
+#include <LibTerraria/Net/Packets/TogglePvp.h>
 #include <LibTerraria/Projectile.h>
+#include <LibTerraria/TileMap.h>
 #include <LibTerraria/World.h>
-#include <LibTerraria/DroppedItem.h>
+#include <Server/Client.h>
 
 namespace Scripting
 {
@@ -117,26 +116,19 @@ public:
 
     const WeakPtr<Client> client(u8 id) const;
 
-    const HashMap<i16, Terraria::Projectile>& projectiles() const
-    { return m_projectiles; }
+    const HashMap<i16, Terraria::Projectile>& projectiles() const { return m_projectiles; }
 
-    HashMap<i16, Terraria::Projectile>& projectiles()
-    { return m_projectiles; }
+    HashMap<i16, Terraria::Projectile>& projectiles() { return m_projectiles; }
 
-    const HashMap<i16, Terraria::DroppedItem>& dropped_items() const
-    { return m_dropped_items; }
+    const HashMap<i16, Terraria::DroppedItem>& dropped_items() const { return m_dropped_items; }
 
-    HashMap<i16, Terraria::DroppedItem>& dropped_items()
-    { return m_dropped_items; }
+    HashMap<i16, Terraria::DroppedItem>& dropped_items() { return m_dropped_items; }
 
-    const Terraria::TileMap& tile_map() const
-    { return *m_world->tile_map(); }
+    const Terraria::TileMap& tile_map() const { return *m_world->tile_map(); }
 
-    Terraria::TileMap& tile_map()
-    { return *m_world->tile_map(); }
+    Terraria::TileMap& tile_map() { return *m_world->tile_map(); }
 
-    const RefPtr<Terraria::World> world() const
-    { return m_world; }
+    const RefPtr<Terraria::World> world() const { return m_world; }
 
     i16 next_available_dropped_item_id() const;
 

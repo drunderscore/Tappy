@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <LibTerraria/Projectile.h>
-#include <LibTerraria/NPC.h>
 #include <AK/String.h>
-#include <LibTerraria/Color.h>
 #include <LibTerraria/Character.h>
-#include <LibTerraria/PlayerDeathReason.h>
-#include <LibTerraria/TileModification.h>
+#include <LibTerraria/Color.h>
 #include <LibTerraria/DroppedItem.h>
+#include <LibTerraria/NPC.h>
+#include <LibTerraria/PlayerDeathReason.h>
+#include <LibTerraria/Projectile.h>
+#include <LibTerraria/TileModification.h>
 
 typedef struct lua_State lua_State;
 

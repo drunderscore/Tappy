@@ -4,55 +4,45 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <Server/Client.h>
-#include <Server/Server.h>
 #include <LibTerraria/Net/NetworkText.h>
-#include <LibTerraria/Net/Packets/SetUserSlot.h>
-#include <LibTerraria/Net/Packets/PlayerInfo.h>
-#include <LibTerraria/Net/Packets/SyncInventorySlot.h>
 #include <LibTerraria/Net/Packets/ClientUUID.h>
-#include <LibTerraria/Net/Packets/PlayerHP.h>
-#include <LibTerraria/Net/Packets/PlayerMana.h>
-#include <LibTerraria/Net/Packets/WorldData.h>
-#include <LibTerraria/Net/Packets/PlayerBuffs.h>
-#include <LibTerraria/Net/Packets/SpawnData.h>
-#include <LibTerraria/Net/Packets/TileSection.h>
-#include <LibTerraria/Net/Packets/SpawnPlayer.h>
-#include <LibTerraria/Net/Packets/ConnectRequest.h>
-#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
 #include <LibTerraria/Net/Packets/ConnectFinished.h>
-#include <LibTerraria/Net/Packets/TileFrameSection.h>
-#include <LibTerraria/Net/Packets/SyncPlayer.h>
-#include <LibTerraria/Net/Packets/SyncProjectile.h>
-#include <LibTerraria/Net/Packets/SyncNPC.h>
-#include <LibTerraria/Net/Packets/ReleaseNPC.h>
+#include <LibTerraria/Net/Packets/ConnectRequest.h>
+#include <LibTerraria/Net/Packets/Disconnect.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
-#include <LibTerraria/Net/Packets/Disconnect.h>
-#include <math.h>
 #include <LibTerraria/Net/Packets/PlayerActive.h>
+#include <LibTerraria/Net/Packets/PlayerBuffs.h>
 #include <LibTerraria/Net/Packets/PlayerDead.h>
+#include <LibTerraria/Net/Packets/PlayerHP.h>
+#include <LibTerraria/Net/Packets/PlayerInfo.h>
+#include <LibTerraria/Net/Packets/PlayerMana.h>
+#include <LibTerraria/Net/Packets/ReleaseNPC.h>
+#include <LibTerraria/Net/Packets/SetUserSlot.h>
+#include <LibTerraria/Net/Packets/SpawnData.h>
+#include <LibTerraria/Net/Packets/SpawnPlayer.h>
+#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
+#include <LibTerraria/Net/Packets/SyncInventorySlot.h>
+#include <LibTerraria/Net/Packets/SyncNPC.h>
+#include <LibTerraria/Net/Packets/SyncPlayer.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/TileFrameSection.h>
+#include <LibTerraria/Net/Packets/TileSection.h>
+#include <LibTerraria/Net/Packets/WorldData.h>
+#include <Server/Client.h>
+#include <Server/Server.h>
+#include <math.h>
 
 #define USE_BOGUS_KEEP_ALIVE_PACKET 0
 
-Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id) :
-        m_socket(move(socket)),
-        m_id(id),
-        m_input_stream(m_socket),
-        m_output_stream(m_socket),
-        m_server(server)
+Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id)
+    : m_socket(move(socket)), m_id(id), m_input_stream(m_socket), m_output_stream(m_socket), m_server(server)
 {
-    m_socket->on_ready_to_read = [this]()
-    {
-        on_ready_to_read();
-    };
+    m_socket->on_ready_to_read = [this]() { on_ready_to_read(); };
 
-    if constexpr(USE_BOGUS_KEEP_ALIVE_PACKET)
+    if constexpr (USE_BOGUS_KEEP_ALIVE_PACKET)
     {
-        m_keep_alive_timer = Core::Timer::create_repeating(5000, [this]
-        {
-            send_keep_alive();
-        });
+        m_keep_alive_timer = Core::Timer::create_repeating(5000, [this] { send_keep_alive(); });
         m_keep_alive_timer->start();
     }
 }
@@ -142,8 +132,7 @@ void Client::full_sync(Client& to)
     Terraria::Net::Packets::SyncInventorySlot sync_inventory_slot;
     sync_inventory_slot.set_player_id(m_id);
     // @formatter:off
-    m_player.inventory().for_each([&](auto slot, auto item)
-    {
+    m_player.inventory().for_each([&](auto slot, auto item) {
         sync_inventory_slot.set_slot(slot);
         sync_inventory_slot.item() = item;
         to.send(sync_inventory_slot);
@@ -185,7 +174,8 @@ void Client::on_ready_to_read()
     auto bytes = m_socket->read(packet_size - 3);
     InputMemoryStream packet_bytes_stream(bytes);
 
-    // TODO: Some of these packets contain the player id, but we ignore that and assume it's the player id we assigned to this socket.
+    // TODO: Some of these packets contain the player id, but we ignore that and assume it's the player id we assigned
+    // to this socket.
 
     // Connection request, let's send a user slot
     if (packet_id == Terraria::Net::Packet::Id::ConnectRequest)
@@ -272,7 +262,7 @@ void Client::on_ready_to_read()
         m_player.set_bits_3(sync_player->bits_3());
         m_player.set_bits_4(sync_player->bits_4());
         m_player.inventory().set_selected_slot(
-                static_cast<Terraria::PlayerInventory::Slot>(sync_player->selected_item()));
+            static_cast<Terraria::PlayerInventory::Slot>(sync_player->selected_item()));
         m_player.position() = sync_player->position();
         if (sync_player->velocity().has_value())
             m_player.velocity() = *sync_player->velocity();

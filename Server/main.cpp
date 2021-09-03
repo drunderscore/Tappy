@@ -11,10 +11,7 @@
 
 static Server* s_server;
 
-Server& server()
-{
-    return *s_server;
-}
+Server& server() { return *s_server; }
 
 int main(int argc, char** argv)
 {

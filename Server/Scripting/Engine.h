@@ -6,32 +6,30 @@
 
 #pragma once
 
+#include <AK/Badge.h>
+#include <AK/HashMap.h>
 #include <AK/RefCounted.h>
 #include <AK/Weakable.h>
-#include <AK/HashMap.h>
-#include <AK/Badge.h>
-#include <Server/Client.h>
-#include <LibTerraria/PlayerInventory.h>
+#include <LibCore/Timer.h>
 #include <LibTerraria/Item.h>
-#include <LibTerraria/Net/Packets/SyncProjectile.h>
-#include <LibTerraria/Net/Packets/TogglePvp.h>
-#include <LibTerraria/Net/Packets/PlayerHurt.h>
-#include <LibTerraria/Net/Packets/PlayerDeath.h>
 #include <LibTerraria/Net/Packets/DamageNPC.h>
-#include <LibTerraria/Net/Packets/SpawnPlayer.h>
 #include <LibTerraria/Net/Packets/ModifyTile.h>
+#include <LibTerraria/Net/Packets/PlayerDeath.h>
+#include <LibTerraria/Net/Packets/PlayerHurt.h>
 #include <LibTerraria/Net/Packets/PlayerTeam.h>
+#include <LibTerraria/Net/Packets/SpawnPlayer.h>
 #include <LibTerraria/Net/Packets/SyncItem.h>
 #include <LibTerraria/Net/Packets/SyncItemOwner.h>
-#include <LibCore/Timer.h>
+#include <LibTerraria/Net/Packets/SyncProjectile.h>
+#include <LibTerraria/Net/Packets/TogglePvp.h>
+#include <LibTerraria/PlayerInventory.h>
+#include <Server/Client.h>
 
 typedef struct lua_State lua_State;
 
-#define DEFINE_LUA_METHOD(name) static int name##_thunk(lua_State* state)   \
-{                                                                           \
-    return (*s_engines.get(state))->name();                                 \
-}                                                                           \
-int name();
+#define DEFINE_LUA_METHOD(name)                                                                                        \
+    static int name##_thunk(lua_State* state) { return (*s_engines.get(state))->name(); }                              \
+    int name();
 
 class Server;
 
@@ -182,8 +180,7 @@ private:
     {
         friend Engine;
 
-        UsingBaseTable(const Engine& engine) : m_engine(engine)
-        { engine.push_base_table(); }
+        UsingBaseTable(const Engine& engine) : m_engine(engine) { engine.push_base_table(); }
 
         ~UsingBaseTable();
 

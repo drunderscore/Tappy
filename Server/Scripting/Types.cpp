@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <Server/Scripting/Types.h>
 #include <Server/Scripting/Lua.h>
+#include <Server/Scripting/Types.h>
 
 namespace Scripting
 {
@@ -291,10 +291,7 @@ void Types::player_death_reason(lua_State* state, const Terraria::PlayerDeathRea
     }
 }
 
-Terraria::PlayerDeathReason Types::player_death_reason(lua_State*, int index)
-{
-
-}
+Terraria::PlayerDeathReason Types::player_death_reason(lua_State*, int index) {}
 
 void Types::npc(lua_State* state, const Terraria::NPC& npc)
 {

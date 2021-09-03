@@ -4,28 +4,25 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-#include <Server/Server.h>
-#include <LibTerraria/Net/Packets/Modules/Text.h>
-#include <LibTerraria/Net/Packets/TileFrameSection.h>
-#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
-#include <LibTerraria/Net/Packets/TileSection.h>
-#include <LibTerraria/Net/Packets/SyncTileRect.h>
-#include <LibTerraria/Net/Packets/PlayerActive.h>
-#include <LibTerraria/Net/Packets/SyncPlayer.h>
-#include <Server/Scripting/Engine.h>
-#include <LibTerraria/Net/Packets/WorldData.h>
-#include <LibTerraria/Net/Packets/SyncItemOwner.h>
 #include <LibTerraria/Model.h>
+#include <LibTerraria/Net/Packets/Modules/Text.h>
+#include <LibTerraria/Net/Packets/PlayerActive.h>
+#include <LibTerraria/Net/Packets/SpawnPlayerSelf.h>
+#include <LibTerraria/Net/Packets/SyncItemOwner.h>
+#include <LibTerraria/Net/Packets/SyncPlayer.h>
+#include <LibTerraria/Net/Packets/SyncTileRect.h>
+#include <LibTerraria/Net/Packets/TileFrameSection.h>
+#include <LibTerraria/Net/Packets/TileSection.h>
+#include <LibTerraria/Net/Packets/WorldData.h>
+#include <Server/Scripting/Engine.h>
+#include <Server/Server.h>
 
 constexpr i16 s_max_dropped_items = 400;
 
-Server::Server(RefPtr<Terraria::World> world)
-        : m_server(Core::TCPServer::construct()),
-          m_world(world)
+Server::Server(RefPtr<Terraria::World> world) : m_server(Core::TCPServer::construct()), m_world(world)
 {
     m_engine = make<Scripting::Engine>(*this);
-    m_server->on_ready_to_accept = [this]
-    {
+    m_server->on_ready_to_accept = [this] {
         auto socket = m_server->accept();
         if (!socket)
         {
@@ -339,8 +336,7 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
     m_engine->client_did_disconnect({}, who, reason);
 
     // @formatter:off
-    deferred_invoke([this, id, addr](auto&)
-    {
+    deferred_invoke([this, id, addr](auto&) {
         outln("Client {}/{} disconnected.", id, addr);
         m_clients.remove(id);
 
@@ -536,10 +532,7 @@ bool Server::listen(AK::IPv4Address addr, u16 port)
     return true;
 }
 
-int Server::exec()
-{
-    return m_event_loop.exec();
-}
+int Server::exec() { return m_event_loop.exec(); }
 
 const WeakPtr<Client> Server::client(u8 id) const
 {
