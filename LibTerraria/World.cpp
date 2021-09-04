@@ -38,7 +38,7 @@ InputStream& operator>>(InputStream& stream, Array<T, size>& array)
 
 namespace Terraria
 {
-Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
+Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
 {
     auto world = adopt_ref(*new World);
 
@@ -85,100 +85,100 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
         }
     }
 
-    Net::Types::read_string(stream, world->m_name);
-    Net::Types::read_string(stream, world->m_seed);
-    stream >> world->m_generator_version;
+    Net::Types::read_string(stream, world->m_header.name);
+    Net::Types::read_string(stream, world->m_header.seed);
+    stream >> world->m_header.generator_version;
 
     AK::Array<u8, 16> uuid;
     stream >> uuid;
-    world->m_uuid = AK::UUID(uuid);
+    world->m_header.uuid = AK::UUID(uuid);
 
-    stream >> world->m_id;
-    stream >> world->m_left;
-    stream >> world->m_right;
-    stream >> world->m_top;
-    stream >> world->m_bottom;
-    stream >> world->m_max_tiles_y;
-    stream >> world->m_max_tiles_x;
-    stream >> world->m_game_mode;
+    stream >> world->m_header.id;
+    stream >> world->m_header.left;
+    stream >> world->m_header.right;
+    stream >> world->m_header.top;
+    stream >> world->m_header.bottom;
+    stream >> world->m_header.max_tiles_y;
+    stream >> world->m_header.max_tiles_x;
+    stream >> world->m_header.game_mode;
     // TODO: Check if reading these as bools is compatible with .NET Binary{Reader,Writer}
-    stream >> world->m_drunk;
-    stream >> world->m_get_good_world;
-    stream >> world->m_tenth_anniversary;
-    stream >> world->m_creation_time;
-    stream >> world->m_moon_type;
-    stream >> world->m_tree_x;
-    stream >> world->m_tree_style;
-    stream >> world->m_cave_back_x;
-    stream >> world->m_cave_back_style;
-    stream >> world->m_ice_back_style;
-    stream >> world->m_jungle_back_style;
-    stream >> world->m_hell_back_style;
-    stream >> world->m_spawn_tile;
-    stream >> world->m_surface;
-    stream >> world->m_rock_layer;
-    stream >> world->m_time;
-    stream >> world->m_day_time;
-    stream >> world->m_moon_phase;
-    stream >> world->m_blood_moon;
-    stream >> world->m_eclipse;
-    stream >> world->m_dungeon;
-    stream >> world->m_crimson;
-    stream >> world->m_downed_boss_1;
-    stream >> world->m_downed_boss_2;
-    stream >> world->m_downed_boss_3;
-    stream >> world->m_downed_queen_bee;
-    stream >> world->m_downed_mech_boss_1;
-    stream >> world->m_downed_mech_boss_2;
-    stream >> world->m_downed_mech_boss_3;
-    stream >> world->m_downed_any_mech_boss;
-    stream >> world->m_downed_plantera;
-    stream >> world->m_downed_golem;
-    stream >> world->m_downed_king_slime;
-    stream >> world->m_saved_goblin;
-    stream >> world->m_saved_wizard;
-    stream >> world->m_saved_mech;
-    stream >> world->m_downed_goblins;
-    stream >> world->m_downed_clown;
-    stream >> world->m_downed_frost;
-    stream >> world->m_downed_pirates;
-    stream >> world->m_shadow_orb_smashed;
-    stream >> world->m_spawn_meteor;
-    stream >> world->m_shadow_orb_count;
-    stream >> world->m_altar_count;
-    stream >> world->m_hard_mode;
-    stream >> world->m_invasion_delay;
-    stream >> world->m_invasion_size;
-    stream >> world->m_invasion_type;
-    stream >> world->m_invasion_x;
-    stream >> world->m_slime_rain_time;
-    stream >> world->m_sundial_cooldown;
-    stream >> world->m_raining;
-    stream >> world->m_rain_time;
-    stream >> world->m_max_rain;
-    stream >> world->m_cobalt_tier;
-    stream >> world->m_mythril_tier;
-    stream >> world->m_adamantite_tier;
-    stream >> world->m_backgrounds;
-    stream >> world->m_cloud_background_active;
-    stream >> world->m_number_of_clouds;
-    stream >> world->m_wind_speed_target;
+    stream >> world->m_header.drunk;
+    stream >> world->m_header.get_good_world;
+    stream >> world->m_header.tenth_anniversary;
+    stream >> world->m_header.creation_time;
+    stream >> world->m_header.moon_type;
+    stream >> world->m_header.tree_x;
+    stream >> world->m_header.tree_style;
+    stream >> world->m_header.cave_back_x;
+    stream >> world->m_header.cave_back_style;
+    stream >> world->m_header.ice_back_style;
+    stream >> world->m_header.jungle_back_style;
+    stream >> world->m_header.hell_back_style;
+    stream >> world->m_header.spawn_tile;
+    stream >> world->m_header.surface;
+    stream >> world->m_header.rock_layer;
+    stream >> world->m_header.time;
+    stream >> world->m_header.day_time;
+    stream >> world->m_header.moon_phase;
+    stream >> world->m_header.blood_moon;
+    stream >> world->m_header.eclipse;
+    stream >> world->m_header.dungeon;
+    stream >> world->m_header.crimson;
+    stream >> world->m_header.downed_boss_1;
+    stream >> world->m_header.downed_boss_2;
+    stream >> world->m_header.downed_boss_3;
+    stream >> world->m_header.downed_queen_bee;
+    stream >> world->m_header.downed_mech_boss_1;
+    stream >> world->m_header.downed_mech_boss_2;
+    stream >> world->m_header.downed_mech_boss_3;
+    stream >> world->m_header.downed_any_mech_boss;
+    stream >> world->m_header.downed_plantera;
+    stream >> world->m_header.downed_golem;
+    stream >> world->m_header.downed_king_slime;
+    stream >> world->m_header.saved_goblin;
+    stream >> world->m_header.saved_wizard;
+    stream >> world->m_header.saved_mech;
+    stream >> world->m_header.downed_goblins;
+    stream >> world->m_header.downed_clown;
+    stream >> world->m_header.downed_frost;
+    stream >> world->m_header.downed_pirates;
+    stream >> world->m_header.shadow_orb_smashed;
+    stream >> world->m_header.spawn_meteor;
+    stream >> world->m_header.shadow_orb_count;
+    stream >> world->m_header.altar_count;
+    stream >> world->m_header.hard_mode;
+    stream >> world->m_header.invasion_delay;
+    stream >> world->m_header.invasion_size;
+    stream >> world->m_header.invasion_type;
+    stream >> world->m_header.invasion_x;
+    stream >> world->m_header.slime_rain_time;
+    stream >> world->m_header.sundial_cooldown;
+    stream >> world->m_header.raining;
+    stream >> world->m_header.rain_time;
+    stream >> world->m_header.max_rain;
+    stream >> world->m_header.cobalt_tier;
+    stream >> world->m_header.mythril_tier;
+    stream >> world->m_header.adamantite_tier;
+    stream >> world->m_header.backgrounds;
+    stream >> world->m_header.cloud_background_active;
+    stream >> world->m_header.number_of_clouds;
+    stream >> world->m_header.wind_speed_target;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         String value;
         Net::Types::read_string(stream, value);
-        world->m_angler_who_finished_today.append(move(value));
+        world->m_header.angler_who_finished_today.append(move(value));
     }
 
-    stream >> world->m_saved_angler;
-    stream >> world->m_angler_quest;
-    stream >> world->m_saved_stylist;
-    stream >> world->m_saved_tax_collector;
-    stream >> world->m_saved_golfer;
-    stream >> world->m_invasion_size_start;
-    stream >> world->m_cultist_delay;
+    stream >> world->m_header.saved_angler;
+    stream >> world->m_header.angler_quest;
+    stream >> world->m_header.saved_stylist;
+    stream >> world->m_header.saved_tax_collector;
+    stream >> world->m_header.saved_golfer;
+    stream >> world->m_header.invasion_size_start;
+    stream >> world->m_header.cultist_delay;
 
     stream >> temporary_16;
     for (int i = 0; i < temporary_16; i++)
@@ -186,84 +186,84 @@ Result<RefPtr<World>, World::Error> World::try_load_world(InputStream& stream)
         i32 value;
         stream >> value;
         if (value != 0)
-            world->m_kill_count.set(i, value);
+            world->m_header.kill_count.set(i, value);
     }
 
-    stream >> world->m_fast_foward_time;
-    stream >> world->m_downed_fishron;
-    stream >> world->m_downed_martians;
-    stream >> world->m_downed_ancient_cultists;
-    stream >> world->m_downed_moonlord;
-    stream >> world->m_downed_halloween_king;
-    stream >> world->m_downed_halloween_tree;
-    stream >> world->m_downed_christmas_ice_queen;
-    stream >> world->m_downed_christmas_santank;
-    stream >> world->m_downed_christmas_tree;
-    stream >> world->m_downed_tower_solar;
-    stream >> world->m_downed_tower_vortex;
-    stream >> world->m_downed_tower_nebula;
-    stream >> world->m_downed_tower_stardust;
-    stream >> world->m_tower_active_solar;
-    stream >> world->m_tower_active_vortex;
-    stream >> world->m_tower_active_nebula;
-    stream >> world->m_tower_active_stardust;
-    stream >> world->m_lunar_apocalypse;
-    stream >> world->m_party_manual;
-    stream >> world->m_party_genuine;
-    stream >> world->m_party_cooldown;
+    stream >> world->m_header.fast_foward_time;
+    stream >> world->m_header.downed_fishron;
+    stream >> world->m_header.downed_martians;
+    stream >> world->m_header.downed_ancient_cultists;
+    stream >> world->m_header.downed_moonlord;
+    stream >> world->m_header.downed_halloween_king;
+    stream >> world->m_header.downed_halloween_tree;
+    stream >> world->m_header.downed_christmas_ice_queen;
+    stream >> world->m_header.downed_christmas_santank;
+    stream >> world->m_header.downed_christmas_tree;
+    stream >> world->m_header.downed_tower_solar;
+    stream >> world->m_header.downed_tower_vortex;
+    stream >> world->m_header.downed_tower_nebula;
+    stream >> world->m_header.downed_tower_stardust;
+    stream >> world->m_header.tower_active_solar;
+    stream >> world->m_header.tower_active_vortex;
+    stream >> world->m_header.tower_active_nebula;
+    stream >> world->m_header.tower_active_stardust;
+    stream >> world->m_header.lunar_apocalypse;
+    stream >> world->m_header.party_manual;
+    stream >> world->m_header.party_genuine;
+    stream >> world->m_header.party_cooldown;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         i32 value;
         stream >> value;
-        world->m_celebrating_npcs.append(value);
+        world->m_header.celebrating_npcs.append(value);
     }
 
-    stream >> world->m_sandstorming;
-    stream >> world->m_sandstorm_time_left;
-    stream >> world->m_sandstorm_severity;
-    stream >> world->m_sandstorm_intended_severity;
-    stream >> world->m_saved_bartender;
-    stream >> world->m_downed_dd2_1;
-    stream >> world->m_downed_dd2_2;
-    stream >> world->m_downed_dd2_3;
-    stream >> world->m_additional_backgrounds;
-    stream >> world->m_combat_book_was_used;
-    stream >> world->m_lantern_night_cooldown;
-    stream >> world->m_lantern_night_genuine;
-    stream >> world->m_lantern_night_manual;
-    stream >> world->m_lantern_night_next_is_genuine;
+    stream >> world->m_header.sandstorming;
+    stream >> world->m_header.sandstorm_time_left;
+    stream >> world->m_header.sandstorm_severity;
+    stream >> world->m_header.sandstorm_intended_severity;
+    stream >> world->m_header.saved_bartender;
+    stream >> world->m_header.downed_dd2_1;
+    stream >> world->m_header.downed_dd2_2;
+    stream >> world->m_header.downed_dd2_3;
+    stream >> world->m_header.additional_backgrounds;
+    stream >> world->m_header.combat_book_was_used;
+    stream >> world->m_header.lantern_night_cooldown;
+    stream >> world->m_header.lantern_night_genuine;
+    stream >> world->m_header.lantern_night_manual;
+    stream >> world->m_header.lantern_night_next_is_genuine;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         i32 value;
         stream >> value;
-        world->m_tree_tops.append(value);
+        world->m_header.tree_tops.append(value);
     }
 
-    stream >> world->m_force_halloween_for_today;
-    stream >> world->m_force_christmas_for_today;
-    stream >> world->m_copper_tier;
-    stream >> world->m_iron_tier;
-    stream >> world->m_silver_tier;
-    stream >> world->m_gold_tier;
-    stream >> world->m_bought_cat;
-    stream >> world->m_bought_dog;
-    stream >> world->m_bought_bunny;
-    stream >> world->m_downed_empress_of_light;
-    stream >> world->m_downed_queen_slime;
+    stream >> world->m_header.force_halloween_for_today;
+    stream >> world->m_header.force_christmas_for_today;
+    stream >> world->m_header.copper_tier;
+    stream >> world->m_header.iron_tier;
+    stream >> world->m_header.silver_tier;
+    stream >> world->m_header.gold_tier;
+    stream >> world->m_header.bought_cat;
+    stream >> world->m_header.bought_dog;
+    stream >> world->m_header.bought_bunny;
+    stream >> world->m_header.downed_empress_of_light;
+    stream >> world->m_header.downed_queen_slime;
 
-    world->m_tile_map = adopt_ref(*new MemoryTileMap(world->m_max_tiles_x, world->m_max_tiles_y));
+    world->m_tile_map = adopt_ref(*new MemoryTileMap(world->m_header.max_tiles_x, world->m_header.max_tiles_y));
 
     u8 temporary_8;
 
     i16 rle = 0;
     Tile* tile_to_rle;
-    for (u16 x = 0; x < world->m_max_tiles_x; x++)
+    for (u16 x = 0; x < world->m_header.max_tiles_x; x++)
     {
-        for (u16 y = 0; y < world->m_max_tiles_y; y++)
+        for (u16 y = 0; y < world->m_header.max_tiles_y; y++)
         {
             auto& tile = world->m_tile_map->at(x, y);
 

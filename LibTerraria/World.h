@@ -25,11 +25,149 @@ namespace Terraria
 class World : public RefCounted<World>
 {
 public:
-    using Error = String;
+    struct Header
+    {
+        String name;
+        String seed;
+        AK::UUID uuid;
+        u64 generator_version{};
+        i32 id{};
+        i32 left{};
+        i32 right{};
+        i32 top{};
+        i32 bottom{};
+        i32 max_tiles_y{};
+        i32 max_tiles_x{};
+        i32 game_mode{};
+        bool drunk{};
+        // FIXME: What is this?
+        bool get_good_world{};
+        bool tenth_anniversary{};
+        // FIXME: Specialize this type for proper time display
+        i64 creation_time{};
+        u8 moon_type{};
+        AK::Array<i32, 3> tree_x;
+        AK::Array<i32, 4> tree_style;
+        AK::Array<i32, 3> cave_back_x;
+        AK::Array<i32, 4> cave_back_style;
+        i32 ice_back_style{};
+        i32 jungle_back_style{};
+        i32 hell_back_style{};
+        Point<i32> spawn_tile{};
+        double surface{};
+        double rock_layer{};
+        double time{};
+        bool day_time{};
+        i32 moon_phase{};
+        bool blood_moon{};
+        bool eclipse{};
+        Point<i32> dungeon{};
+        bool crimson{};
+        // TODO: Magic values
+        bool downed_boss_1{};
+        bool downed_boss_2{};
+        bool downed_boss_3{};
+        bool downed_queen_bee{};
+        bool downed_mech_boss_1{};
+        bool downed_mech_boss_2{};
+        bool downed_mech_boss_3{};
+        bool downed_any_mech_boss{};
+        bool downed_plantera{};
+        bool downed_golem{};
+        bool downed_king_slime{};
+        bool saved_goblin{};
+        bool saved_wizard{};
+        bool saved_mech{};
+        bool downed_goblins{};
+        bool downed_clown{};
+        bool downed_frost{};
+        bool downed_pirates{};
+        bool shadow_orb_smashed{};
+        bool spawn_meteor{};
+        u8 shadow_orb_count{};
+        i32 altar_count{};
+        bool hard_mode{};
+        i32 invasion_delay{};
+        i32 invasion_size{};
+        i32 invasion_type{};
+        double invasion_x{};
+        double slime_rain_time{};
+        u8 sundial_cooldown{};
+        bool raining{};
+        i32 rain_time{};
+        float max_rain{};
+        i32 cobalt_tier{};
+        i32 mythril_tier{};
+        i32 adamantite_tier{};
+        Array<u8, 8> backgrounds;
+        i32 cloud_background_active{};
+        i16 number_of_clouds{};
+        float wind_speed_target{};
+        Vector<String> angler_who_finished_today;
+        bool saved_angler{};
+        i32 angler_quest{};
+        bool saved_stylist{};
+        bool saved_tax_collector{};
+        bool saved_golfer{};
+        i32 invasion_size_start{};
+        i32 cultist_delay{};
+        // FIXME: Magic value
+        HashMap<i16, i32> kill_count;
+        bool fast_foward_time{};
+        bool downed_fishron{};
+        bool downed_martians{};
+        bool downed_ancient_cultists{};
+        bool downed_moonlord{};
+        bool downed_halloween_king{};
+        bool downed_halloween_tree{};
+        bool downed_christmas_ice_queen{};
+        bool downed_christmas_santank{};
+        bool downed_christmas_tree{};
+        bool downed_tower_solar{};
+        bool downed_tower_vortex{};
+        bool downed_tower_nebula{};
+        bool downed_tower_stardust{};
+        bool tower_active_solar{};
+        bool tower_active_vortex{};
+        bool tower_active_nebula{};
+        bool tower_active_stardust{};
+        bool lunar_apocalypse{};
+        bool party_manual{};
+        bool party_genuine{};
+        i32 party_cooldown{};
+        // FIXME: Magic value
+        Vector<i32> celebrating_npcs;
+        bool sandstorming{};
+        i32 sandstorm_time_left{};
+        float sandstorm_severity{};
+        float sandstorm_intended_severity{};
+        bool saved_bartender{};
+        bool downed_dd2_1{};
+        bool downed_dd2_2{};
+        bool downed_dd2_3{};
+        Array<u8, 5> additional_backgrounds;
+        bool combat_book_was_used{};
+        i32 lantern_night_cooldown{};
+        bool lantern_night_genuine{};
+        bool lantern_night_manual{};
+        bool lantern_night_next_is_genuine{};
+        Vector<i32> tree_tops;
+        bool force_halloween_for_today{};
+        bool force_christmas_for_today{};
+        i32 copper_tier{};
+        i32 iron_tier{};
+        i32 silver_tier{};
+        i32 gold_tier{};
+        bool bought_cat{};
+        bool bought_dog{};
+        bool bought_bunny{};
+        bool downed_empress_of_light{};
+        bool downed_queen_slime{};
+    };
 
-    static Result<RefPtr<World>, Error> try_load_world(InputStream& stream);
+    static Result<RefPtr<World>, String> try_load_world(InputStream& stream);
 
-    const String& name() const { return m_name; }
+    const Header& header() const { return m_header; }
 
     const RefPtr<TileMap> tile_map() const { return m_tile_map; }
 
@@ -43,151 +181,14 @@ public:
 
     HashMap<u16, Sign>& signs() { return m_signs; }
 
-public:
+private:
     World() = default;
 
     i32 m_version{};
     FileMetadata m_metadata;
-    String m_name;
-    String m_seed;
-    AK::UUID m_uuid;
-    u64 m_generator_version{};
-    i32 m_id{};
-    i32 m_left{};
-    i32 m_right{};
-    i32 m_top{};
-    i32 m_bottom{};
-    i32 m_max_tiles_y{};
-    i32 m_max_tiles_x{};
-    i32 m_game_mode{};
-    bool m_drunk{};
-    // FIXME: What is this?
-    bool m_get_good_world{};
-    bool m_tenth_anniversary{};
-    // FIXME: Specialize this type for proper time display
-    i64 m_creation_time{};
-    u8 m_moon_type{};
-    AK::Array<i32, 3> m_tree_x;
-    AK::Array<i32, 4> m_tree_style;
-    AK::Array<i32, 3> m_cave_back_x;
-    AK::Array<i32, 4> m_cave_back_style;
-    i32 m_ice_back_style{};
-    i32 m_jungle_back_style{};
-    i32 m_hell_back_style{};
-    Point<i32> m_spawn_tile{};
-    double m_surface{};
-    double m_rock_layer{};
-    double m_time{};
-    bool m_day_time{};
-    i32 m_moon_phase{};
-    bool m_blood_moon{};
-    bool m_eclipse{};
-    Point<i32> m_dungeon{};
-    bool m_crimson{};
-    // TODO: Magic values
-    bool m_downed_boss_1{};
-    bool m_downed_boss_2{};
-    bool m_downed_boss_3{};
-    bool m_downed_queen_bee{};
-    bool m_downed_mech_boss_1{};
-    bool m_downed_mech_boss_2{};
-    bool m_downed_mech_boss_3{};
-    bool m_downed_any_mech_boss{};
-    bool m_downed_plantera{};
-    bool m_downed_golem{};
-    bool m_downed_king_slime{};
-    bool m_saved_goblin{};
-    bool m_saved_wizard{};
-    bool m_saved_mech{};
-    bool m_downed_goblins{};
-    bool m_downed_clown{};
-    bool m_downed_frost{};
-    bool m_downed_pirates{};
-    bool m_shadow_orb_smashed{};
-    bool m_spawn_meteor{};
-    u8 m_shadow_orb_count{};
-    i32 m_altar_count{};
-    bool m_hard_mode{};
-    i32 m_invasion_delay{};
-    i32 m_invasion_size{};
-    i32 m_invasion_type{};
-    double m_invasion_x{};
-    double m_slime_rain_time{};
-    u8 m_sundial_cooldown{};
-    bool m_raining{};
-    i32 m_rain_time{};
-    float m_max_rain{};
-    i32 m_cobalt_tier{};
-    i32 m_mythril_tier{};
-    i32 m_adamantite_tier{};
-    Array<u8, 8> m_backgrounds;
-    i32 m_cloud_background_active{};
-    i16 m_number_of_clouds{};
-    float m_wind_speed_target{};
-    Vector<String> m_angler_who_finished_today;
-    bool m_saved_angler{};
-    i32 m_angler_quest{};
-    bool m_saved_stylist{};
-    bool m_saved_tax_collector{};
-    bool m_saved_golfer{};
-    i32 m_invasion_size_start{};
-    i32 m_cultist_delay{};
-    // FIXME: Magic value
-    HashMap<i16, i32> m_kill_count;
-    bool m_fast_foward_time{};
-    bool m_downed_fishron{};
-    bool m_downed_martians{};
-    bool m_downed_ancient_cultists{};
-    bool m_downed_moonlord{};
-    bool m_downed_halloween_king{};
-    bool m_downed_halloween_tree{};
-    bool m_downed_christmas_ice_queen{};
-    bool m_downed_christmas_santank{};
-    bool m_downed_christmas_tree{};
-    bool m_downed_tower_solar{};
-    bool m_downed_tower_vortex{};
-    bool m_downed_tower_nebula{};
-    bool m_downed_tower_stardust{};
-    bool m_tower_active_solar{};
-    bool m_tower_active_vortex{};
-    bool m_tower_active_nebula{};
-    bool m_tower_active_stardust{};
-    bool m_lunar_apocalypse{};
-    bool m_party_manual{};
-    bool m_party_genuine{};
-    i32 m_party_cooldown{};
-    // FIXME: Magic value
-    Vector<i32> m_celebrating_npcs;
-    bool m_sandstorming{};
-    i32 m_sandstorm_time_left{};
-    float m_sandstorm_severity{};
-    float m_sandstorm_intended_severity{};
-    bool m_saved_bartender{};
-    bool m_downed_dd2_1{};
-    bool m_downed_dd2_2{};
-    bool m_downed_dd2_3{};
-    Array<u8, 5> m_additional_backgrounds;
-    bool m_combat_book_was_used{};
-    i32 m_lantern_night_cooldown{};
-    bool m_lantern_night_genuine{};
-    bool m_lantern_night_manual{};
-    bool m_lantern_night_next_is_genuine{};
-    Vector<i32> m_tree_tops;
-    bool m_force_halloween_for_today{};
-    bool m_force_christmas_for_today{};
-    i32 m_copper_tier{};
-    i32 m_iron_tier{};
-    i32 m_silver_tier{};
-    i32 m_gold_tier{};
-    bool m_bought_cat{};
-    bool m_bought_dog{};
-    bool m_bought_bunny{};
-    bool m_downed_empress_of_light{};
-    bool m_downed_queen_slime{};
-
+    Header m_header;
     HashMap<u16, Chest> m_chests;
     HashMap<u16, Sign> m_signs;
-
     RefPtr<MemoryTileMap> m_tile_map;
 };
 }

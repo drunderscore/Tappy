@@ -98,36 +98,36 @@ void Server::client_did_request_world_data(Badge<Client>, Client& who)
 {
     Terraria::Net::Packets::WorldData world_data;
 
-    world_data.set_time(m_world->m_time);
+    world_data.set_time(m_world->header().time);
     // FIXME: Is this correct?
-    world_data.set_day_state(m_world->m_day_time);
-    world_data.set_max_tiles_x(m_world->m_max_tiles_x);
-    world_data.set_max_tiles_y(m_world->m_max_tiles_y);
-    world_data.set_spawn_x(m_world->m_spawn_tile.x());
-    world_data.set_spawn_y(m_world->m_spawn_tile.y());
-    world_data.set_world_surface(m_world->m_surface);
-    world_data.set_rock_layer(m_world->m_rock_layer);
-    world_data.set_world_id(m_world->m_id);
-    world_data.set_world_name(m_world->name());
-    world_data.set_gamemode(m_world->m_game_mode);
-    world_data.set_world_generator_version(m_world->m_generator_version);
+    world_data.set_day_state(m_world->header().day_time);
+    world_data.set_max_tiles_x(m_world->header().max_tiles_x);
+    world_data.set_max_tiles_y(m_world->header().max_tiles_y);
+    world_data.set_spawn_x(m_world->header().spawn_tile.x());
+    world_data.set_spawn_y(m_world->header().spawn_tile.y());
+    world_data.set_world_surface(m_world->header().surface);
+    world_data.set_rock_layer(m_world->header().rock_layer);
+    world_data.set_world_id(m_world->header().id);
+    world_data.set_world_name(m_world->header().name);
+    world_data.set_gamemode(m_world->header().game_mode);
+    world_data.set_world_generator_version(m_world->header().generator_version);
 
-    for (auto i = 0; i < m_world->m_tree_x.size(); i++)
-        world_data.tree_x()[i] = m_world->m_tree_x[i];
+    for (auto i = 0; i < m_world->header().tree_x.size(); i++)
+        world_data.tree_x()[i] = m_world->header().tree_x[i];
 
-    for (auto i = 0; i < m_world->m_tree_style.size(); i++)
-        world_data.tree_style()[i] = m_world->m_tree_style[i];
+    for (auto i = 0; i < m_world->header().tree_style.size(); i++)
+        world_data.tree_style()[i] = m_world->header().tree_style[i];
 
     for (auto i = 0; i < world_data.tree_top_variations().size(); i++)
-        world_data.tree_top_variations()[i] = m_world->m_tree_tops[i];
+        world_data.tree_top_variations()[i] = m_world->header().tree_tops[i];
 
-    world_data.set_copper_ore_tier(m_world->m_copper_tier);
-    world_data.set_iron_ore_tier(m_world->m_iron_tier);
-    world_data.set_silver_ore_tier(m_world->m_silver_tier);
-    world_data.set_gold_ore_tier(m_world->m_gold_tier);
-    world_data.set_mythril_ore_tier(m_world->m_mythril_tier);
-    world_data.set_adamantite_ore_tier(m_world->m_adamantite_tier);
-    world_data.set_intended_sandstorm_severity(m_world->m_sandstorm_intended_severity);
+    world_data.set_copper_ore_tier(m_world->header().copper_tier);
+    world_data.set_iron_ore_tier(m_world->header().iron_tier);
+    world_data.set_silver_ore_tier(m_world->header().silver_tier);
+    world_data.set_gold_ore_tier(m_world->header().gold_tier);
+    world_data.set_mythril_ore_tier(m_world->header().mythril_tier);
+    world_data.set_adamantite_ore_tier(m_world->header().adamantite_tier);
+    world_data.set_intended_sandstorm_severity(m_world->header().sandstorm_intended_severity);
 
     world_data.set_world_flags_1(world_data.world_flags_1() | 0b0100'0000);
 
