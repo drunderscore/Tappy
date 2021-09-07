@@ -167,6 +167,10 @@ public:
 
     static Result<RefPtr<World>, String> try_load_world(InputStream& stream);
 
+    static RefPtr<World> create_with_tile_map(RefPtr<TileMap> tile_map);
+
+    Header& header() { return m_header; }
+
     const Header& header() const { return m_header; }
 
     const RefPtr<TileMap> tile_map() const { return m_tile_map; }
@@ -189,6 +193,6 @@ private:
     Header m_header;
     HashMap<u16, Chest> m_chests;
     HashMap<u16, Sign> m_signs;
-    RefPtr<MemoryTileMap> m_tile_map;
+    RefPtr<TileMap> m_tile_map;
 };
 }

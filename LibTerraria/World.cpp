@@ -447,4 +447,16 @@ Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
 
     return {world};
 }
+
+RefPtr<World> World::create_with_tile_map(RefPtr<TileMap> tile_map)
+{
+    auto world = adopt_ref(*new World);
+
+    world->m_header.max_tiles_x = tile_map->width();
+    world->m_header.max_tiles_y = tile_map->height();
+
+    world->m_tile_map = tile_map;
+
+    return world;
+}
 }
