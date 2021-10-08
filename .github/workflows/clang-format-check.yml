@@ -19,7 +19,7 @@ jobs:
         steps:
         - uses: actions/checkout@v2
         - name: Run clang-format style check for C/C++ programs.
-          uses: jidicula/clang-format-action@v4.1.0
+          uses: jidicula/clang-format-action@7709c2a70b025f444ab479907c0d72f3beea5a63
           with:
             clang-format-version: '12'
             check-path: ${{ matrix.path }}
