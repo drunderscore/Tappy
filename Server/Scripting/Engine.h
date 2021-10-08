@@ -112,8 +112,6 @@ private:
 
     DEFINE_LUA_METHOD(game_add_projectile);
 
-    DEFINE_LUA_METHOD(game_projectile_exists);
-
     DEFINE_LUA_METHOD(game_add_dropped_item);
 
     DEFINE_LUA_METHOD(game_remove_dropped_item);

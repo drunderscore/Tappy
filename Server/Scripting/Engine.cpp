@@ -36,7 +36,6 @@ Engine::Engine(Server& server) : m_server(server)
         {"client", game_client_thunk},
         {"clients", game_clients_thunk},
         {"addProjectile", game_add_projectile_thunk},
-        {"projectileExists", game_projectile_exists_thunk},
         {"addDroppedItem", game_add_dropped_item_thunk},
         {"removeDroppedItem", game_remove_dropped_item_thunk},
         {"setItemOwner", game_set_item_owner_thunk},
@@ -562,12 +561,6 @@ int Engine::game_add_projectile()
     lua_pushboolean(m_state, result == AK::HashSetResult::InsertedNewEntry);
 
     return 2;
-}
-
-int Engine::game_projectile_exists()
-{
-    lua_pushboolean(m_state, m_server.projectiles().contains(luaL_checkinteger(m_state, 1)));
-    return 1;
 }
 
 int Engine::game_add_dropped_item()
