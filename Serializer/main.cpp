@@ -11,8 +11,6 @@
 #include <LibCore/ArgsParser.h>
 #include <LibCore/File.h>
 
-void stringify(const String& name, const StringView& lines);
-
 void generate_item_models(const JsonArray& items);
 
 void generate_tile_models(const JsonArray& items);
@@ -72,11 +70,7 @@ int main(int argc, char** argv)
 
     auto content = file->read_all();
 
-    if (action == "stringify")
-    {
-        stringify(name, content);
-    }
-    else if (action == "item_model")
+    if (action == "item_model")
     {
         auto json = JsonValue::from_string(content);
         if (!json.has_value() || !json->is_array())
