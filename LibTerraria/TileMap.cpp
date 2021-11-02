@@ -77,6 +77,7 @@ void TileMap::process_tile_modification(const Terraria::TileModification& modifi
         case 7:
             tile.block()->set_shape(1);
             dbgln_if(SLOPE_DEBUG, "Tile modify 7 with {}, we set the shape to 1", modification.flags_1);
+            break;
         case 8:
             tile.set_has_actuator(true);
             break;
