@@ -73,14 +73,14 @@ String format(lua_State* state, int index)
                 append_string(nil_string.characters());
                 break;
             }
-            default:
-                dbgln("Unimplemented string formatter for Lua type {} (aka {})", type, lua_typename(state, type));
             case LUA_TSTRING:
             {
                 auto value = lua_tostring(state, i);
                 append_string(value);
                 break;
             }
+            default:
+                dbgln("Unimplemented string formatter for Lua type {} (aka {})", type, lua_typename(state, type));
         }
         type_erased_parameters.append(move(param));
     }
