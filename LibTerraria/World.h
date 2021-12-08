@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include <AK/Error.h>
 #include <AK/HashMap.h>
 #include <AK/RefCounted.h>
-#include <AK/Error.h>
 #include <AK/Stream.h>
 #include <AK/String.h>
 #include <AK/UUID.h>
