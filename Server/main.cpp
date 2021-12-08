@@ -30,15 +30,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     auto file_bytes = file->read_all();
     InputMemoryStream bytes_stream(file_bytes);
 
-    auto world_or_error = Terraria::World::try_load_world(bytes_stream);
-
-    if (world_or_error.is_error())
-    {
-        warnln("Failed to load world file: {}", world_or_error.error());
-        return 3;
-    }
-
-    auto world = world_or_error.release_value();
+    auto world = TRY(Terraria::World::try_load_world(bytes_stream));
 
     s_server = new Server(world);
     if (!s_server->listen())

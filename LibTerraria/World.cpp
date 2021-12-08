@@ -40,7 +40,7 @@ namespace Terraria
 {
 World::World(NonnullRefPtr<TileMap> tile_map) : m_tile_map(move(tile_map)) {}
 
-Result<NonnullRefPtr<World>, String> World::try_load_world(InputStream& stream)
+ErrorOr<NonnullRefPtr<World>> World::try_load_world(InputStream& stream)
 {
     i32 version;
     FileMetadata metadata;
@@ -49,15 +49,15 @@ Result<NonnullRefPtr<World>, String> World::try_load_world(InputStream& stream)
     stream >> version;
 
     if (version != world_version_capable_of_loading)
-        return String("Unable to load this world version");
+        return Error::from_string_literal("Unable to load this world version");
 
     stream >> metadata;
 
     if (stream.handle_recoverable_error())
-        return String("Unable to read world metadata");
+        return Error::from_string_literal("Unable to read world metadata");
 
     if (metadata.type() != FileMetadata::FileType::World)
-        return String("File is not a world file");
+        return Error::from_string_literal("File is not a world file");
 
     u16 temporary_16;
     u32 temporary_32;

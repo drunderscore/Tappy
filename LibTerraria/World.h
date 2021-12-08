@@ -8,7 +8,7 @@
 
 #include <AK/HashMap.h>
 #include <AK/RefCounted.h>
-#include <AK/Result.h>
+#include <AK/Error.h>
 #include <AK/Stream.h>
 #include <AK/String.h>
 #include <AK/UUID.h>
@@ -171,7 +171,7 @@ public:
 
     World(NonnullRefPtr<TileMap>);
 
-    static Result<NonnullRefPtr<World>, String> try_load_world(InputStream& stream);
+    static ErrorOr<NonnullRefPtr<World>> try_load_world(InputStream& stream);
 
     Header& header() { return m_header; }
 
