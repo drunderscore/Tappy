@@ -13,4 +13,4 @@ target_include_directories(Server SYSTEM PRIVATE
         ${PROJECT_BINARY_DIR}
         )
 
-target_link_libraries(Server PRIVATE Terraria lua5.3)
+target_link_libraries(Server PRIVATE Terraria lua5.3 LagomMain)
