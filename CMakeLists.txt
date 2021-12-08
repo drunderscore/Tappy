@@ -7,6 +7,7 @@ include(FetchContent)
 include(cmake/FetchLagom.cmake)
 
 add_compile_options(-Werror=implicit-fallthrough)
+add_compile_options(-Wno-literal-suffix)
 add_subdirectory(Serializer)
 add_subdirectory(LibTerraria)
 add_subdirectory(Server)
