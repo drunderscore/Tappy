@@ -8,6 +8,7 @@
 
 #include <AK/Optional.h>
 #include <AK/StringView.h>
+#include <AK/Vector.h>
 #include <LibTerraria/Point.h>
 
 namespace Terraria

@@ -72,17 +72,26 @@ public:
 };
 }
 
-template<>
-struct AK::Formatter<Terraria::Net::Packet::Id> : AK::Formatter<String>
+namespace AK
 {
-    void format(FormatBuilder& builder, Terraria::Net::Packet::Id id) { builder.put_i64(static_cast<u8>(id)); }
+template<>
+struct Formatter<Terraria::Net::Packet::Id> : Formatter<String>
+{
+    ErrorOr<void> format(FormatBuilder& builder, Terraria::Net::Packet::Id id)
+    {
+        return builder.put_i64(static_cast<u8>(id));
+    }
 };
 
 template<>
-struct AK::Formatter<Terraria::Net::Packet::ModuleId> : AK::Formatter<String>
+struct Formatter<Terraria::Net::Packet::ModuleId> : Formatter<String>
 {
-    void format(FormatBuilder& builder, Terraria::Net::Packet::ModuleId id) { builder.put_i64(static_cast<u16>(id)); }
+    ErrorOr<void> format(FormatBuilder& builder, Terraria::Net::Packet::ModuleId id)
+    {
+        return builder.put_i64(static_cast<u16>(id));
+    }
 };
+}
 
 InputStream& operator>>(InputStream& stream, Terraria::Net::Packet::Id& value);
 

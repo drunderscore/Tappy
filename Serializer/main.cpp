@@ -5,11 +5,13 @@
  */
 
 #include <AK/Format.h>
+#include <AK/GenericLexer.h>
 #include <AK/JsonObject.h>
 #include <AK/LexicalPath.h>
 #include <AK/String.h>
 #include <LibCore/ArgsParser.h>
 #include <LibCore/File.h>
+#include <LibMain/Main.h>
 
 void generate_item_models(const JsonArray& items);
 
@@ -48,7 +50,7 @@ private:
     Optional<String> m_when;
 };
 
-int main(int argc, char** argv)
+ErrorOr<int> serenity_main(Main::Arguments arguments)
 {
     Core::ArgsParser args_parser;
     String input_file_path;
@@ -58,88 +60,61 @@ int main(int argc, char** argv)
     args_parser.add_option(action, "Action to perform on the input file", "action", 'a', "action");
     args_parser.add_option(name, "Name to pass to the action", "name", 'n', "name");
 
-    if (!args_parser.parse(argc, argv))
+    if (!args_parser.parse(arguments))
         return 1;
 
-    auto file = Core::File::construct(input_file_path);
-    if (!file->open(Core::OpenMode::ReadOnly))
-    {
-        warnln("Failed to open file.");
-        return 2;
-    }
+    auto file = TRY(Core::File::open(input_file_path, Core::OpenMode::ReadOnly));
 
     auto content = file->read_all();
 
+    auto json = TRY(JsonValue::from_string(content));
+
     if (action == "item_model")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_array())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_array())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_array = json->as_array();
+        auto json_array = json.as_array();
         generate_item_models(json_array);
     }
     else if (action == "tile_model")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_array())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_array())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_array = json->as_array();
+        auto json_array = json.as_array();
         generate_tile_models(json_array);
     }
     else if (action == "wall_model")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_array())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_array())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_array = json->as_array();
+        auto json_array = json.as_array();
         generate_wall_models(json_array);
     }
     else if (action == "prefix_model")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_array())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_array())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_array = json->as_array();
+        auto json_array = json.as_array();
         generate_prefix_models(json_array);
     }
     else if (action == "tile_object_model")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_array())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_array())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_array = json->as_array();
+        auto json_array = json.as_array();
         generate_tile_object_models(json_array);
     }
     else if (action == "packet_definition")
     {
-        auto json = JsonValue::from_string(content);
-        if (!json.has_value() || !json->is_object())
-        {
-            warnln("Invalid JSON format.");
-            return 3;
-        }
+        if (!json.is_object())
+            return Error::from_string_literal("Invalid JSON format");
 
-        auto json_object = json->as_object();
+        auto json_object = json.as_object();
 
         auto json_fields = json_object.get("fields");
         if (json_fields.type() != AK::JsonValue::Type::Array)
@@ -345,7 +320,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        warnln("Unknown serializer action {}", action);
-        return 6;
+        return Error::from_string_literal(String::formatted("Unknown serializer action {}", action));
     }
+
+    return 0;
 }

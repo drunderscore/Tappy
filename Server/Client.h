@@ -9,12 +9,12 @@
 #include <AK/RefCounted.h>
 #include <AK/UUID.h>
 #include <AK/WeakPtr.h>
-#include <LibCore/FileStream.h>
 #include <LibCore/TCPSocket.h>
 #include <LibCore/Timer.h>
 #include <LibTerraria/Net/NetworkText.h>
 #include <LibTerraria/Net/Packet.h>
 #include <LibTerraria/Player.h>
+#include <Server/SocketStream.h>
 
 class Server;
 
@@ -57,8 +57,7 @@ private:
 
     Server& m_server;
     NonnullRefPtr<Core::TCPSocket> m_socket;
-    Core::InputFileStream m_input_stream;
-    Core::OutputFileStream m_output_stream;
+    SocketStream m_stream;
     Terraria::Player m_player;
     Optional<UUID> m_uuid;
     u8 m_id;

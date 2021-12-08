@@ -335,7 +335,7 @@ void Server::client_did_disconnect(Badge<Client>, Client& who, Client::Disconnec
     auto addr = who.address();
     m_engine->client_did_disconnect({}, who, reason);
 
-    deferred_invoke([this, id, addr](auto&) {
+    deferred_invoke([this, id, addr]() {
         outln("Client {}/{} disconnected.", id, addr);
         m_clients.remove(id);
 

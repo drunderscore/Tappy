@@ -5,6 +5,7 @@
  */
 
 #include <AK/Format.h>
+#include <AK/Vector.h>
 #include <Server/Scripting/Format.h>
 #include <Server/Scripting/Lua.h>
 #include <math.h>

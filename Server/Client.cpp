@@ -36,7 +36,7 @@
 #define USE_BOGUS_KEEP_ALIVE_PACKET 0
 
 Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id)
-    : m_socket(move(socket)), m_id(id), m_input_stream(m_socket), m_output_stream(m_socket), m_server(server)
+    : m_socket(move(socket)), m_id(id), m_stream(m_socket), m_server(server)
 {
     m_socket->on_ready_to_read = [this]() { on_ready_to_read(); };
 
@@ -50,9 +50,9 @@ Client::Client(NonnullRefPtr<Core::TCPSocket> socket, Server& server, u8 id)
 void Client::send(const Terraria::Net::Packet& packet)
 {
     auto bytes = packet.to_bytes();
-    m_output_stream << static_cast<u16>(bytes.size() + 2);
-    m_output_stream << bytes;
-    if (m_output_stream.handle_any_error())
+    m_stream << static_cast<u16>(bytes.size() + 2);
+    m_stream << bytes;
+    if (m_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to send data");
@@ -148,9 +148,9 @@ void Client::on_ready_to_read()
     }
 
     u16 packet_size;
-    m_input_stream >> packet_size;
+    m_stream >> packet_size;
 
-    if (m_input_stream.handle_any_error())
+    if (m_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to read packet size");
@@ -159,8 +159,8 @@ void Client::on_ready_to_read()
     }
 
     Terraria::Net::Packet::Id packet_id;
-    m_input_stream >> packet_id;
-    if (m_input_stream.handle_any_error())
+    m_stream >> packet_id;
+    if (m_stream.handle_any_error())
     {
         m_in_process_of_disconnecting = true;
         warnln("Stream errored trying to read packet id");
@@ -376,6 +376,6 @@ void Client::send_keep_alive()
     // This is our way of keeping the client connection alive
     // The client will think the server has disconnected after 7200 ticks (120 seconds) of no data received.
     // Packet ID 0 is unused, so we just send it as bogus, and it knows we're still here.
-    m_output_stream << static_cast<u16>(3);
-    m_output_stream << static_cast<u8>(0);
+    m_stream << static_cast<u16>(3);
+    m_stream << static_cast<u8>(0);
 }

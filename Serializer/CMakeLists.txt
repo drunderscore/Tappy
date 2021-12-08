@@ -3,3 +3,4 @@ add_executable(Serializer
         ModelGenerator.cpp
         )
 target_lagom(Serializer)
+target_link_libraries(Serializer PRIVATE LagomMain)

@@ -8,6 +8,7 @@
 #include <AK/JsonObject.h>
 #include <AK/LexicalPath.h>
 #include <LibCore/DirIterator.h>
+#include <LibCore/File.h>
 #include <LibTerraria/Net/Packets/KillProjectile.h>
 #include <LibTerraria/Net/Packets/Modules/Text.h>
 #include <LibTerraria/Net/Packets/SyncNPC.h>
@@ -493,7 +494,16 @@ int Engine::json_deserialize()
     auto json_string = luaL_checkstring(m_state, 1);
 
     auto maybe_json = JsonValue::from_string(json_string);
-    if (!maybe_json.has_value() || !maybe_json->is_object())
+    if (maybe_json.is_error())
+    {
+        // TODO: Can we include the error from the error type here? Does Lua copy the string?
+        luaL_error(m_state, "the supplied JSON was invalid");
+        return 0;
+    }
+
+    auto json = maybe_json.release_value();
+
+    if (!json.is_object())
     {
         luaL_error(m_state, "the supplied JSON was invalid");
         return 0;
