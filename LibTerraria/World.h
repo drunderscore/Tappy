@@ -29,7 +29,7 @@ public:
     {
         String name;
         String seed;
-        AK::UUID uuid;
+        UUID uuid;
         u64 generator_version{};
         i32 id{};
         i32 left{};
@@ -48,10 +48,10 @@ public:
         // FIXME: Specialize this type for proper time display
         i64 creation_time{};
         u8 moon_type{};
-        AK::Array<i32, 3> tree_x;
-        AK::Array<i32, 4> tree_style;
-        AK::Array<i32, 3> cave_back_x;
-        AK::Array<i32, 4> cave_back_style;
+        Array<i32, 3> tree_x;
+        Array<i32, 4> tree_style;
+        Array<i32, 3> cave_back_x;
+        Array<i32, 4> cave_back_style;
         i32 ice_back_style{};
         i32 jungle_back_style{};
         i32 hell_back_style{};
@@ -167,17 +167,19 @@ public:
         bool downed_queen_slime{};
     };
 
-    static Result<RefPtr<World>, String> try_load_world(InputStream& stream);
+    static constexpr i32 world_version_capable_of_loading = 244;
 
-    static RefPtr<World> create_with_tile_map(RefPtr<TileMap> tile_map);
+    World(NonnullRefPtr<TileMap>);
+
+    static Result<NonnullRefPtr<World>, String> try_load_world(InputStream& stream);
 
     Header& header() { return m_header; }
 
     const Header& header() const { return m_header; }
 
-    const RefPtr<TileMap> tile_map() const { return m_tile_map; }
+    const NonnullRefPtr<TileMap> tile_map() const { return m_tile_map; }
 
-    RefPtr<TileMap> tile_map() { return m_tile_map; }
+    NonnullRefPtr<TileMap> tile_map() { return m_tile_map; }
 
     const HashMap<u16, Chest>& chests() const { return m_chests; }
 
@@ -188,13 +190,11 @@ public:
     HashMap<u16, Sign>& signs() { return m_signs; }
 
 private:
-    World() = default;
-
     i32 m_version{};
     FileMetadata m_metadata;
     Header m_header;
     HashMap<u16, Chest> m_chests;
     HashMap<u16, Sign> m_signs;
-    RefPtr<TileMap> m_tile_map;
+    NonnullRefPtr<TileMap> m_tile_map;
 };
 }

@@ -38,18 +38,26 @@ InputStream& operator>>(InputStream& stream, Array<T, size>& array)
 
 namespace Terraria
 {
-Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
+World::World(NonnullRefPtr<TileMap> tile_map) : m_tile_map(move(tile_map)) {}
+
+Result<NonnullRefPtr<World>, String> World::try_load_world(InputStream& stream)
 {
-    auto world = adopt_ref(*new World);
+    i32 version;
+    FileMetadata metadata;
+    Header header;
 
-    stream >> world->m_version;
-    stream >> world->m_metadata;
+    stream >> version;
 
-    if (stream.has_recoverable_error())
-    {
-        stream.handle_recoverable_error();
-        return {"Unable to read world metadata"};
-    }
+    if (version != world_version_capable_of_loading)
+        return String("Unable to load this world version");
+
+    stream >> metadata;
+
+    if (stream.handle_recoverable_error())
+        return String("Unable to read world metadata");
+
+    if (metadata.type() != FileMetadata::FileType::World)
+        return String("File is not a world file");
 
     u16 temporary_16;
     u32 temporary_32;
@@ -85,102 +93,101 @@ Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
         }
     }
 
-    Net::Types::read_string(stream, world->m_header.name);
-    Net::Types::read_string(stream, world->m_header.seed);
-    stream >> world->m_header.generator_version;
+    Net::Types::read_string(stream, header.name);
+    Net::Types::read_string(stream, header.seed);
+    stream >> header.generator_version;
 
-    AK::Array<u8, 16> uuid;
+    Array<u8, 16> uuid;
     stream >> uuid;
-    world->m_header.uuid = AK::UUID(uuid);
+    header.uuid = uuid;
 
-    stream >> world->m_header.id;
-    stream >> world->m_header.left;
-    stream >> world->m_header.right;
-    stream >> world->m_header.top;
-    stream >> world->m_header.bottom;
-    stream >> world->m_header.max_tiles_y;
-    stream >> world->m_header.max_tiles_x;
-    stream >> world->m_header.game_mode;
-    // TODO: Check if reading these as bools is compatible with .NET Binary{Reader,Writer}
-    stream >> world->m_header.drunk;
-    stream >> world->m_header.get_good_world;
-    stream >> world->m_header.tenth_anniversary;
-    stream >> world->m_header.dont_starve;
-    stream >> world->m_header.not_the_bees;
-    stream >> world->m_header.creation_time;
-    stream >> world->m_header.moon_type;
-    stream >> world->m_header.tree_x;
-    stream >> world->m_header.tree_style;
-    stream >> world->m_header.cave_back_x;
-    stream >> world->m_header.cave_back_style;
-    stream >> world->m_header.ice_back_style;
-    stream >> world->m_header.jungle_back_style;
-    stream >> world->m_header.hell_back_style;
-    stream >> world->m_header.spawn_tile;
-    stream >> world->m_header.surface;
-    stream >> world->m_header.rock_layer;
-    stream >> world->m_header.time;
-    stream >> world->m_header.day_time;
-    stream >> world->m_header.moon_phase;
-    stream >> world->m_header.blood_moon;
-    stream >> world->m_header.eclipse;
-    stream >> world->m_header.dungeon;
-    stream >> world->m_header.crimson;
-    stream >> world->m_header.downed_boss_1;
-    stream >> world->m_header.downed_boss_2;
-    stream >> world->m_header.downed_boss_3;
-    stream >> world->m_header.downed_queen_bee;
-    stream >> world->m_header.downed_mech_boss_1;
-    stream >> world->m_header.downed_mech_boss_2;
-    stream >> world->m_header.downed_mech_boss_3;
-    stream >> world->m_header.downed_any_mech_boss;
-    stream >> world->m_header.downed_plantera;
-    stream >> world->m_header.downed_golem;
-    stream >> world->m_header.downed_king_slime;
-    stream >> world->m_header.saved_goblin;
-    stream >> world->m_header.saved_wizard;
-    stream >> world->m_header.saved_mech;
-    stream >> world->m_header.downed_goblins;
-    stream >> world->m_header.downed_clown;
-    stream >> world->m_header.downed_frost;
-    stream >> world->m_header.downed_pirates;
-    stream >> world->m_header.shadow_orb_smashed;
-    stream >> world->m_header.spawn_meteor;
-    stream >> world->m_header.shadow_orb_count;
-    stream >> world->m_header.altar_count;
-    stream >> world->m_header.hard_mode;
-    stream >> world->m_header.invasion_delay;
-    stream >> world->m_header.invasion_size;
-    stream >> world->m_header.invasion_type;
-    stream >> world->m_header.invasion_x;
-    stream >> world->m_header.slime_rain_time;
-    stream >> world->m_header.sundial_cooldown;
-    stream >> world->m_header.raining;
-    stream >> world->m_header.rain_time;
-    stream >> world->m_header.max_rain;
-    stream >> world->m_header.cobalt_tier;
-    stream >> world->m_header.mythril_tier;
-    stream >> world->m_header.adamantite_tier;
-    stream >> world->m_header.backgrounds;
-    stream >> world->m_header.cloud_background_active;
-    stream >> world->m_header.number_of_clouds;
-    stream >> world->m_header.wind_speed_target;
+    stream >> header.id;
+    stream >> header.left;
+    stream >> header.right;
+    stream >> header.top;
+    stream >> header.bottom;
+    stream >> header.max_tiles_y;
+    stream >> header.max_tiles_x;
+    stream >> header.game_mode;
+    stream >> header.drunk;
+    stream >> header.get_good_world;
+    stream >> header.tenth_anniversary;
+    stream >> header.tenth_anniversary;
+    stream >> header.dont_starve;
+    stream >> header.creation_time;
+    stream >> header.moon_type;
+    stream >> header.tree_x;
+    stream >> header.tree_style;
+    stream >> header.cave_back_x;
+    stream >> header.cave_back_style;
+    stream >> header.ice_back_style;
+    stream >> header.jungle_back_style;
+    stream >> header.hell_back_style;
+    stream >> header.spawn_tile;
+    stream >> header.surface;
+    stream >> header.rock_layer;
+    stream >> header.time;
+    stream >> header.day_time;
+    stream >> header.moon_phase;
+    stream >> header.blood_moon;
+    stream >> header.eclipse;
+    stream >> header.dungeon;
+    stream >> header.crimson;
+    stream >> header.downed_boss_1;
+    stream >> header.downed_boss_2;
+    stream >> header.downed_boss_3;
+    stream >> header.downed_queen_bee;
+    stream >> header.downed_mech_boss_1;
+    stream >> header.downed_mech_boss_2;
+    stream >> header.downed_mech_boss_3;
+    stream >> header.downed_any_mech_boss;
+    stream >> header.downed_plantera;
+    stream >> header.downed_golem;
+    stream >> header.downed_king_slime;
+    stream >> header.saved_goblin;
+    stream >> header.saved_wizard;
+    stream >> header.saved_mech;
+    stream >> header.downed_goblins;
+    stream >> header.downed_clown;
+    stream >> header.downed_frost;
+    stream >> header.downed_pirates;
+    stream >> header.shadow_orb_smashed;
+    stream >> header.spawn_meteor;
+    stream >> header.shadow_orb_count;
+    stream >> header.altar_count;
+    stream >> header.hard_mode;
+    stream >> header.invasion_delay;
+    stream >> header.invasion_size;
+    stream >> header.invasion_type;
+    stream >> header.invasion_x;
+    stream >> header.slime_rain_time;
+    stream >> header.sundial_cooldown;
+    stream >> header.raining;
+    stream >> header.rain_time;
+    stream >> header.max_rain;
+    stream >> header.cobalt_tier;
+    stream >> header.mythril_tier;
+    stream >> header.adamantite_tier;
+    stream >> header.backgrounds;
+    stream >> header.cloud_background_active;
+    stream >> header.number_of_clouds;
+    stream >> header.wind_speed_target;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         String value;
         Net::Types::read_string(stream, value);
-        world->m_header.angler_who_finished_today.append(move(value));
+        header.angler_who_finished_today.append(move(value));
     }
 
-    stream >> world->m_header.saved_angler;
-    stream >> world->m_header.angler_quest;
-    stream >> world->m_header.saved_stylist;
-    stream >> world->m_header.saved_tax_collector;
-    stream >> world->m_header.saved_golfer;
-    stream >> world->m_header.invasion_size_start;
-    stream >> world->m_header.cultist_delay;
+    stream >> header.saved_angler;
+    stream >> header.angler_quest;
+    stream >> header.saved_stylist;
+    stream >> header.saved_tax_collector;
+    stream >> header.saved_golfer;
+    stream >> header.invasion_size_start;
+    stream >> header.cultist_delay;
 
     stream >> temporary_16;
     for (int i = 0; i < temporary_16; i++)
@@ -188,76 +195,78 @@ Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
         i32 value;
         stream >> value;
         if (value != 0)
-            world->m_header.kill_count.set(i, value);
+            header.kill_count.set(i, value);
     }
 
-    stream >> world->m_header.fast_foward_time;
-    stream >> world->m_header.downed_fishron;
-    stream >> world->m_header.downed_martians;
-    stream >> world->m_header.downed_ancient_cultists;
-    stream >> world->m_header.downed_moonlord;
-    stream >> world->m_header.downed_halloween_king;
-    stream >> world->m_header.downed_halloween_tree;
-    stream >> world->m_header.downed_christmas_ice_queen;
-    stream >> world->m_header.downed_christmas_santank;
-    stream >> world->m_header.downed_christmas_tree;
-    stream >> world->m_header.downed_tower_solar;
-    stream >> world->m_header.downed_tower_vortex;
-    stream >> world->m_header.downed_tower_nebula;
-    stream >> world->m_header.downed_tower_stardust;
-    stream >> world->m_header.tower_active_solar;
-    stream >> world->m_header.tower_active_vortex;
-    stream >> world->m_header.tower_active_nebula;
-    stream >> world->m_header.tower_active_stardust;
-    stream >> world->m_header.lunar_apocalypse;
-    stream >> world->m_header.party_manual;
-    stream >> world->m_header.party_genuine;
-    stream >> world->m_header.party_cooldown;
+    stream >> header.fast_foward_time;
+    stream >> header.downed_fishron;
+    stream >> header.downed_martians;
+    stream >> header.downed_ancient_cultists;
+    stream >> header.downed_moonlord;
+    stream >> header.downed_halloween_king;
+    stream >> header.downed_halloween_tree;
+    stream >> header.downed_christmas_ice_queen;
+    stream >> header.downed_christmas_santank;
+    stream >> header.downed_christmas_tree;
+    stream >> header.downed_tower_solar;
+    stream >> header.downed_tower_vortex;
+    stream >> header.downed_tower_nebula;
+    stream >> header.downed_tower_stardust;
+    stream >> header.tower_active_solar;
+    stream >> header.tower_active_vortex;
+    stream >> header.tower_active_nebula;
+    stream >> header.tower_active_stardust;
+    stream >> header.lunar_apocalypse;
+    stream >> header.party_manual;
+    stream >> header.party_genuine;
+    stream >> header.party_cooldown;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         i32 value;
         stream >> value;
-        world->m_header.celebrating_npcs.append(value);
+        header.celebrating_npcs.append(value);
     }
 
-    stream >> world->m_header.sandstorming;
-    stream >> world->m_header.sandstorm_time_left;
-    stream >> world->m_header.sandstorm_severity;
-    stream >> world->m_header.sandstorm_intended_severity;
-    stream >> world->m_header.saved_bartender;
-    stream >> world->m_header.downed_dd2_1;
-    stream >> world->m_header.downed_dd2_2;
-    stream >> world->m_header.downed_dd2_3;
-    stream >> world->m_header.additional_backgrounds;
-    stream >> world->m_header.combat_book_was_used;
-    stream >> world->m_header.lantern_night_cooldown;
-    stream >> world->m_header.lantern_night_genuine;
-    stream >> world->m_header.lantern_night_manual;
-    stream >> world->m_header.lantern_night_next_is_genuine;
+    stream >> header.sandstorming;
+    stream >> header.sandstorm_time_left;
+    stream >> header.sandstorm_severity;
+    stream >> header.sandstorm_intended_severity;
+    stream >> header.saved_bartender;
+    stream >> header.downed_dd2_1;
+    stream >> header.downed_dd2_2;
+    stream >> header.downed_dd2_3;
+    stream >> header.additional_backgrounds;
+    stream >> header.combat_book_was_used;
+    stream >> header.lantern_night_cooldown;
+    stream >> header.lantern_night_genuine;
+    stream >> header.lantern_night_manual;
+    stream >> header.lantern_night_next_is_genuine;
 
     stream >> temporary_32;
     for (int i = 0; i < temporary_32; i++)
     {
         i32 value;
         stream >> value;
-        world->m_header.tree_tops.append(value);
+        header.tree_tops.append(value);
     }
 
-    stream >> world->m_header.force_halloween_for_today;
-    stream >> world->m_header.force_christmas_for_today;
-    stream >> world->m_header.copper_tier;
-    stream >> world->m_header.iron_tier;
-    stream >> world->m_header.silver_tier;
-    stream >> world->m_header.gold_tier;
-    stream >> world->m_header.bought_cat;
-    stream >> world->m_header.bought_dog;
-    stream >> world->m_header.bought_bunny;
-    stream >> world->m_header.downed_empress_of_light;
-    stream >> world->m_header.downed_queen_slime;
+    stream >> header.force_halloween_for_today;
+    stream >> header.force_christmas_for_today;
+    stream >> header.copper_tier;
+    stream >> header.iron_tier;
+    stream >> header.silver_tier;
+    stream >> header.gold_tier;
+    stream >> header.bought_cat;
+    stream >> header.bought_dog;
+    stream >> header.bought_bunny;
+    stream >> header.downed_empress_of_light;
+    stream >> header.downed_queen_slime;
 
-    world->m_tile_map = adopt_ref(*new MemoryTileMap(world->m_header.max_tiles_x, world->m_header.max_tiles_y));
+    auto tile_map = adopt_ref(*new MemoryTileMap(header.max_tiles_x, header.max_tiles_y));
+    auto world = adopt_ref(*new World(move(tile_map)));
+    world->m_header = move(header);
 
     u8 temporary_8;
 
@@ -448,17 +457,5 @@ Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
     }
 
     return {world};
-}
-
-RefPtr<World> World::create_with_tile_map(RefPtr<TileMap> tile_map)
-{
-    auto world = adopt_ref(*new World);
-
-    world->m_header.max_tiles_x = tile_map->width();
-    world->m_header.max_tiles_y = tile_map->height();
-
-    world->m_tile_map = tile_map;
-
-    return world;
 }
 }
