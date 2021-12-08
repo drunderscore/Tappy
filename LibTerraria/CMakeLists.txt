@@ -146,5 +146,4 @@ target_include_directories(Terraria SYSTEM PRIVATE
         ${PROJECT_BINARY_DIR}
         )
 
-target_lagom(Terraria)
-target_link_libraries(Terraria PRIVATE LagomCompress)
+target_link_libraries(Terraria PRIVATE Lagom::Core Lagom::Compress)
