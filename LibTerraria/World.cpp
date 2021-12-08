@@ -105,6 +105,8 @@ Result<RefPtr<World>, String> World::try_load_world(InputStream& stream)
     stream >> world->m_header.drunk;
     stream >> world->m_header.get_good_world;
     stream >> world->m_header.tenth_anniversary;
+    stream >> world->m_header.dont_starve;
+    stream >> world->m_header.not_the_bees;
     stream >> world->m_header.creation_time;
     stream >> world->m_header.moon_type;
     stream >> world->m_header.tree_x;

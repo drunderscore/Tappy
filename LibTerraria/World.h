@@ -43,6 +43,8 @@ public:
         // FIXME: What is this?
         bool get_good_world{};
         bool tenth_anniversary{};
+        bool dont_starve{};
+        bool not_the_bees{};
         // FIXME: Specialize this type for proper time display
         i64 creation_time{};
         u8 moon_type{};
